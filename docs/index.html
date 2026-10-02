@@ -404,6 +404,10 @@ img { max-width: 100%; }
 
 .brand, .btn { white-space: nowrap; }
 @media (max-width: 420px) { .brand { font-size: 15px; gap: 8px; } .top .btn-sm { padding: 0 10px; } }
+
+/* 소개 영상 */
+.video-sec { padding-block: 0 72px; border-top: 0 !important; }
+.intro-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--r-xl); background: var(--bg-subtle); box-shadow: var(--sh-2); object-fit: cover; }
 /* 예약 창 — 왼쪽 상담 정보 · 가운데 달력 · 오른쪽 시간 */
 .book { width: min(1000px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: var(--r-xl); background: var(--bg-surface); color: var(--fg-primary); box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: auto; }
 .book::backdrop { background: rgba(22, 32, 43, .48); }
@@ -513,6 +517,12 @@ img { max-width: 100%; }
           <div><small>메모</small>9월 14일 통화 · 재고 연동 견적 3,000만원 건, 범위 다시 받기로</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="video-sec" aria-label="30초 소개 영상">
+    <div class="wrap">
+      <video class="intro-video" id="intro-video" src="assets/intro.mp4" poster="assets/intro-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="나의 기술고문 아저씨 30초 소개: 장점 4가지와 진행 순서"></video>
     </div>
   </section>
 
@@ -940,5 +950,12 @@ img { max-width: 100%; }
 <script src="assets/slots.js"></script>
 <script src="assets/booking.js"></script>
 
+
+<script>
+(function () {
+  var v = document.getElementById('intro-video');
+  if (v && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); v.pause(); v.controls = true; }
+})();
+</script>
 </body>
 </html>
