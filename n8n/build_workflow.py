@@ -10,6 +10,7 @@ ORIGINS = 'https://yahr.github.io,http://localhost:8766'
 CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
 TG_CRED = {'telegramApi': {'id': 'B2fSwl8ppGfhN8QZ', 'name': 'Telegram (@illey_secretary_bot)'}}
 CHAT_ID = '6630606379'
+CAL_CRED = {'googleCalendarOAuth2Api': {'id': 'QNKMHoO0PJUojtFo', 'name': 'Google Calendar account - light.ez.jjack@gmail.com'}}
 NAME = '나의기술고문_무료상담_예약'
 
 DAY_RANGE = r'''
@@ -49,7 +50,7 @@ def cal_list(name, pos):
         'sendQuery': True, 'queryParameters': {'parameters': [
             {'name': 'timeMin', 'value': '={{ $json.timeMin }}'}, {'name': 'timeMax', 'value': '={{ $json.timeMax }}'},
             {'name': 'singleEvents', 'value': 'true'}, {'name': 'maxResults', 'value': '250'}]},
-        'options': {}}, pos)
+        'options': {}}, pos, credentials=CAL_CRED)
 
 def respond(name, body_expr, pos, code_=200):
     opts = {'responseCode': code_} if code_ != 200 else {}
@@ -109,7 +110,7 @@ b_taken = respond('이미 찬 시간 응답', '={{ JSON.stringify({ ok: false, r
 b_create = node('캘린더에 예약 등록', 'n8n-nodes-base.httpRequest', 4.2, {
     'method': 'POST', 'url': CAL_EVENTS, 'authentication': 'predefinedCredentialType', 'nodeCredentialType': 'googleCalendarOAuth2Api',
     'sendQuery': True, 'queryParameters': {'parameters': [{'name': 'sendUpdates', 'value': 'all'}]},
-    'sendBody': True, 'specifyBody': 'json', 'jsonBody': '={{ JSON.stringify($json.event) }}', 'options': {}}, [1320, 240])
+    'sendBody': True, 'specifyBody': 'json', 'jsonBody': '={{ JSON.stringify($json.event) }}', 'options': {}}, [1320, 240], credentials=CAL_CRED)
 b_ok = respond('예약 완료 응답', '={{ JSON.stringify({ ok: true }) }}', [1540, 240])
 b_tg = node('텔레그램 알림', 'n8n-nodes-base.telegram', 1.2, {
     'chatId': CHAT_ID,

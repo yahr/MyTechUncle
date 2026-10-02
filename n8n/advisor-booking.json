@@ -2,7 +2,7 @@
   "name": "나의기술고문_무료상담_예약",
   "nodes": [
     {
-      "id": "6520ac58-51e9-4a68-b0f7-44251f30c20f",
+      "id": "7a5571db-58a1-4b3d-a9fa-06016f16b495",
       "name": "예약 가능 시간 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -18,10 +18,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "ac001493-4e5b-488e-9cc5-5bd636dcd28d"
+      "webhookId": "b8b708ab-dcb8-4b84-a824-4e19795c6e14"
     },
     {
-      "id": "eba02e29-9469-407e-a9f3-9f616430e56d",
+      "id": "9d68426e-0459-4769-b6a5-636850844a29",
       "name": "조회 날짜 범위",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -34,7 +34,7 @@
       }
     },
     {
-      "id": "dcf17f8f-1ac4-4de3-8277-60ea19d1590f",
+      "id": "8693ac24-cee7-4bb0-a7d3-4fc019971bdb",
       "name": "캘린더 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -68,10 +68,16 @@
           ]
         },
         "options": {}
+      },
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "QNKMHoO0PJUojtFo",
+          "name": "Google Calendar account - light.ez.jjack@gmail.com"
+        }
       }
     },
     {
-      "id": "b6abe1c5-cee6-4dbd-916c-410c0764cefe",
+      "id": "3806b7eb-b29a-4467-a29e-389118a1612b",
       "name": "빈 시간 계산",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -84,7 +90,7 @@
       }
     },
     {
-      "id": "92692f11-288b-4a7c-b18d-31447382cf65",
+      "id": "6166610c-2556-4d68-a8e5-e9fff686fdf5",
       "name": "빈 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -99,7 +105,7 @@
       }
     },
     {
-      "id": "aef103b9-6442-465f-abf6-9ef41b7bff64",
+      "id": "dac231ea-9dc7-4771-9772-da68003b11ad",
       "name": "예약 접수 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -115,10 +121,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "27e6137d-4b40-4a25-b075-7f374a350e3f"
+      "webhookId": "8e6afe16-2104-4e1c-8fc1-032b76a2467d"
     },
     {
-      "id": "8cb4b4a7-b6d7-4e70-8e34-7b93f37d6755",
+      "id": "430e7f8f-ddaa-46a9-8d67-f1f8a88886dc",
       "name": "입력 확인",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -131,7 +137,7 @@
       }
     },
     {
-      "id": "9416e8b4-1fab-4ab5-998e-584a33ddcc3d",
+      "id": "b527cdd8-96cc-4d81-85ac-b5617e2e09c6",
       "name": "입력이 올바른가",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -148,7 +154,7 @@
           },
           "conditions": [
             {
-              "id": "11dba106-c717-4836-ad54-10394fbd368f",
+              "id": "ad5b5234-998b-4ca4-bf6a-0e50da38395a",
               "leftValue": "={{ $json.valid }}",
               "rightValue": "",
               "operator": {
@@ -164,7 +170,7 @@
       }
     },
     {
-      "id": "616817f5-d711-45d5-a6e0-4f23cf3ffa38",
+      "id": "1499d0e8-e42a-4973-a84f-b8684082da75",
       "name": "입력 오류 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -181,7 +187,7 @@
       }
     },
     {
-      "id": "c86209e9-f7bf-4979-b3d7-30598b86cc93",
+      "id": "06342930-cff2-46ff-8b9d-c6f1bf1a0afb",
       "name": "예약 직전 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -215,10 +221,16 @@
           ]
         },
         "options": {}
+      },
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "QNKMHoO0PJUojtFo",
+          "name": "Google Calendar account - light.ez.jjack@gmail.com"
+        }
       }
     },
     {
-      "id": "be85adc2-8ab1-40a3-a103-eb31de916b7d",
+      "id": "d4357d64-2539-4cbd-90ab-e908e713a769",
       "name": "그 시간이 비었나",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -231,7 +243,7 @@
       }
     },
     {
-      "id": "177a68e7-06bc-4b91-8c8d-8a6850b686c1",
+      "id": "98da23ec-64be-4478-9d16-8e95127687b0",
       "name": "비어 있나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -248,7 +260,7 @@
           },
           "conditions": [
             {
-              "id": "c3e7346c-2a3a-4d01-826e-926808b492f5",
+              "id": "321ef666-b572-40ed-a3de-004501567e8e",
               "leftValue": "={{ $json.free }}",
               "rightValue": "",
               "operator": {
@@ -264,7 +276,7 @@
       }
     },
     {
-      "id": "fee1e5e1-b353-4932-a90a-8c1f11bd4477",
+      "id": "cde7c8cd-b04f-429f-9b88-21af91bbdf63",
       "name": "이미 찬 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -281,7 +293,7 @@
       }
     },
     {
-      "id": "734b5397-2404-4a4f-a004-2c33e94de23c",
+      "id": "c0576115-85cc-49c6-887a-f7ca1c711f73",
       "name": "캘린더에 예약 등록",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -307,10 +319,16 @@
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.event) }}",
         "options": {}
+      },
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "QNKMHoO0PJUojtFo",
+          "name": "Google Calendar account - light.ez.jjack@gmail.com"
+        }
       }
     },
     {
-      "id": "f87bee07-a576-44ad-8cea-bf0f91cc5706",
+      "id": "29d35158-226c-4b28-b6d5-b591ef1f2fb7",
       "name": "예약 완료 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -325,7 +343,7 @@
       }
     },
     {
-      "id": "ac32b33e-fe49-4fec-b213-bba1d1760496",
+      "id": "f7d48e69-bc77-4022-a5c4-11fffa05915a",
       "name": "텔레그램 알림",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
