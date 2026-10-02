@@ -385,6 +385,7 @@ p { margin: 0; }
 .voice-pending .bubble { background: transparent; border-style: dashed; box-shadow: none; justify-content: center; }
 .voice-pending .bubble::after { background: var(--bg-page); border-style: dashed; }
 .voice-pending .bubble p { color: var(--fg-muted); font-size: 15px; }
+.foot-link { color: var(--fg-muted); }
 footer { padding-block: 40px 56px; font-size: 13px; color: var(--fg-muted); }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
 .mark { width: 22px; height: 22px; }
@@ -823,7 +824,7 @@ img { max-width: 100%; }
       <svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="52 81 1056 1056" aria-hidden="true"><defs><linearGradient id="lez-mark-landing" gradientUnits="userSpaceOnUse" x1="0" y1="126" x2="0" y2="1088"><stop offset="0" stop-color="#5fe2cf"/><stop offset="0.5" stop-color="#2ed8c3"/><stop offset="1" stop-color="#0fa08d"/></linearGradient></defs><path fill="url(#lez-mark-landing)" d="M270.4 1074.1C276.8 1057.4 339.1 1014.2 358.3 956.8C384.3 878.5 384.7 787 395.6 705.1C400.6 667.3 413.6 631.9 421.2 594.8C422.5 588.4 407.5 584.6 408.8 578.2C414 553 428.8 526.8 440.7 504.2C513.6 364.7 650 315.1 778.8 240.3C813.7 220 849.9 195.6 878.5 167C888.4 157.1 906 130.2 918.7 126.8C938.7 143.4 893.2 303.1 879.7 330.2C784.1 521.8 565.7 570 457.1 757.4C459.7 763.4 489.4 724.1 495 718.5C521.7 691.8 550.1 668.9 580.6 647.1C663.7 587.6 766.6 563.1 851.4 501.9C864.2 492.7 931.1 424.1 935.4 424.1C951.8 443.9 918 469.4 913.1 477.6C907.4 487.2 906.8 504.3 903.8 515.3C859.2 677.1 738.8 699.6 602.5 758C562.9 775 520.5 798 490 828.5C487.3 831.2 483 833.4 485.5 837C489 840.5 499.2 854.6 504 854.9C509.3 855.3 582.6 826.5 596.3 822.8C658.1 805.9 721.7 801.8 782.8 780.3C813.8 769.3 870.7 728.3 890.2 723.5C890.5 753.5 863.4 794.8 848.7 820.2C787.2 926.1 683.3 972 566.9 987.4C519.5 993.7 472 988.9 425.3 1000.8C367.9 1015.4 325.1 1056.6 270.4 1074.1Z"/></svg>
       운영 가볍지이지
     </span>
-    <span>사업자 정보·이용약관·개인정보 처리방침은 공개 전에 채워요</span>
+    <a href="privacy.html" class="foot-link">개인정보 처리방침</a>
   </div>
 </footer>
 
@@ -910,7 +911,7 @@ img { max-width: 100%; }
           <div class="consent">
             <input id="bk-consent" name="consent" type="checkbox" required>
             <div><label for="bk-consent">개인정보 수집·이용에 동의해요 (필수)</label>
-              <details><summary>자세히 보기</summary>수집 항목: 이름, 회사명, 업종, 휴대폰, 이메일, 상담 내용 · 목적: 상담 예약과 안내 · 보관: 상담 후 1년 뒤 파기 · 동의하지 않으면 예약할 수 없어요.</details>
+              <details><summary>자세히 보기</summary>수집 항목: 이름, 회사명, 업종, 휴대폰, 이메일, 상담 내용 · 목적: 상담 예약과 안내 · 보관: 상담 후 1년 뒤 파기 · 국외 이전: 일정 등록을 위해 Google 캘린더(미국 등), 예약 알림을 위해 Telegram 서버로 전송돼요 · 동의하지 않으면 예약할 수 없어요. <a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침 전문</a></details>
             </div>
           </div>
           <div class="book-foot">
