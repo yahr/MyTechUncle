@@ -114,7 +114,7 @@ b_create = node('캘린더에 예약 등록', 'n8n-nodes-base.httpRequest', 4.2,
 b_ok = respond('예약 완료 응답', '={{ JSON.stringify({ ok: true }) }}', [1540, 240])
 b_tg = node('텔레그램 알림', 'n8n-nodes-base.telegram', 1.2, {
     'chatId': CHAT_ID,
-    'text': "={{ '📞 무료 상담 예약\\n' + $('그 시간이 비었나').first().json.d.date + ' ' + $('그 시간이 비었나').first().json.d.time + '\\n' + $('그 시간이 비었나').first().json.d.company + ' ' + $('그 시간이 비었나').first().json.d.name + ' (' + $('그 시간이 비었나').first().json.d.phone + ')\\n' + $('그 시간이 비었나').first().json.label + '\\n고민: ' + $('그 시간이 비었나').first().json.d.topic }}",
+    'text': "={{ '📞 무료 상담 예약\\n' + $('그 시간이 비었나').first().json.d.date + ' ' + $('그 시간이 비었나').first().json.d.time + '\\n' + $('그 시간이 비었나').first().json.d.company + ' ' + $('그 시간이 비었나').first().json.d.name + ' (' + $('그 시간이 비었나').first().json.d.phone + ')\\n' + $('그 시간이 비었나').first().json.label + '\\n고민: ' + $('그 시간이 비었나').first().json.d.topic + '\\n\\n📅 캘린더: ' + $('캘린더에 예약 등록').first().json.htmlLink }}",
     'additionalFields': {'appendAttribution': False}}, [1760, 240], credentials=TG_CRED)
 
 nodes = [s_hook, s_range, s_cal, s_calc, s_resp, b_hook, b_check, b_valid, b_bad, b_cal, b_free, b_isfree, b_taken, b_create, b_ok, b_tg]

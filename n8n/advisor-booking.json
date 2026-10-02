@@ -2,7 +2,7 @@
   "name": "나의기술고문_무료상담_예약",
   "nodes": [
     {
-      "id": "7a5571db-58a1-4b3d-a9fa-06016f16b495",
+      "id": "3147c62d-d2ac-49e2-ba41-d53c7f651b47",
       "name": "예약 가능 시간 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -18,10 +18,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "b8b708ab-dcb8-4b84-a824-4e19795c6e14"
+      "webhookId": "c4d5e0c8-a721-4773-bf8e-2e292a70b5ef"
     },
     {
-      "id": "9d68426e-0459-4769-b6a5-636850844a29",
+      "id": "6cd5d912-f040-4740-87b9-932501aba942",
       "name": "조회 날짜 범위",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -34,7 +34,7 @@
       }
     },
     {
-      "id": "8693ac24-cee7-4bb0-a7d3-4fc019971bdb",
+      "id": "f54f2c15-34ed-44cd-a673-4858939622d9",
       "name": "캘린더 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -77,7 +77,7 @@
       }
     },
     {
-      "id": "3806b7eb-b29a-4467-a29e-389118a1612b",
+      "id": "d780ce11-2833-4e86-90e6-79bc04faed91",
       "name": "빈 시간 계산",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -90,7 +90,7 @@
       }
     },
     {
-      "id": "6166610c-2556-4d68-a8e5-e9fff686fdf5",
+      "id": "4a4d463c-f2fe-462a-bcd1-bbe95764067b",
       "name": "빈 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -105,7 +105,7 @@
       }
     },
     {
-      "id": "dac231ea-9dc7-4771-9772-da68003b11ad",
+      "id": "d1257e57-6f8e-4f78-8003-9023ad4897c9",
       "name": "예약 접수 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -121,10 +121,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "8e6afe16-2104-4e1c-8fc1-032b76a2467d"
+      "webhookId": "d13fc677-c52e-47c8-8e97-5653f0ed64e7"
     },
     {
-      "id": "430e7f8f-ddaa-46a9-8d67-f1f8a88886dc",
+      "id": "5282ba36-3121-43c0-8dc3-331391e42c53",
       "name": "입력 확인",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -137,7 +137,7 @@
       }
     },
     {
-      "id": "b527cdd8-96cc-4d81-85ac-b5617e2e09c6",
+      "id": "74c23f1f-e269-4986-aca4-2910a8c5c144",
       "name": "입력이 올바른가",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -154,7 +154,7 @@
           },
           "conditions": [
             {
-              "id": "ad5b5234-998b-4ca4-bf6a-0e50da38395a",
+              "id": "bf20ffd7-c40a-4dc6-a269-e99c8718a07b",
               "leftValue": "={{ $json.valid }}",
               "rightValue": "",
               "operator": {
@@ -170,7 +170,7 @@
       }
     },
     {
-      "id": "1499d0e8-e42a-4973-a84f-b8684082da75",
+      "id": "10516713-ea42-45d5-8057-cfcc1f321cd8",
       "name": "입력 오류 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -187,7 +187,7 @@
       }
     },
     {
-      "id": "06342930-cff2-46ff-8b9d-c6f1bf1a0afb",
+      "id": "121fd1d8-9022-42ca-a205-d7f16a4e9e40",
       "name": "예약 직전 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -230,7 +230,7 @@
       }
     },
     {
-      "id": "d4357d64-2539-4cbd-90ab-e908e713a769",
+      "id": "588e7330-1bc8-4194-b07d-780124db25be",
       "name": "그 시간이 비었나",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -243,7 +243,7 @@
       }
     },
     {
-      "id": "98da23ec-64be-4478-9d16-8e95127687b0",
+      "id": "63d95f91-cfc9-46f2-847a-b802ad8124e4",
       "name": "비어 있나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -260,7 +260,7 @@
           },
           "conditions": [
             {
-              "id": "321ef666-b572-40ed-a3de-004501567e8e",
+              "id": "571bdedf-a023-4068-adf9-7776a5e7202c",
               "leftValue": "={{ $json.free }}",
               "rightValue": "",
               "operator": {
@@ -276,7 +276,7 @@
       }
     },
     {
-      "id": "cde7c8cd-b04f-429f-9b88-21af91bbdf63",
+      "id": "06448d72-6440-4269-9cee-4219f8b3300e",
       "name": "이미 찬 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -293,7 +293,7 @@
       }
     },
     {
-      "id": "c0576115-85cc-49c6-887a-f7ca1c711f73",
+      "id": "053335a2-156d-421b-aa4b-95324a484fd8",
       "name": "캘린더에 예약 등록",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -328,7 +328,7 @@
       }
     },
     {
-      "id": "29d35158-226c-4b28-b6d5-b591ef1f2fb7",
+      "id": "1bb90543-a5d0-4a0c-9c6c-3105a640b1d6",
       "name": "예약 완료 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -343,7 +343,7 @@
       }
     },
     {
-      "id": "f7d48e69-bc77-4022-a5c4-11fffa05915a",
+      "id": "e4d189d7-b748-4921-8f52-2af8efe4100b",
       "name": "텔레그램 알림",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -353,7 +353,7 @@
       ],
       "parameters": {
         "chatId": "6630606379",
-        "text": "={{ '📞 무료 상담 예약\\n' + $('그 시간이 비었나').first().json.d.date + ' ' + $('그 시간이 비었나').first().json.d.time + '\\n' + $('그 시간이 비었나').first().json.d.company + ' ' + $('그 시간이 비었나').first().json.d.name + ' (' + $('그 시간이 비었나').first().json.d.phone + ')\\n' + $('그 시간이 비었나').first().json.label + '\\n고민: ' + $('그 시간이 비었나').first().json.d.topic }}",
+        "text": "={{ '📞 무료 상담 예약\\n' + $('그 시간이 비었나').first().json.d.date + ' ' + $('그 시간이 비었나').first().json.d.time + '\\n' + $('그 시간이 비었나').first().json.d.company + ' ' + $('그 시간이 비었나').first().json.d.name + ' (' + $('그 시간이 비었나').first().json.d.phone + ')\\n' + $('그 시간이 비었나').first().json.label + '\\n고민: ' + $('그 시간이 비었나').first().json.d.topic + '\\n\\n📅 캘린더: ' + $('캘린더에 예약 등록').first().json.htmlLink }}",
         "additionalFields": {
           "appendAttribution": false
         }
