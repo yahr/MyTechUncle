@@ -37,8 +37,9 @@ function busyRanges(events) {
     .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);
 }
 
-// 그날에 걸친 종일 일정 중 막는 일정이 있으면 하루 전체 휴무
-const dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start && blocks(e));
+// 그날에 걸친 종일 일정 중 제목에 '휴무'·'상담불가'가 있으면 하루 전체 휴무
+// (기간형 종일 일정은 바쁨이어도 흔해서 제목으로만 판단한다)
+const dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start && OFF_TITLE.test(e.summary || ''));
 
 function dayAllowed(dayUtc, now, cfg) {
   if (dayUtc == null) return false;

@@ -46,9 +46,10 @@ test('투명(한가함) 일정과 한가함 종일 일정은 막지 않는다', 
   assert.strictEqual(computeSlots({ date: '2026-10-05', now: NOW, events }).length, 30);
 });
 
-test('바쁨 상태 종일 일정은 그날 전체를 막는다', () => {
-  const events = [{ start: '2026-10-05', end: '2026-10-06', allDay: true, transparency: 'opaque', summary: '출장' }];
-  assert.deepStrictEqual(computeSlots({ date: '2026-10-05', now: NOW, events }), []);
+test('종일 일정은 바쁨이어도 제목에 휴무·상담불가가 없으면 막지 않는다', () => {
+  // 실제 캘린더의 기간형 일정(예: 공부 계획 9/25~10/9)이 바쁨으로 들어 있어도 예약은 열려 있어야 한다
+  const events = [{ start: '2026-09-25', end: '2026-10-09', allDay: true, transparency: 'opaque', summary: '[JLPT N4] 7~8주차' }];
+  assert.strictEqual(computeSlots({ date: '2026-10-05', now: NOW, events }).length, 30);
 });
 
 test('제목에 휴무·상담불가가 있으면 한가함이어도 막는다', () => {
