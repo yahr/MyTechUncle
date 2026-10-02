@@ -513,7 +513,7 @@ img { max-width: 100%; }
           <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm-2 8h14v10H5z"/></svg>예약</span>
         </div>
         <div class="fields">
-          <div><small>상담 시간</small>평일 아침 7시–저녁 10시 · 예약 통화 20분</div>
+          <div><small>상담 시간</small>평일 아침 7시–저녁 10시 · 주말 9시–6시 · 예약 통화 20분</div>
           <div><small>메모</small>9월 14일 통화 · 재고 연동 견적 3,000만원 건, 범위 다시 받기로</div>
         </div>
       </div>
@@ -795,7 +795,7 @@ img { max-width: 100%; }
         <li class="tl-item"><span class="tl-phase">무료</span><strong>무료 상담 신청</strong><p>고민 한 줄과 통화하기 편한 시간만 남겨 주세요</p></li>
         <li class="tl-item"><span class="tl-phase">무료</span><strong>첫 통화 20분</strong><p>지금 고민 하나를 같이 보고 브리핑 1장을 보내 드려요</p></li>
         <li class="tl-item"><span class="tl-phase">회원</span><strong>연간권 신청</strong><p>통화가 도움이 됐을 때 정하시면 돼요</p></li>
-        <li class="tl-item"><span class="tl-phase">회원</span><strong>필요할 때 통화 예약</strong><p>평일 아침 7시–저녁 10시, 한 번에 20분 안팎이에요</p></li>
+        <li class="tl-item"><span class="tl-phase">회원</span><strong>필요할 때 통화 예약</strong><p>평일 아침 7시–저녁 10시, 주말 9시–6시, 한 번에 20분 안팎이에요</p></li>
         <li class="tl-item"><span class="tl-phase">회원</span><strong>통화마다 브리핑</strong><p>결정한 것과 다음 할 일이 기록으로 쌓여요</p></li>
         <li class="tl-item opt"><span class="tl-phase">선택</span><strong>방문 자문</strong><p>업무 흐름을 직접 봐야 할 때 찾아가요</p></li>
         <li class="tl-item opt"><span class="tl-phase">선택</span><strong>DX·AX 프로젝트</strong><p>업무 분석, 자동화, 시스템 구축을 따로 진행해요</p></li>
@@ -808,7 +808,7 @@ img { max-width: 100%; }
       <div class="sec-head"><p class="eyebrow">자주 묻는 질문</p><h2>궁금한 점</h2></div>
       <div class="faq">
         <details><summary>무료 상담은 어떻게 받나요?</summary><p>신청하시면 통화 시간을 잡아 드려요. 회사 1곳당 1회, 20분이에요. 통화 후 브리핑까지 보내 드리고, 연간권은 그다음에 정하시면 돼요.</p></details>
-        <details><summary>정말 아무 때나 전화할 수 있나요?</summary><p>예약 통화가 원칙이에요. 평일 아침 7시부터 저녁 10시까지 운영하고, 긴급 장애 대응 서비스는 아니에요. 장애가 나면 누구에게 무엇을 전달해야 하는지는 바로 정리해 드려요.</p></details>
+        <details><summary>정말 아무 때나 전화할 수 있나요?</summary><p>예약 통화가 원칙이에요. 평일은 아침 7시부터 저녁 10시까지, 주말은 9시부터 6시까지 운영하고, 긴급 장애 대응 서비스는 아니에요. 장애가 나면 누구에게 무엇을 전달해야 하는지는 바로 정리해 드려요.</p></details>
         <details><summary>상담 횟수 제한이 있나요?</summary><p>주 1–2회 통화할 수 있어요. 질문 개수를 기계적으로 세지는 않아요. 긴 조사, 문서 작성, 개발처럼 통화 범위를 넘는 일은 따로 안내해 드려요.</p></details>
         <details><summary>AI에 물어보는 것과 뭐가 다른가요?</summary><p>AI는 선택지를 알려줘요. 기술고문은 회사 상황, 예산, 지금 쓰는 시스템, 직원 역량을 알고 어떤 선택이 현실적인지 같이 판단해요.</p></details>
         <details><summary>개발도 해주시나요?</summary><p>회원권에는 개발이 들어 있지 않아요. 개발이 정말 필요하면 범위부터 정리하고, 원하시면 별도 프로젝트로 진행할 수 있어요.</p></details>
@@ -903,7 +903,7 @@ img { max-width: 100%; }
           <div class="cal-nav"><button type="button" id="cal-prev" aria-label="이전 달">‹</button><strong id="cal-title"></strong><button type="button" id="cal-next" aria-label="다음 달">›</button></div>
           <div class="cal-dow" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
           <div class="cal-grid" id="cal-grid"></div>
-          <p class="note tz">한국 표준시(KST) 기준 · 평일 아침 7시–저녁 10시</p>
+          <p class="note tz">한국 표준시(KST) 기준 · 평일 7시–22시 · 주말 9시–18시</p>
         </div>
         <div class="times">
           <p class="times-head" id="book-times-head">날짜를 골라 주세요</p>
@@ -947,7 +947,7 @@ img { max-width: 100%; }
   </div>
 </dialog>
 <script>window.ADVISOR_API = 'https://flow.illey.me/webhook';</script>
-<script src="assets/slots.js"></script>
+<script src="assets/slots.js?v=2"></script>
 <script src="assets/booking.js"></script>
 
 

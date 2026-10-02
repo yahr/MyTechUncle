@@ -3,11 +3,13 @@
 const CFG = {
   openMin: 7 * 60,        // 07:00
   closeMin: 22 * 60,      // 22:00 (마지막 슬롯 21:30)
+  weekendOpenMin: 9 * 60,   // 토·일 09:00
+  weekendCloseMin: 18 * 60, // 토·일 18:00 (마지막 슬롯 17:30)
   slotMin: 30,            // 통화 20분 + 정리 10분
   leadMin: 180,           // 지금부터 3시간 뒤부터 예약 가능
   windowDays: 14,         // 오늘 포함 14일 앞까지
   maxPerDay: 8,           // 하루 상담 예약 한도
-  weekdays: [1, 2, 3, 4, 5],
+  weekdays: [0, 1, 2, 3, 4, 5, 6], // 예약 받는 요일 (0=일)
   bookingPrefix: '[무료상담]',
 };
 const KST = 9 * 60 * 60 * 1000;
@@ -55,8 +57,10 @@ function computeSlots({ date, now, events, cfg = CFG }) {
   if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];
   const busy = busyRanges(events);
   const base = kstMidnight(dayUtc);
+  const weekend = [0, 6].includes(new Date(dayUtc).getUTCDay());
+  const open = weekend ? cfg.weekendOpenMin : cfg.openMin, close = weekend ? cfg.weekendCloseMin : cfg.closeMin;
   const out = [];
-  for (let m = cfg.openMin; m + cfg.slotMin <= cfg.closeMin; m += cfg.slotMin) {
+  for (let m = open; m + cfg.slotMin <= close; m += cfg.slotMin) {
     const s = base + m * 60000, e = s + cfg.slotMin * 60000;
     if (s < now + cfg.leadMin * 60000) continue;
     if (busy.some(([bs, be]) => bs < e && be > s)) continue;

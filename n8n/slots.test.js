@@ -13,9 +13,13 @@ test('평일 하루 슬롯은 07:00부터 21:30까지 30분 간격', () => {
   assert.strictEqual(r.length, 30);
 });
 
-test('주말은 예약 불가', () => {
-  assert.deepStrictEqual(computeSlots({ date: '2026-10-03', now: NOW, events: [] }), []); // 토
-  assert.deepStrictEqual(computeSlots({ date: '2026-10-04', now: NOW, events: [] }), []); // 일
+test('주말은 09:00부터 17:30까지', () => {
+  for (const date of ['2026-10-03', '2026-10-04']) { // 토, 일
+    const r = computeSlots({ date, now: NOW, events: [] });
+    assert.strictEqual(r[0], '09:00');
+    assert.strictEqual(r[r.length - 1], '17:30');
+    assert.strictEqual(r.length, 18);
+  }
 });
 
 test('오늘은 지금부터 준비 시간(3시간) 이후 슬롯만', () => {

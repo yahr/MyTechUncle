@@ -2,7 +2,7 @@
   "name": "나의기술고문_무료상담_예약",
   "nodes": [
     {
-      "id": "de532259-7074-4058-abf9-0c247bf83878",
+      "id": "08fb1754-d613-48a0-94b0-ba48efcee699",
       "name": "예약 가능 시간 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -18,10 +18,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "53cc1bad-56f5-45d9-9e8f-9c564886f981"
+      "webhookId": "4b37e80c-4af6-4d97-aa53-f728ebe37633"
     },
     {
-      "id": "cff2eeec-a09f-40e2-b9a8-42d051ce6a74",
+      "id": "83d5b26b-1ec7-41c6-948a-b0dd0bb6ad99",
       "name": "조회 날짜 범위",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -34,7 +34,7 @@
       }
     },
     {
-      "id": "2357d79a-faff-44ae-b296-71d4173d0ea3",
+      "id": "5dcd1f90-9a4b-41fe-ba03-b8acd6d17383",
       "name": "캘린더 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -77,7 +77,7 @@
       }
     },
     {
-      "id": "02985b42-edff-4bc7-91c8-d51eb8d4688b",
+      "id": "47830387-e07b-4da9-9a7a-bd9c3a86af55",
       "name": "빈 시간 계산",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -86,11 +86,11 @@
         0
       ],
       "parameters": {
-        "jsCode": "// 예약 가능 시간 계산 — n8n Code 노드와 테스트가 같이 쓰는 순수 함수.\n// 모든 시각은 한국 시간(KST, UTC+9) 기준.\nconst CFG = {\n  openMin: 7 * 60,        // 07:00\n  closeMin: 22 * 60,      // 22:00 (마지막 슬롯 21:30)\n  slotMin: 30,            // 통화 20분 + 정리 10분\n  leadMin: 180,           // 지금부터 3시간 뒤부터 예약 가능\n  windowDays: 14,         // 오늘 포함 14일 앞까지\n  maxPerDay: 8,           // 하루 상담 예약 한도\n  weekdays: [1, 2, 3, 4, 5],\n  bookingPrefix: '[무료상담]',\n};\nconst KST = 9 * 60 * 60 * 1000;\nconst DAY = 24 * 60 * 60 * 1000;\n\nfunction parseDate(date) {\n  const m = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date || '');\n  if (!m) return null;\n  const [y, mo, d] = [+m[1], +m[2], +m[3]];\n  const t = Date.UTC(y, mo - 1, d);\n  const back = new Date(t);\n  if (back.getUTCFullYear() !== y || back.getUTCMonth() !== mo - 1 || back.getUTCDate() !== d) return null;\n  return t; // 그 날짜 00:00 UTC (요일·날짜 비교용)\n}\n\n// 그 날짜 KST 00:00 의 실제 시각(ms)\nconst kstMidnight = (dayUtc) => dayUtc - KST;\n\n// 예약 전용 캘린더(MyTechUncle)라서 그 캘린더에 있는 일정은 상태와 상관없이 모두 막는다.\nconst isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');\n\nfunction busyRanges(events) {\n  return (events || [])\n    .filter((e) => !isAllDay(e) && e.start && e.end)\n    .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);\n}\n\n// 그날에 걸친 종일 일정이 있으면 하루 전체 휴무 (조회 범위가 그날이라 걸친 것만 들어온다)\nconst dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start);\n\nfunction dayAllowed(dayUtc, now, cfg) {\n  if (dayUtc == null) return false;\n  if (!cfg.weekdays.includes(new Date(dayUtc).getUTCDay())) return false;\n  const todayUtc = Math.floor((now + KST) / DAY) * DAY;\n  return dayUtc >= todayUtc && dayUtc < todayUtc + cfg.windowDays * DAY;\n}\n\nfunction bookedCount(events, cfg) {\n  return (events || []).filter((e) => String(e.summary || '').startsWith(cfg.bookingPrefix)).length;\n}\n\nfunction computeSlots({ date, now, events, cfg = CFG }) {\n  const dayUtc = parseDate(date);\n  if (!dayAllowed(dayUtc, now, cfg)) return [];\n  if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];\n  const busy = busyRanges(events);\n  const base = kstMidnight(dayUtc);\n  const out = [];\n  for (let m = cfg.openMin; m + cfg.slotMin <= cfg.closeMin; m += cfg.slotMin) {\n    const s = base + m * 60000, e = s + cfg.slotMin * 60000;\n    if (s < now + cfg.leadMin * 60000) continue;\n    if (busy.some(([bs, be]) => bs < e && be > s)) continue;\n    out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);\n  }\n  return out;\n}\n\nfunction isSlotFree({ date, time, now, events, cfg = CFG }) {\n  return computeSlots({ date, now, events, cfg }).includes(time);\n}\n\n// 슬롯 시작·끝을 KST ISO 문자열로 (캘린더 일정 생성용)\nfunction slotRange(date, time, cfg = CFG) {\n  const end = new Date(new Date(`${date}T${time}:00+09:00`).getTime() + cfg.slotMin * 60000);\n  const pad = (n) => String(n).padStart(2, '0');\n  const k = new Date(end.getTime() + KST);\n  const endStr = `${k.getUTCFullYear()}-${pad(k.getUTCMonth() + 1)}-${pad(k.getUTCDate())}T${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}:00+09:00`;\n  return { start: `${date}T${time}:00+09:00`, end: endStr };\n}\n\n\nfunction dayRange(date) {\n  const ok = /^\\d{4}-\\d{2}-\\d{2}$/.test(date || '') && !isNaN(Date.parse(date + 'T00:00:00+09:00'));\n  const d = ok ? date : '1970-01-01';\n  const start = new Date(d + 'T00:00:00+09:00');\n  return { timeMin: start.toISOString(), timeMax: new Date(start.getTime() + 86400000).toISOString() };\n}\nfunction toEvents(items) {\n  return (items || []).filter(e => e.status !== 'cancelled').map(e => ({\n    start: (e.start && (e.start.dateTime || e.start.date)) || '',\n    end: (e.end && (e.end.dateTime || e.end.date)) || '',\n    allDay: !!(e.start && e.start.date),\n    transparency: e.transparency || 'opaque',\n    summary: e.summary || '',\n  }));\n}\n\nconst date = $('조회 날짜 범위').first().json.date;\nconst events = toEvents($input.first().json.items);\nreturn [{ json: { date, slots: computeSlots({ date, now: Date.now(), events }) } }];"
+        "jsCode": "// 예약 가능 시간 계산 — n8n Code 노드와 테스트가 같이 쓰는 순수 함수.\n// 모든 시각은 한국 시간(KST, UTC+9) 기준.\nconst CFG = {\n  openMin: 7 * 60,        // 07:00\n  closeMin: 22 * 60,      // 22:00 (마지막 슬롯 21:30)\n  weekendOpenMin: 9 * 60,   // 토·일 09:00\n  weekendCloseMin: 18 * 60, // 토·일 18:00 (마지막 슬롯 17:30)\n  slotMin: 30,            // 통화 20분 + 정리 10분\n  leadMin: 180,           // 지금부터 3시간 뒤부터 예약 가능\n  windowDays: 14,         // 오늘 포함 14일 앞까지\n  maxPerDay: 8,           // 하루 상담 예약 한도\n  weekdays: [0, 1, 2, 3, 4, 5, 6], // 예약 받는 요일 (0=일)\n  bookingPrefix: '[무료상담]',\n};\nconst KST = 9 * 60 * 60 * 1000;\nconst DAY = 24 * 60 * 60 * 1000;\n\nfunction parseDate(date) {\n  const m = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date || '');\n  if (!m) return null;\n  const [y, mo, d] = [+m[1], +m[2], +m[3]];\n  const t = Date.UTC(y, mo - 1, d);\n  const back = new Date(t);\n  if (back.getUTCFullYear() !== y || back.getUTCMonth() !== mo - 1 || back.getUTCDate() !== d) return null;\n  return t; // 그 날짜 00:00 UTC (요일·날짜 비교용)\n}\n\n// 그 날짜 KST 00:00 의 실제 시각(ms)\nconst kstMidnight = (dayUtc) => dayUtc - KST;\n\n// 예약 전용 캘린더(MyTechUncle)라서 그 캘린더에 있는 일정은 상태와 상관없이 모두 막는다.\nconst isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');\n\nfunction busyRanges(events) {\n  return (events || [])\n    .filter((e) => !isAllDay(e) && e.start && e.end)\n    .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);\n}\n\n// 그날에 걸친 종일 일정이 있으면 하루 전체 휴무 (조회 범위가 그날이라 걸친 것만 들어온다)\nconst dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start);\n\nfunction dayAllowed(dayUtc, now, cfg) {\n  if (dayUtc == null) return false;\n  if (!cfg.weekdays.includes(new Date(dayUtc).getUTCDay())) return false;\n  const todayUtc = Math.floor((now + KST) / DAY) * DAY;\n  return dayUtc >= todayUtc && dayUtc < todayUtc + cfg.windowDays * DAY;\n}\n\nfunction bookedCount(events, cfg) {\n  return (events || []).filter((e) => String(e.summary || '').startsWith(cfg.bookingPrefix)).length;\n}\n\nfunction computeSlots({ date, now, events, cfg = CFG }) {\n  const dayUtc = parseDate(date);\n  if (!dayAllowed(dayUtc, now, cfg)) return [];\n  if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];\n  const busy = busyRanges(events);\n  const base = kstMidnight(dayUtc);\n  const weekend = [0, 6].includes(new Date(dayUtc).getUTCDay());\n  const open = weekend ? cfg.weekendOpenMin : cfg.openMin, close = weekend ? cfg.weekendCloseMin : cfg.closeMin;\n  const out = [];\n  for (let m = open; m + cfg.slotMin <= close; m += cfg.slotMin) {\n    const s = base + m * 60000, e = s + cfg.slotMin * 60000;\n    if (s < now + cfg.leadMin * 60000) continue;\n    if (busy.some(([bs, be]) => bs < e && be > s)) continue;\n    out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);\n  }\n  return out;\n}\n\nfunction isSlotFree({ date, time, now, events, cfg = CFG }) {\n  return computeSlots({ date, now, events, cfg }).includes(time);\n}\n\n// 슬롯 시작·끝을 KST ISO 문자열로 (캘린더 일정 생성용)\nfunction slotRange(date, time, cfg = CFG) {\n  const end = new Date(new Date(`${date}T${time}:00+09:00`).getTime() + cfg.slotMin * 60000);\n  const pad = (n) => String(n).padStart(2, '0');\n  const k = new Date(end.getTime() + KST);\n  const endStr = `${k.getUTCFullYear()}-${pad(k.getUTCMonth() + 1)}-${pad(k.getUTCDate())}T${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}:00+09:00`;\n  return { start: `${date}T${time}:00+09:00`, end: endStr };\n}\n\n\nfunction dayRange(date) {\n  const ok = /^\\d{4}-\\d{2}-\\d{2}$/.test(date || '') && !isNaN(Date.parse(date + 'T00:00:00+09:00'));\n  const d = ok ? date : '1970-01-01';\n  const start = new Date(d + 'T00:00:00+09:00');\n  return { timeMin: start.toISOString(), timeMax: new Date(start.getTime() + 86400000).toISOString() };\n}\nfunction toEvents(items) {\n  return (items || []).filter(e => e.status !== 'cancelled').map(e => ({\n    start: (e.start && (e.start.dateTime || e.start.date)) || '',\n    end: (e.end && (e.end.dateTime || e.end.date)) || '',\n    allDay: !!(e.start && e.start.date),\n    transparency: e.transparency || 'opaque',\n    summary: e.summary || '',\n  }));\n}\n\nconst date = $('조회 날짜 범위').first().json.date;\nconst events = toEvents($input.first().json.items);\nreturn [{ json: { date, slots: computeSlots({ date, now: Date.now(), events }) } }];"
       }
     },
     {
-      "id": "75b5b011-2492-464d-bac7-5aecd0c1b6c8",
+      "id": "e78dbb04-c207-4787-af9c-14f786d65664",
       "name": "빈 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -105,7 +105,7 @@
       }
     },
     {
-      "id": "ce0fe63e-a18f-4118-b37b-359946ca6c45",
+      "id": "d24ad829-f87c-42ec-9720-a025836c061c",
       "name": "예약 접수 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -121,10 +121,10 @@
           "allowedOrigins": "https://yahr.github.io,http://localhost:8766"
         }
       },
-      "webhookId": "9fa3ce7d-9bca-4fe6-8b96-cd9ddcbcbceb"
+      "webhookId": "77cdb87d-e871-4ab6-94d8-d48d006f60c7"
     },
     {
-      "id": "d3aa767e-5a91-4270-ad2f-bfe2f0245bc7",
+      "id": "37039362-7512-453a-b1ff-1a6c3f961da3",
       "name": "입력 확인",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -137,7 +137,7 @@
       }
     },
     {
-      "id": "a72d130d-8198-4a63-8d32-53b68cac252e",
+      "id": "ab1fb9c7-6b96-4b00-9049-db459f9d6edf",
       "name": "입력이 올바른가",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -154,7 +154,7 @@
           },
           "conditions": [
             {
-              "id": "e3b23316-8212-4f9e-81a5-b37f3bc1d8d3",
+              "id": "e504dc76-5544-4ed1-92d2-337b7f01892a",
               "leftValue": "={{ $json.valid }}",
               "rightValue": "",
               "operator": {
@@ -170,7 +170,7 @@
       }
     },
     {
-      "id": "5a967934-8981-45a9-8501-4b5a248054b6",
+      "id": "97c5529b-22e6-416f-aa77-a7fe012901f4",
       "name": "입력 오류 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -187,7 +187,7 @@
       }
     },
     {
-      "id": "560fcf93-256e-401e-9070-c1932ece41a2",
+      "id": "e33b8265-bd88-4349-81b8-f8f3f9b37a3f",
       "name": "예약 직전 일정 조회",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -230,7 +230,7 @@
       }
     },
     {
-      "id": "261a061e-c7ab-4f47-8ca2-563d5c11644e",
+      "id": "83077062-bd3c-4eb6-883a-79e87d608eba",
       "name": "그 시간이 비었나",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -239,11 +239,11 @@
         320
       ],
       "parameters": {
-        "jsCode": "// 예약 가능 시간 계산 — n8n Code 노드와 테스트가 같이 쓰는 순수 함수.\n// 모든 시각은 한국 시간(KST, UTC+9) 기준.\nconst CFG = {\n  openMin: 7 * 60,        // 07:00\n  closeMin: 22 * 60,      // 22:00 (마지막 슬롯 21:30)\n  slotMin: 30,            // 통화 20분 + 정리 10분\n  leadMin: 180,           // 지금부터 3시간 뒤부터 예약 가능\n  windowDays: 14,         // 오늘 포함 14일 앞까지\n  maxPerDay: 8,           // 하루 상담 예약 한도\n  weekdays: [1, 2, 3, 4, 5],\n  bookingPrefix: '[무료상담]',\n};\nconst KST = 9 * 60 * 60 * 1000;\nconst DAY = 24 * 60 * 60 * 1000;\n\nfunction parseDate(date) {\n  const m = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date || '');\n  if (!m) return null;\n  const [y, mo, d] = [+m[1], +m[2], +m[3]];\n  const t = Date.UTC(y, mo - 1, d);\n  const back = new Date(t);\n  if (back.getUTCFullYear() !== y || back.getUTCMonth() !== mo - 1 || back.getUTCDate() !== d) return null;\n  return t; // 그 날짜 00:00 UTC (요일·날짜 비교용)\n}\n\n// 그 날짜 KST 00:00 의 실제 시각(ms)\nconst kstMidnight = (dayUtc) => dayUtc - KST;\n\n// 예약 전용 캘린더(MyTechUncle)라서 그 캘린더에 있는 일정은 상태와 상관없이 모두 막는다.\nconst isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');\n\nfunction busyRanges(events) {\n  return (events || [])\n    .filter((e) => !isAllDay(e) && e.start && e.end)\n    .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);\n}\n\n// 그날에 걸친 종일 일정이 있으면 하루 전체 휴무 (조회 범위가 그날이라 걸친 것만 들어온다)\nconst dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start);\n\nfunction dayAllowed(dayUtc, now, cfg) {\n  if (dayUtc == null) return false;\n  if (!cfg.weekdays.includes(new Date(dayUtc).getUTCDay())) return false;\n  const todayUtc = Math.floor((now + KST) / DAY) * DAY;\n  return dayUtc >= todayUtc && dayUtc < todayUtc + cfg.windowDays * DAY;\n}\n\nfunction bookedCount(events, cfg) {\n  return (events || []).filter((e) => String(e.summary || '').startsWith(cfg.bookingPrefix)).length;\n}\n\nfunction computeSlots({ date, now, events, cfg = CFG }) {\n  const dayUtc = parseDate(date);\n  if (!dayAllowed(dayUtc, now, cfg)) return [];\n  if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];\n  const busy = busyRanges(events);\n  const base = kstMidnight(dayUtc);\n  const out = [];\n  for (let m = cfg.openMin; m + cfg.slotMin <= cfg.closeMin; m += cfg.slotMin) {\n    const s = base + m * 60000, e = s + cfg.slotMin * 60000;\n    if (s < now + cfg.leadMin * 60000) continue;\n    if (busy.some(([bs, be]) => bs < e && be > s)) continue;\n    out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);\n  }\n  return out;\n}\n\nfunction isSlotFree({ date, time, now, events, cfg = CFG }) {\n  return computeSlots({ date, now, events, cfg }).includes(time);\n}\n\n// 슬롯 시작·끝을 KST ISO 문자열로 (캘린더 일정 생성용)\nfunction slotRange(date, time, cfg = CFG) {\n  const end = new Date(new Date(`${date}T${time}:00+09:00`).getTime() + cfg.slotMin * 60000);\n  const pad = (n) => String(n).padStart(2, '0');\n  const k = new Date(end.getTime() + KST);\n  const endStr = `${k.getUTCFullYear()}-${pad(k.getUTCMonth() + 1)}-${pad(k.getUTCDate())}T${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}:00+09:00`;\n  return { start: `${date}T${time}:00+09:00`, end: endStr };\n}\n\n\nfunction dayRange(date) {\n  const ok = /^\\d{4}-\\d{2}-\\d{2}$/.test(date || '') && !isNaN(Date.parse(date + 'T00:00:00+09:00'));\n  const d = ok ? date : '1970-01-01';\n  const start = new Date(d + 'T00:00:00+09:00');\n  return { timeMin: start.toISOString(), timeMax: new Date(start.getTime() + 86400000).toISOString() };\n}\nfunction toEvents(items) {\n  return (items || []).filter(e => e.status !== 'cancelled').map(e => ({\n    start: (e.start && (e.start.dateTime || e.start.date)) || '',\n    end: (e.end && (e.end.dateTime || e.end.date)) || '',\n    allDay: !!(e.start && e.start.date),\n    transparency: e.transparency || 'opaque',\n    summary: e.summary || '',\n  }));\n}\n\nconst d = $('입력 확인').first().json;\nconst free = isSlotFree({ date: d.date, time: d.time, now: Date.now(), events: toEvents($input.first().json.items) });\nconst r = slotRange(d.date, d.time);\nconst label = { free: '무료 상담', annual: '연간 기술고문', founder: 'Founder 기술고문' }[d.product];\nconst event = {\n  summary: `${CFG.bookingPrefix} ${d.company} ${d.name}`,\n  description: `회사: ${d.company}\\n업종: ${d.industry || '-'}\\n이름: ${d.name}\\n휴대폰: ${d.phone}\\n이메일: ${d.email}\\n관심 상품: ${label}\\n\\n고민:\\n${d.topic}\\n\\n— 나의 기술고문 아저씨 무료 상담 (20분 전화)`,\n  start: { dateTime: r.start, timeZone: 'Asia/Seoul' },\n  end: { dateTime: r.end, timeZone: 'Asia/Seoul' },\n  attendees: [{ email: d.email, displayName: d.name }],\n  reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] },\n};\nreturn [{ json: { free, event, d, label } }];"
+        "jsCode": "// 예약 가능 시간 계산 — n8n Code 노드와 테스트가 같이 쓰는 순수 함수.\n// 모든 시각은 한국 시간(KST, UTC+9) 기준.\nconst CFG = {\n  openMin: 7 * 60,        // 07:00\n  closeMin: 22 * 60,      // 22:00 (마지막 슬롯 21:30)\n  weekendOpenMin: 9 * 60,   // 토·일 09:00\n  weekendCloseMin: 18 * 60, // 토·일 18:00 (마지막 슬롯 17:30)\n  slotMin: 30,            // 통화 20분 + 정리 10분\n  leadMin: 180,           // 지금부터 3시간 뒤부터 예약 가능\n  windowDays: 14,         // 오늘 포함 14일 앞까지\n  maxPerDay: 8,           // 하루 상담 예약 한도\n  weekdays: [0, 1, 2, 3, 4, 5, 6], // 예약 받는 요일 (0=일)\n  bookingPrefix: '[무료상담]',\n};\nconst KST = 9 * 60 * 60 * 1000;\nconst DAY = 24 * 60 * 60 * 1000;\n\nfunction parseDate(date) {\n  const m = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date || '');\n  if (!m) return null;\n  const [y, mo, d] = [+m[1], +m[2], +m[3]];\n  const t = Date.UTC(y, mo - 1, d);\n  const back = new Date(t);\n  if (back.getUTCFullYear() !== y || back.getUTCMonth() !== mo - 1 || back.getUTCDate() !== d) return null;\n  return t; // 그 날짜 00:00 UTC (요일·날짜 비교용)\n}\n\n// 그 날짜 KST 00:00 의 실제 시각(ms)\nconst kstMidnight = (dayUtc) => dayUtc - KST;\n\n// 예약 전용 캘린더(MyTechUncle)라서 그 캘린더에 있는 일정은 상태와 상관없이 모두 막는다.\nconst isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');\n\nfunction busyRanges(events) {\n  return (events || [])\n    .filter((e) => !isAllDay(e) && e.start && e.end)\n    .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);\n}\n\n// 그날에 걸친 종일 일정이 있으면 하루 전체 휴무 (조회 범위가 그날이라 걸친 것만 들어온다)\nconst dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start);\n\nfunction dayAllowed(dayUtc, now, cfg) {\n  if (dayUtc == null) return false;\n  if (!cfg.weekdays.includes(new Date(dayUtc).getUTCDay())) return false;\n  const todayUtc = Math.floor((now + KST) / DAY) * DAY;\n  return dayUtc >= todayUtc && dayUtc < todayUtc + cfg.windowDays * DAY;\n}\n\nfunction bookedCount(events, cfg) {\n  return (events || []).filter((e) => String(e.summary || '').startsWith(cfg.bookingPrefix)).length;\n}\n\nfunction computeSlots({ date, now, events, cfg = CFG }) {\n  const dayUtc = parseDate(date);\n  if (!dayAllowed(dayUtc, now, cfg)) return [];\n  if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];\n  const busy = busyRanges(events);\n  const base = kstMidnight(dayUtc);\n  const weekend = [0, 6].includes(new Date(dayUtc).getUTCDay());\n  const open = weekend ? cfg.weekendOpenMin : cfg.openMin, close = weekend ? cfg.weekendCloseMin : cfg.closeMin;\n  const out = [];\n  for (let m = open; m + cfg.slotMin <= close; m += cfg.slotMin) {\n    const s = base + m * 60000, e = s + cfg.slotMin * 60000;\n    if (s < now + cfg.leadMin * 60000) continue;\n    if (busy.some(([bs, be]) => bs < e && be > s)) continue;\n    out.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);\n  }\n  return out;\n}\n\nfunction isSlotFree({ date, time, now, events, cfg = CFG }) {\n  return computeSlots({ date, now, events, cfg }).includes(time);\n}\n\n// 슬롯 시작·끝을 KST ISO 문자열로 (캘린더 일정 생성용)\nfunction slotRange(date, time, cfg = CFG) {\n  const end = new Date(new Date(`${date}T${time}:00+09:00`).getTime() + cfg.slotMin * 60000);\n  const pad = (n) => String(n).padStart(2, '0');\n  const k = new Date(end.getTime() + KST);\n  const endStr = `${k.getUTCFullYear()}-${pad(k.getUTCMonth() + 1)}-${pad(k.getUTCDate())}T${pad(k.getUTCHours())}:${pad(k.getUTCMinutes())}:00+09:00`;\n  return { start: `${date}T${time}:00+09:00`, end: endStr };\n}\n\n\nfunction dayRange(date) {\n  const ok = /^\\d{4}-\\d{2}-\\d{2}$/.test(date || '') && !isNaN(Date.parse(date + 'T00:00:00+09:00'));\n  const d = ok ? date : '1970-01-01';\n  const start = new Date(d + 'T00:00:00+09:00');\n  return { timeMin: start.toISOString(), timeMax: new Date(start.getTime() + 86400000).toISOString() };\n}\nfunction toEvents(items) {\n  return (items || []).filter(e => e.status !== 'cancelled').map(e => ({\n    start: (e.start && (e.start.dateTime || e.start.date)) || '',\n    end: (e.end && (e.end.dateTime || e.end.date)) || '',\n    allDay: !!(e.start && e.start.date),\n    transparency: e.transparency || 'opaque',\n    summary: e.summary || '',\n  }));\n}\n\nconst d = $('입력 확인').first().json;\nconst free = isSlotFree({ date: d.date, time: d.time, now: Date.now(), events: toEvents($input.first().json.items) });\nconst r = slotRange(d.date, d.time);\nconst label = { free: '무료 상담', annual: '연간 기술고문', founder: 'Founder 기술고문' }[d.product];\nconst event = {\n  summary: `${CFG.bookingPrefix} ${d.company} ${d.name}`,\n  description: `회사: ${d.company}\\n업종: ${d.industry || '-'}\\n이름: ${d.name}\\n휴대폰: ${d.phone}\\n이메일: ${d.email}\\n관심 상품: ${label}\\n\\n고민:\\n${d.topic}\\n\\n— 나의 기술고문 아저씨 무료 상담 (20분 전화)`,\n  start: { dateTime: r.start, timeZone: 'Asia/Seoul' },\n  end: { dateTime: r.end, timeZone: 'Asia/Seoul' },\n  attendees: [{ email: d.email, displayName: d.name }],\n  reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] },\n};\nreturn [{ json: { free, event, d, label } }];"
       }
     },
     {
-      "id": "d257de1a-bd23-4923-8c05-087486ee72d4",
+      "id": "3e3f2abe-b3af-495c-803c-bd0c670b8600",
       "name": "비어 있나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -260,7 +260,7 @@
           },
           "conditions": [
             {
-              "id": "deb78277-69f9-47ee-906d-c14815201acd",
+              "id": "5925f68c-40e2-455f-b52f-d71df2a7e605",
               "leftValue": "={{ $json.free }}",
               "rightValue": "",
               "operator": {
@@ -276,7 +276,7 @@
       }
     },
     {
-      "id": "176d8c89-beb0-41f3-8d2b-1588ff3117fb",
+      "id": "b893b0f1-3ca9-446f-af07-074a651ae7a2",
       "name": "이미 찬 시간 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -293,7 +293,7 @@
       }
     },
     {
-      "id": "81516caf-a293-49db-a9d1-6da47b3518a0",
+      "id": "28252ea9-2a35-4f6e-93c7-1fd316e34c58",
       "name": "캘린더에 예약 등록",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -328,7 +328,7 @@
       }
     },
     {
-      "id": "41c34895-9e1d-4c48-802e-5e5ffe16307d",
+      "id": "2a89dc4b-db4d-4cb6-bd0b-4f9fd3e550c1",
       "name": "예약 완료 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -343,7 +343,7 @@
       }
     },
     {
-      "id": "fe6acf77-18c0-4b72-ac49-a8dc68f33b52",
+      "id": "a00ff057-bae2-4eb3-b3bf-4de17a117d14",
       "name": "텔레그램 알림",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
