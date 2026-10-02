@@ -1,0 +1,506 @@
+{
+  "name": "나의기술고문_앱API",
+  "nodes": [
+    {
+      "id": "816cbd61-7aff-467d-9363-5dd45cd53909",
+      "name": "앱 데이터 요청",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "mtu-api/data",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "2d0af277-3b0c-4d91-980a-31ac3be704e4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3g7jgSREOadPJYvX",
+          "name": "MyTechUncle 앱 토큰"
+        }
+      }
+    },
+    {
+      "id": "1d99181b-1adb-4a75-b02c-b5cfc9a0bb92",
+      "name": "customers 조회",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "5qDtcVGsBuMFKueV"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "condition": "eq",
+              "keyValue": "lightez"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "33cf1aae-3b5b-4b6e-bce9-219f6d536e04",
+      "name": "applications 조회",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SOVh9O6LyXcADRzE"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "condition": "eq",
+              "keyValue": "lightez"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "61447a99-cbbb-42e6-b6b7-7d878cd77ed0",
+      "name": "subscriptions 조회",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "2ZX9iNXiAqrMXaMz"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "condition": "eq",
+              "keyValue": "lightez"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "cf0bdd83-0bf7-4336-82b3-dcfc8297051b",
+      "name": "consultations 조회",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SjS8D9OKcSlDIcD5"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "condition": "eq",
+              "keyValue": "lightez"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "931195c1-5811-4134-8fad-031731262f2c",
+      "name": "앱 데이터 묶기",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const rows = (n) => $(n).all().map((i) => i.json).filter((r) => r.id != null);\nreturn [{ json: {\n  customers: rows('customers 조회'),\n  applications: rows('applications 조회'),\n  subscriptions: rows('subscriptions 조회'),\n  consultations: rows('consultations 조회')\n} }];"
+      }
+    },
+    {
+      "id": "7cc5a64c-08c0-44d0-876b-b0d9f5492d26",
+      "name": "앱 데이터 응답",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "de7f088b-e779-4a46-9c54-163d9a4bb16a",
+      "name": "앱 저장 요청",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        400
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mtu-api/save",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "19e0cee1-b542-4b22-89ed-bd693d1c65a1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3g7jgSREOadPJYvX",
+          "name": "MyTechUncle 앱 토큰"
+        }
+      }
+    },
+    {
+      "id": "06ae2183-d48e-4d26-98bd-3d667024de97",
+      "name": "저장 확인",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const TABLES = {\"customers\": \"5qDtcVGsBuMFKueV\", \"applications\": \"SOVh9O6LyXcADRzE\", \"subscriptions\": \"2ZX9iNXiAqrMXaMz\", \"consultations\": \"SjS8D9OKcSlDIcD5\"};\nconst COLUMNS = {\"customers\": {\"company\": \"s\", \"name\": \"s\", \"phone\": \"s\", \"email\": \"s\", \"industry\": \"s\", \"memo\": \"s\"}, \"applications\": {\"customer_id\": \"n\", \"product\": \"s\", \"topic\": \"s\", \"slot\": \"s\", \"status\": \"s\", \"calendar_link\": \"s\", \"source\": \"s\"}, \"subscriptions\": {\"customer_id\": \"n\", \"product\": \"s\", \"start_date\": \"s\", \"end_date\": \"s\", \"amount\": \"n\", \"paid\": \"b\", \"status\": \"s\"}, \"consultations\": {\"customer_id\": \"n\", \"date\": \"s\", \"title\": \"s\", \"content\": \"s\", \"next_action\": \"s\"}};\nconst WS = \"lightez\";\n\nconst b = $input.first().json.body || {};\nconst cols = COLUMNS[b.table];\nif (!cols || !b.row || typeof b.row !== 'object') throw new Error('table 또는 row 가 올바르지 않아요');\nconst row = { workspace_id: WS };\nfor (const [k, t] of Object.entries(cols)) {\n  if (!(k in b.row)) continue;\n  const v = b.row[k];\n  row[k] = t === 'n' ? (v === '' || v == null ? null : Number(v)) : t === 'b' ? !!v : String(v ?? '').slice(0, 5000);\n}\nconst id = Number(b.row.id) || 0;\nreturn [{ json: { tableId: TABLES[b.table], id, isUpdate: id > 0, row } }];"
+      }
+    },
+    {
+      "id": "59cfde98-15b3-4bd5-be65-d16bd787a303",
+      "name": "수정인가",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        440,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "6466232b-5ec6-466e-aef5-6203dc6268eb",
+              "leftValue": "={{ $json.isUpdate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "57afa661-5823-4f12-9433-b4c55db7cad2",
+      "name": "수정할 칸",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        320
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: $('저장 확인').first().json.row }];"
+      }
+    },
+    {
+      "id": "77ad5f9f-4def-45f7-aa6c-92704ca99625",
+      "name": "추가할 칸",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        480
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: $('저장 확인').first().json.row }];"
+      }
+    },
+    {
+      "id": "f7924665-66b8-431a-bc86-61c892e0a522",
+      "name": "행 수정",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        320
+      ],
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('저장 확인').first().json.tableId }}"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('저장 확인').first().json.id }}"
+            },
+            {
+              "keyName": "workspace_id",
+              "condition": "eq",
+              "keyValue": "lightez"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      }
+    },
+    {
+      "id": "623ce2fc-cdda-4503-8151-0fc9bf9b3d81",
+      "name": "행 추가",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        480
+      ],
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('저장 확인').first().json.tableId }}"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      }
+    },
+    {
+      "id": "9b1e21e1-3260-4e89-bb6b-b450eba056fa",
+      "name": "저장 응답",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        400
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "앱 데이터 요청": {
+      "main": [
+        [
+          {
+            "node": "customers 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "customers 조회": {
+      "main": [
+        [
+          {
+            "node": "applications 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "applications 조회": {
+      "main": [
+        [
+          {
+            "node": "subscriptions 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subscriptions 조회": {
+      "main": [
+        [
+          {
+            "node": "consultations 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultations 조회": {
+      "main": [
+        [
+          {
+            "node": "앱 데이터 묶기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "앱 데이터 묶기": {
+      "main": [
+        [
+          {
+            "node": "앱 데이터 응답",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "앱 저장 요청": {
+      "main": [
+        [
+          {
+            "node": "저장 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "저장 확인": {
+      "main": [
+        [
+          {
+            "node": "수정인가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "수정인가": {
+      "main": [
+        [
+          {
+            "node": "수정할 칸",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "추가할 칸",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "수정할 칸": {
+      "main": [
+        [
+          {
+            "node": "행 수정",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "추가할 칸": {
+      "main": [
+        [
+          {
+            "node": "행 추가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "행 수정": {
+      "main": [
+        [
+          {
+            "node": "저장 응답",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "행 추가": {
+      "main": [
+        [
+          {
+            "node": "저장 응답",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

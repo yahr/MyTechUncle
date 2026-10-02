@@ -119,13 +119,31 @@ b_tg = node('텔레그램 알림', 'n8n-nodes-base.telegram', 1.2, {
     'text': "={{ '📞 무료 상담 예약\\n' + $('그 시간이 비었나').first().json.d.date + ' ' + $('그 시간이 비었나').first().json.d.time + '\\n' + $('그 시간이 비었나').first().json.d.company + ' ' + $('그 시간이 비었나').first().json.d.name + ' (' + $('그 시간이 비었나').first().json.d.phone + ')\\n' + $('그 시간이 비었나').first().json.label + '\\n고민: ' + $('그 시간이 비었나').first().json.d.topic + '\\n\\n📅 캘린더: ' + $('캘린더에 예약 등록').first().json.htmlLink }}",
     'additionalFields': {'appendAttribution': False}}, [1760, 240], credentials=TG_CRED)
 
-nodes = [s_hook, s_range, s_cal, s_calc, s_resp, b_hook, b_check, b_valid, b_bad, b_cal, b_free, b_isfree, b_taken, b_create, b_ok, b_tg]
+# 앱용 기록: 전화번호로 고객을 찾거나 만들고, 신청 한 줄 추가 (테이블은 build_app_api.py 참고)
+D = "$('그 시간이 비었나').first().json.d"
+tbl = lambda v: {'__rl': True, 'mode': 'id', 'value': v}
+b_cust = node('고객 찾기·만들기', 'n8n-nodes-base.dataTable', 1.1, {
+    'operation': 'upsert', 'dataTableId': tbl('5qDtcVGsBuMFKueV'), 'matchType': 'allConditions',
+    'filters': {'conditions': [{'keyName': 'workspace_id', 'condition': 'eq', 'keyValue': 'lightez'},
+                               {'keyName': 'phone', 'condition': 'eq', 'keyValue': '={{ %s.phone.replace(/\\D/g, "") }}' % D}]},
+    'columns': {'mappingMode': 'defineBelow', 'value': {
+        'workspace_id': 'lightez', 'phone': '={{ %s.phone.replace(/\\D/g, "") }}' % D,
+        'company': '={{ %s.company }}' % D, 'name': '={{ %s.name }}' % D, 'email': '={{ %s.email }}' % D,
+        'industry': '={{ %s.industry }}' % D}}}, [1980, 240], executeOnce=True)
+b_app = node('신청 추가', 'n8n-nodes-base.dataTable', 1.1, {
+    'operation': 'insert', 'dataTableId': tbl('SOVh9O6LyXcADRzE'),
+    'columns': {'mappingMode': 'defineBelow', 'value': {
+        'workspace_id': 'lightez', 'customer_id': '={{ $json.id }}', 'product': '={{ %s.product }}' % D,
+        'topic': '={{ %s.topic }}' % D, 'slot': '={{ %s.date + " " + %s.time }}' % (D, D), 'status': 'new',
+        'calendar_link': "={{ $('캘린더에 예약 등록').first().json.htmlLink }}", 'source': 'landing'}}}, [2200, 240], executeOnce=True)
+
+nodes = [s_hook, s_range, s_cal, s_calc, s_resp, b_hook, b_check, b_valid, b_bad, b_cal, b_free, b_isfree, b_taken, b_create, b_ok, b_tg, b_cust, b_app]
 def link(a, b, out=0):
     return a['name'], out, b['name']
 links = [link(s_hook, s_range), link(s_range, s_cal), link(s_cal, s_calc), link(s_calc, s_resp),
          link(b_hook, b_check), link(b_check, b_valid), link(b_valid, b_cal, 0), link(b_valid, b_bad, 1),
          link(b_cal, b_free), link(b_free, b_isfree), link(b_isfree, b_create, 0), link(b_isfree, b_taken, 1),
-         link(b_create, b_ok), link(b_ok, b_tg)]
+         link(b_create, b_ok), link(b_ok, b_tg), link(b_tg, b_cust), link(b_cust, b_app)]
 connections = {}
 for src, out, dst in links:
     c = connections.setdefault(src, {'main': []})['main']
