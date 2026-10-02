@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나의 기술고문 아저씨</title>
+<meta name="description" content="개발자 없는 회사 대표님이 기술 결정을 할 때 전화로 편히 물어볼 수 있는 DX·AX 기술고문. 첫 상담 20분 무료.">
+<meta property="og:site_name" content="My Tech Uncle">
+<meta property="og:title" content="나의 기술고문 아저씨">
+<meta property="og:description" content="대표님 휴대폰에 기술고문 한 명 저장해두세요. 첫 상담 20분 무료.">
+<meta property="og:image" content="assets/character.jpg">
+<link rel="icon" href="assets/character-face.jpg">
+<style>
+@font-face { font-family: 'A2z'; font-weight: 500; font-display: swap; src: url(assets/a2z-500.woff2) format('woff2'); }
+@font-face { font-family: 'A2z'; font-weight: 700; font-display: swap; src: url(assets/a2z-700.woff2) format('woff2'); }
+
+/* 레이아웃: 휴대폰 '연락처 카드'로 시작해 '통화 메모'처럼 읽히는 한 줄 흐름. 민트 강조는 화면마다 한 군데 */
+:root {
+  color-scheme: light;
+  --bg-page: #f7f9fb; --bg-surface: #ffffff; --bg-subtle: #eef1f5; --bg-inverse: #16202b;
+  --bg-brand: #0fa08d; --bg-brand-hover: #0b7f70; --bg-brand-soft: #e6fbf8;
+  --fg-primary: #16202b; --fg-secondary: #4c5866; --fg-muted: #6e7a88;
+  --fg-brand: #0b7f70; --fg-on-brand: #ffffff; --fg-inverse: #ffffff;
+  --stroke-default: #e1e6ec; --stroke-strong: #cbd3db; --stroke-focus: #17bfa9;
+  --ok: #22a06b; --ok-soft: #eaf8ef; --ok-ink: #1a7a52; --ok-line: #c6ebd3;
+  --warn-soft: #fff7e8; --warn-ink: #a5661a; --warn-line: #fbe7bf;
+  --danger-soft: #fbecea; --danger-ink: #9e2f23; --danger-line: #f6d6d2;
+  --memo: #fffdf6; --memo-line: #efe6c8;
+  --sh-1: 0 1px 2px rgba(22,32,43,.06);
+  --sh-2: 0 2px 6px rgba(22,32,43,.08), 0 8px 24px rgba(22,32,43,.06);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 999px;
+  --font-head: 'A2z', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-body: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --dur: 120ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --bg-inverse: #eef1f5;
+    --bg-brand: #2ed8c3; --bg-brand-hover: #5fe2cf; --bg-brand-soft: #0f3a36;
+    --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2;
+    --fg-brand: #2ed8c3; --fg-on-brand: #04211e; --fg-inverse: #16202b;
+    --stroke-default: #2e3a48; --stroke-strong: #3d4a5a; --stroke-focus: #5fe2cf;
+    --ok: #3fbf7c; --ok-soft: #16342a; --ok-ink: #6ccb94; --ok-line: #275c47;
+    --warn-soft: #3a2c18; --warn-ink: #ecbb5e; --warn-line: #6b4e1e;
+    --danger-soft: #3a1f22; --danger-ink: #e7908a; --danger-line: #6b3339;
+    --memo: #1c2733; --memo-line: #3a3a2c;
+    --sh-1: 0 0 0 1px #2e3a48;
+    --sh-2: 0 0 0 1px #2e3a48, 0 8px 24px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --bg-inverse: #eef1f5;
+  --bg-brand: #2ed8c3; --bg-brand-hover: #5fe2cf; --bg-brand-soft: #0f3a36;
+  --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2;
+  --fg-brand: #2ed8c3; --fg-on-brand: #04211e; --fg-inverse: #16202b;
+  --stroke-default: #2e3a48; --stroke-strong: #3d4a5a; --stroke-focus: #5fe2cf;
+  --ok: #3fbf7c; --ok-soft: #16342a; --ok-ink: #6ccb94; --ok-line: #275c47;
+  --warn-soft: #3a2c18; --warn-ink: #ecbb5e; --warn-line: #6b4e1e;
+  --danger-soft: #3a1f22; --danger-ink: #e7908a; --danger-line: #6b3339;
+  --memo: #1c2733; --memo-line: #3a3a2c;
+  --sh-1: 0 0 0 1px #2e3a48;
+  --sh-2: 0 0 0 1px #2e3a48, 0 8px 24px rgba(0,0,0,.4);
+}
+@media (prefers-reduced-motion: reduce) { :root { --dur: 0ms; } }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg-page); color: var(--fg-primary); font: 400 16px/1.7 var(--font-body); word-break: keep-all; overflow-wrap: anywhere; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; }
+section { padding-block: 72px; }
+section + section { border-top: 1px solid var(--stroke-default); }
+h1, h2, h3 { font-family: var(--font-head); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(30px, 5.2vw, 52px); line-height: 1.25; letter-spacing: -0.03em; font-weight: 700; }
+h2 { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.35; letter-spacing: -0.02em; font-weight: 700; }
+h3 { font-size: 19px; line-height: 1.45; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font: 500 13px/1.4 var(--font-head); letter-spacing: .04em; color: var(--fg-brand); }
+.lead { font-size: 18px; color: var(--fg-secondary); max-width: 36em; }
+.muted { color: var(--fg-muted); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.sec-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; max-width: 44em; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.grid > * { min-width: 0; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px; border-radius: var(--r-lg); font: 600 16px/1 var(--font-body); text-decoration: none; border: 1px solid transparent; transition: background var(--dur), transform var(--dur); cursor: pointer; }
+.btn:active { transform: scale(.98); }
+.btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 3px; }
+.btn-primary { background: var(--bg-brand); color: var(--fg-on-brand); }
+.btn-primary:hover { background: var(--bg-brand-hover); }
+.btn-secondary { background: var(--bg-surface); color: var(--fg-primary); border-color: var(--stroke-strong); }
+.btn-secondary:hover { background: var(--bg-subtle); }
+.btn-sm { height: 36px; padding: 0 14px; border-radius: var(--r-md); font-size: 14px; }
+.badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--r-pill); font: 500 13px/1 var(--font-body); border: 1px solid; white-space: nowrap; }
+.badge-ok { background: var(--ok-soft); color: var(--ok-ink); border-color: var(--ok-line); }
+.badge-warn { background: var(--warn-soft); color: var(--warn-ink); border-color: var(--warn-line); }
+.badge-danger { background: var(--danger-soft); color: var(--danger-ink); border-color: var(--danger-line); }
+.card { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-lg); box-shadow: var(--sh-1); padding: 24px; }
+
+/* 초안 안내 띠 */
+.draft { background: var(--warn-soft); color: var(--warn-ink); border-bottom: 1px solid var(--warn-line); font-size: 13px; line-height: 1.5; }
+.draft .wrap { padding-block: 10px; }
+
+/* 상단 바 */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg-page) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--stroke-default); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 18px/1 var(--font-head); color: var(--fg-primary); text-decoration: none; letter-spacing: -0.02em; }
+.brand small { font: 500 12px/1 var(--font-body); color: var(--fg-muted); letter-spacing: 0; }
+
+/* Hero */
+.hero { padding-block: 64px 80px; }
+.hero .wrap { display: grid; gap: 48px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; }
+@media (max-width: 860px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); } }
+.hero-copy { display: flex; flex-direction: column; gap: 24px; }
+.hero h1 em { font-style: normal; color: var(--fg-brand); }
+.price-hook { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; font-size: 15px; color: var(--fg-secondary); }
+.price-hook b { font: 700 22px/1.2 var(--font-head); color: var(--fg-primary); font-variant-numeric: tabular-nums; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* 연락처 카드 (휴대폰 화면) */
+.phone { justify-self: center; width: min(100%, 340px); background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 36px; box-shadow: var(--sh-2); padding: 28px 20px 24px; display: flex; flex-direction: column; gap: 18px; }
+.phone-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--fg-brand); }
+.avatar { width: 88px; height: 88px; border-radius: 50%; margin: 4px auto 0; display: grid; place-items: center; background: var(--bg-brand-soft); color: var(--fg-brand); font: 700 26px/1 var(--font-head); }
+.contact-name { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.contact-name strong { font: 700 24px/1.2 var(--font-head); }
+.contact-name span { font-size: 13px; color: var(--fg-muted); }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.actions span { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 0; border-radius: var(--r-md); background: var(--bg-subtle); font-size: 12px; color: var(--fg-brand); }
+.actions svg { width: 20px; height: 20px; }
+.fields { border-radius: var(--r-md); background: var(--bg-subtle); }
+.fields div { padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.fields div + div { border-top: 1px solid var(--stroke-default); }
+.fields small { font-size: 12px; color: var(--fg-muted); }
+
+/* 질문 말풍선 */
+.asks { display: flex; flex-wrap: wrap; gap: 12px; }
+.ask { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 20px 20px 20px 6px; padding: 12px 18px; font-size: 16px; box-shadow: var(--sh-1); max-width: 100%; }
+.ask:nth-child(3n) { border-radius: 20px 20px 6px 20px; }
+
+/* AI 비교 */
+.versus { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.versus .card { display: flex; flex-direction: column; gap: 10px; }
+.versus .who { font: 500 13px/1 var(--font-head); color: var(--fg-muted); letter-spacing: .04em; }
+.versus q { font: 700 20px/1.45 var(--font-head); quotes: "“" "”"; }
+.versus .is-us { border-color: var(--bg-brand); box-shadow: 0 0 0 1px var(--bg-brand), var(--sh-1); }
+.versus .is-us .who { color: var(--fg-brand); }
+
+/* 상담 브리핑 예시 */
+.brief-wrap { display: grid; gap: 40px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
+@media (max-width: 860px) { .brief-wrap { grid-template-columns: minmax(0, 1fr); } }
+.memo { background: var(--memo); border: 1px solid var(--memo-line); border-radius: var(--r-md); padding: 28px; box-shadow: var(--sh-2); display: flex; flex-direction: column; gap: 18px; font-size: 15px; }
+.memo-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-bottom: 14px; border-bottom: 1px dashed var(--memo-line); }
+.memo-head strong { font: 700 18px/1.3 var(--font-head); }
+.memo-head span { font-size: 13px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.memo dl { margin: 0; display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 12px 16px; }
+.memo dt { font: 500 13px/1.7 var(--font-head); color: var(--fg-muted); }
+.memo dd { margin: 0; }
+.memo ul { margin: 0; padding-left: 1.1em; }
+.verdict { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+@media (max-width: 520px) { .memo dl { grid-template-columns: minmax(0, 1fr); gap: 4px; } .memo dd { margin-bottom: 10px; } }
+
+/* 숫자 강조 */
+.money { display: flex; flex-wrap: wrap; gap: 12px 32px; margin-block: 8px 24px; }
+.money span { font: 700 clamp(28px, 4.6vw, 44px)/1.1 var(--font-head); color: var(--fg-muted); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.money span:last-child { color: var(--fg-primary); }
+
+/* 가능/불가능 */
+.scope h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.scope ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: var(--fg-secondary); }
+.scope li::before { content: "·"; margin-right: 8px; color: var(--fg-muted); }
+.next-path { margin-top: 24px; background: var(--bg-brand-soft); border-radius: var(--r-lg); padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+.next-path strong { font: 700 19px/1.4 var(--font-head); }
+
+/* 대표 소개 */
+.bio { display: grid; gap: 40px; grid-template-columns: 220px minmax(0, 1fr); }
+@media (max-width: 760px) { .bio { grid-template-columns: minmax(0, 1fr); } }
+.portrait { aspect-ratio: 4 / 5; max-width: 220px; width: 100%; border-radius: var(--r-xl); border: 1px dashed var(--stroke-strong); display: grid; place-items: center; text-align: center; color: var(--fg-muted); font-size: 13px; background: var(--bg-surface); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.facts div { display: flex; flex-direction: column; }
+.facts b { font: 700 28px/1.2 var(--font-head); font-variant-numeric: tabular-nums; }
+.facts span { font-size: 13px; color: var(--fg-muted); }
+.history { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--stroke-default); }
+.history li { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--stroke-default); font-size: 15px; }
+.history time { color: var(--fg-muted); font-variant-numeric: tabular-nums; font-size: 14px; }
+
+/* 가격 */
+.plans { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.plan { display: flex; flex-direction: column; gap: 16px; padding: 28px; }
+.plan-name { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font: 700 18px/1.3 var(--font-head); }
+.plan-price { font: 700 36px/1.1 var(--font-head); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.plan-price small { font: 500 15px/1 var(--font-body); color: var(--fg-muted); letter-spacing: 0; }
+.plan-terms { font-size: 14px; color: var(--fg-brand); font-weight: 600; }
+.plan ul { margin: 0; padding-left: 1.1em; font-size: 15px; color: var(--fg-secondary); display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.plan .btn { width: 100%; }
+.plan-note { font-size: 13px; color: var(--fg-muted); }
+
+/* 진행 순서 */
+.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.steps li { counter-increment: s; background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-md); padding: 16px; font-size: 15px; display: flex; flex-direction: column; gap: 6px; }
+.steps li::before { content: counter(s); font: 700 14px/1 var(--font-head); color: var(--fg-brand); font-variant-numeric: tabular-nums; }
+.steps li.opt { border-style: dashed; color: var(--fg-secondary); }
+
+/* FAQ */
+.faq { display: flex; flex-direction: column; gap: 8px; }
+.faq details { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-md); }
+.faq summary { cursor: pointer; padding: 16px 20px; font: 600 16px/1.5 var(--font-body); list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::after { content: "+"; color: var(--fg-muted); font-weight: 400; }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { padding: 0 20px 18px; color: var(--fg-secondary); font-size: 15px; }
+
+/* 마지막 CTA */
+.final { background: var(--bg-inverse); color: var(--fg-inverse); border-radius: var(--r-xl); padding: 48px 32px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+.final h2 { color: var(--fg-inverse); }
+.final p { opacity: .8; }
+.final .btn-secondary { background: transparent; color: var(--fg-inverse); border-color: color-mix(in srgb, var(--fg-inverse) 40%, transparent); }
+
+/* 무료 상담 */
+.free-pill { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: var(--r-pill); background: var(--bg-brand-soft); color: var(--fg-brand); font: 600 14px/1 var(--font-body); }
+.free-box { display: grid; gap: 24px 40px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; background: var(--bg-brand-soft); border-radius: var(--r-xl); padding: 40px; }
+.free-box > .btn { justify-self: start; }
+@media (max-width: 860px) { .free-box { grid-template-columns: minmax(0, 1fr); padding: 28px 20px; } }
+.free-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.free-list li { display: flex; flex-direction: column; background: var(--bg-surface); border-radius: var(--r-md); padding: 12px 16px; }
+.free-list b { font: 700 16px/1.4 var(--font-head); }
+.free-list span { font-size: 14px; color: var(--fg-muted); }
+/* 태그 클라우드 */
+.seg { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px; background: var(--bg-subtle); border-radius: var(--r-lg); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; color: var(--fg-secondary); font: 500 14px/1 var(--font-body); height: 34px; padding: 0 12px; border-radius: var(--r-md); cursor: pointer; transition: background var(--dur), color var(--dur); }
+.seg button span { color: var(--fg-muted); font-variant-numeric: tabular-nums; margin-left: 2px; }
+.seg button[aria-pressed="true"] { background: var(--bg-surface); color: var(--fg-primary); box-shadow: var(--sh-1); }
+.seg button:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 1px; }
+.cloud { margin: 8px 0 0; padding: 24px; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 6px 18px; background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-xl); }
+.cloud li { font-family: var(--font-head); line-height: 1.3; letter-spacing: -0.01em; transition: opacity var(--dur), color var(--dur); }
+.cloud .w4 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; color: var(--fg-primary); }
+.cloud .w3 { font-size: clamp(18px, 2.3vw, 22px); font-weight: 700; color: var(--fg-primary); }
+.cloud .w2 { font-size: 16px; font-weight: 500; color: var(--fg-secondary); }
+.cloud .w1 { font-size: 14px; font-weight: 500; color: var(--fg-muted); }
+.cloud.filtered li:not(.on) { display: none; }
+.cloud li { animation: cloud-in var(--dur) ease-out; }
+@keyframes cloud-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.cloud-note { font-size: 13px; color: var(--fg-muted); }
+
+.top-actions { display: flex; align-items: center; gap: 8px; }
+.theme-btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: var(--r-md); border: 1px solid var(--stroke-default); background: var(--bg-surface); color: var(--fg-secondary); cursor: pointer; transition: background var(--dur); }
+.theme-btn:hover { background: var(--bg-subtle); }
+.theme-btn:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 2px; }
+.theme-btn svg { width: 18px; height: 18px; }
+.theme-btn .i-sun { display: none; }
+.is-dark .theme-btn .i-sun { display: block; }
+.is-dark .theme-btn .i-moon { display: none; }
+
+/* 진행 순서 타임라인 — 넓은 화면은 가로, 좁은 화면은 세로 */
+.timeline { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0 12px; }
+.tl-item { position: relative; padding-top: 36px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tl-item::before { content: ""; position: absolute; top: 4px; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--bg-brand); box-shadow: 0 0 0 4px var(--bg-brand-soft); z-index: 1; }
+.tl-item::after { content: ""; position: absolute; top: 11px; left: 16px; right: -12px; height: 2px; background: var(--bg-brand); }
+.tl-item:last-child::after { display: none; }
+.tl-item.opt::before { background: var(--bg-surface); border: 2px solid var(--stroke-strong); box-shadow: none; }
+.tl-item.opt::after, .tl-item:nth-child(5)::after { background: repeating-linear-gradient(90deg, var(--stroke-strong) 0 6px, transparent 6px 12px); }
+.tl-phase { font: 500 12px/1 var(--font-head); letter-spacing: .04em; color: var(--fg-brand); }
+.tl-item.opt .tl-phase { color: var(--fg-muted); }
+.tl-item strong { font: 700 17px/1.4 var(--font-head); }
+.tl-item p { font-size: 14px; line-height: 1.55; color: var(--fg-secondary); }
+@media (max-width: 860px) {
+  .timeline { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .tl-item { padding: 0 0 28px 36px; }
+  .tl-item::before { top: 4px; }
+  .tl-item::after { top: 20px; bottom: -4px; left: 7px; right: auto; width: 2px; height: auto; }
+  .tl-item.opt::after, .tl-item:nth-child(5)::after { background: repeating-linear-gradient(180deg, var(--stroke-strong) 0 6px, transparent 6px 12px); }
+}
+
+.brand-mark { width: 40px; height: 40px; flex: none; }
+.avatar { background: none; width: 120px; height: 120px; }
+.avatar-mark { width: 120px; height: 120px; }
+
+.char-img { display: inline-block; background: url(assets/character.jpg) center / 100% no-repeat; clip-path: circle(46% at 50% 50%); }
+.avatar-mark { display: block; }
+
+.char-face { display: inline-block; background: url(assets/character-face.jpg) center / 100% no-repeat; clip-path: circle(46% at 50% 50%); }
+
+/* 이런 순간 — 세 줄이 오른쪽에서 왼쪽으로, 줄마다 속도·크기를 달리해 깊이감 */
+.q-sec { overflow-x: clip; }
+.marquee { display: flex; flex-direction: column; gap: 14px; width: 100vw; margin-left: calc(50% - 50vw); -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.mq-row { overflow: hidden; }
+.mq-track { display: flex; width: max-content; animation: mq-flow var(--mq-dur, 50s) linear infinite; }
+.mq-set { display: flex; gap: 12px; padding-right: 12px; padding-block: 4px; }
+.mq-set .ask { white-space: nowrap; margin: 0; }
+.mq-back { --mq-dur: 72s; }
+.mq-back .ask { font-size: 14px; color: var(--fg-muted); box-shadow: none; }
+.mq-front { --mq-dur: 38s; }
+.mq-front .ask { font-size: 17px; font-weight: 600; }
+.mq-mid { --mq-dur: 54s; }
+.mq-mid .mq-track { animation-delay: -20s; }
+.marquee:hover .mq-track { animation-play-state: paused; }
+@keyframes mq-flow { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .mq-track { animation: none; width: auto; }
+  .mq-set { flex-wrap: wrap; padding-inline: 20px; }
+  .mq-set[aria-hidden="true"] { display: none; }
+  .mq-set .ask { white-space: normal; }
+}
+
+.cloud { background: none; border: 0; border-radius: 0; padding: 16px 0 0; gap: 16px 32px; max-width: 920px; }
+
+/* 전문성 — 화면 전체 폭, 크기·굵기·모양을 섞어 다양하게 */
+.adv-sec { overflow-x: clip; }
+.cloud { width: 100vw; max-width: none; margin-left: calc(50% - 50vw); padding: 24px clamp(16px, 4vw, 56px) 0; gap: 14px 22px; justify-content: center; align-items: center; }
+.cloud li { padding: 6px 14px; border-radius: var(--r-pill); border: 1px solid transparent; }
+/* 카테고리별 모양 — 크기·굵기는 묶음마다 하나로 통일 */
+.cloud li[data-g] { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.cloud li[data-g="ai"] { background: var(--bg-brand-soft); color: var(--fg-brand); font-size: 17px; font-weight: 700; }
+.cloud li[data-g="domain"] { background: var(--bg-surface); border-color: var(--stroke-strong); color: var(--fg-primary); }
+.cloud li[data-g="feature"] { background: var(--bg-subtle); color: var(--fg-secondary); font-size: 15px; font-weight: 500; }
+.cloud li[data-g="stack"] { border: 1px dashed var(--stroke-strong); color: var(--fg-secondary); font: 500 14px/1.3 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.price-was { font-weight: 500; color: var(--fg-muted); text-decoration: line-through; }
+.plan-price .price-was { font-size: 20px; margin-right: 4px; }
+.final .price-was, .price-hook .price-was { font-size: 15px; }
+
+/* 하는 일 — 카드뉴스 슬라이드 */
+.deck { display: flex; flex-direction: column; gap: 20px; }
+.deck-track { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 0; padding-bottom: 8px; scrollbar-width: none; overscroll-behavior-x: contain; }
+.deck-track::-webkit-scrollbar { display: none; }
+.deck-track:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 4px; border-radius: var(--r-lg); }
+.slide { flex: none; width: calc((100% - 32px) / 3); aspect-ratio: 4 / 5; scroll-snap-align: start; border-radius: var(--r-xl); background: var(--bg-surface); border: 1px solid var(--stroke-default); box-shadow: var(--sh-1); padding: 28px 26px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.slide h3 { font: 700 24px/1.35 var(--font-head); letter-spacing: -0.02em; margin-top: auto; }
+.slide p { font-size: 16px; line-height: 1.65; color: var(--fg-secondary); }
+.slide-page { font: 500 13px/1 var(--font-head); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.slide-icon { width: 56px; height: 56px; color: var(--fg-brand); background: var(--bg-brand-soft); border-radius: 18px; padding: 12px; margin-top: 8px; }
+.slide-cover { background: var(--bg-brand); border-color: transparent; color: var(--fg-on-brand); justify-content: space-between; }
+.slide-cover h2 { font-size: 30px; line-height: 1.3; color: var(--fg-on-brand); }
+.slide-kicker { font: 500 13px/1 var(--font-head); letter-spacing: .04em; opacity: .85; color: var(--fg-on-brand) !important; }
+.slide-hint { font-size: 14px; opacity: .85; color: var(--fg-on-brand) !important; }
+@media (max-width: 900px) { .slide { width: calc((100% - 16px) / 2); } }
+@media (max-width: 600px) { .slide { width: 100%; aspect-ratio: auto; min-height: 360px; } }
+.deck-nav { display: flex; align-items: center; gap: 16px; }
+.deck-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--stroke-strong); background: var(--bg-surface); color: var(--fg-primary); font-size: 18px; cursor: pointer; transition: background var(--dur); }
+.deck-btn:hover { background: var(--bg-subtle); }
+.deck-btn:disabled { opacity: .35; cursor: default; }
+.deck-btn:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 2px; }
+.deck-dots { display: flex; gap: 6px; }
+.deck-dots span { width: 8px; height: 8px; border-radius: 999px; background: var(--stroke-strong); transition: width var(--dur), background var(--dur); }
+.deck-dots span.on { width: 22px; background: var(--bg-brand); }
+
+/* 하는 일 — 화면 전체 폭에 가로로 나란히 */
+.work-sec { overflow-x: clip; }
+.deck { width: 100vw; margin-left: calc(50% - 50vw); padding-inline: clamp(16px, 4vw, 56px); }
+.deck-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; overflow: visible; scroll-snap-type: none; padding-bottom: 0; }
+.deck-track .slide { width: auto; aspect-ratio: auto; min-height: 320px; scroll-snap-align: none; }
+@media (max-width: 1000px) { .deck-track { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .deck-track { grid-template-columns: minmax(0, 1fr); } .deck-track .slide { min-height: 0; } }
+
+/* 하는 일 — 제목 높이 맞추기 */
+.deck-track .slide { min-height: 0; }
+.deck-track .slide h3 { margin-top: 12px; }
+
+/* 이용 사례 — 말풍선 후기 (예시) */
+.voice-sec { overflow-x: clip; }
+.voices { width: 100vw; margin-left: calc(50% - 50vw); overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.voice-track { display: flex; width: max-content; animation: mq-flow 60s linear infinite; }
+.voices:hover .voice-track { animation-play-state: paused; }
+.voice-set { display: flex; gap: 20px; padding: 4px 20px 12px 0; align-items: stretch; }
+.voice-set .voice { width: min(80vw, 340px); flex: none; }
+@media (prefers-reduced-motion: reduce) {
+  .voice-track { animation: none; width: auto; }
+  .voice-set { flex-wrap: wrap; justify-content: center; padding-inline: 20px; }
+  .voice-set[aria-hidden="true"] { display: none; }
+}
+.voice { margin: 0; display: flex; flex-direction: column; gap: 18px; }
+.bubble { position: relative; margin: 0; flex: 1; background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-xl); box-shadow: var(--sh-1); padding: 24px 24px 22px; display: flex; flex-direction: column; gap: 10px; }
+.bubble p { font-size: 16px; line-height: 1.7; color: var(--fg-primary); }
+.bubble::after { content: ""; position: absolute; left: 32px; bottom: -9px; width: 16px; height: 16px; background: var(--bg-surface); border-right: 1px solid var(--stroke-default); border-bottom: 1px solid var(--stroke-default); transform: rotate(45deg); }
+.voice figcaption { display: flex; align-items: center; gap: 10px; padding-left: 20px; }
+.voice figcaption b { display: block; font: 700 15px/1.3 var(--font-head); }
+.voice figcaption small { font-size: 13px; color: var(--fg-brand); }
+.voice-av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--bg-subtle); color: var(--fg-secondary); font: 700 16px/1 var(--font-head); flex: none; }
+.sample-tag { align-self: flex-start; font: 600 11px/1 var(--font-body); padding: 4px 8px; border-radius: var(--r-pill); background: var(--warn-soft); color: var(--warn-ink); border: 1px solid var(--warn-line); }
+.sample-note { font-size: 14px; color: var(--warn-ink); }
+
+.voice-single { max-width: 720px; }
+.voice-single .bubble p { font: 600 clamp(20px, 2.4vw, 26px)/1.55 var(--font-head); letter-spacing: -0.01em; }
+.voice-single .bubble { padding: 32px 32px 30px; }
+
+.voice-pending .bubble { background: transparent; border-style: dashed; box-shadow: none; justify-content: center; }
+.voice-pending .bubble::after { background: var(--bg-page); border-style: dashed; }
+.voice-pending .bubble p { color: var(--fg-muted); font-size: 15px; }
+footer { padding-block: 40px 56px; font-size: 13px; color: var(--fg-muted); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
+.mark { width: 22px; height: 22px; }
+
+/* 기본 */
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+.brand, .btn { white-space: nowrap; }
+@media (max-width: 420px) { .brand { font-size: 15px; gap: 8px; } .top .btn-sm { padding: 0 10px; } }
+/* 예약 창 — 왼쪽 상담 정보 · 가운데 달력 · 오른쪽 시간 */
+.book { width: min(1000px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: var(--r-xl); background: var(--bg-surface); color: var(--fg-primary); box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: auto; }
+.book::backdrop { background: rgba(22, 32, 43, .48); }
+.book-wrap { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 540px; }
+.book-info { padding: 28px 24px; border-right: 1px solid var(--stroke-default); display: flex; flex-direction: column; gap: 10px; }
+.book-av { width: 56px; height: 56px; }
+.book-host { font-size: 14px; color: var(--fg-muted); margin-top: 6px; }
+.book-info h2 { font-size: 24px; }
+.book-meta { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: var(--fg-secondary); }
+.book-meta li { display: flex; align-items: center; gap: 8px; }
+.book-meta svg { width: 18px; height: 18px; flex: none; color: var(--fg-muted); }
+.book[data-step="1"] .book-when-li { display: none; }
+.book-when-li { color: var(--fg-brand); font-weight: 600; }
+.book-desc { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+.book-main { position: relative; padding: 28px 28px 24px; min-width: 0; }
+.book-main h3 { font: 700 19px/1.4 var(--font-head); margin: 0 0 16px; }
+.book-x { position: absolute; top: 16px; right: 16px; border: 0; background: var(--bg-subtle); color: var(--fg-secondary); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+.step-pick { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 24px; }
+.cal-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; }
+.cal-nav strong { font: 600 16px/1 var(--font-head); min-width: 110px; text-align: center; }
+.cal-nav button { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--bg-brand-soft); color: var(--fg-brand); font-size: 18px; cursor: pointer; }
+.cal-nav button:disabled { background: transparent; color: var(--fg-disabled, #9ba6b2); cursor: default; }
+.cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; text-align: center; }
+.cal-dow span { font-size: 12px; color: var(--fg-muted); padding-bottom: 4px; }
+.cal-day { aspect-ratio: 1; max-width: 48px; width: 100%; justify-self: center; border-radius: 50%; border: 0; font: 600 15px/1 var(--font-body); background: var(--bg-brand-soft); color: var(--fg-brand); cursor: pointer; font-variant-numeric: tabular-nums; }
+.cal-day:disabled { background: transparent; color: var(--fg-muted); font-weight: 400; cursor: default; opacity: .6; }
+.cal-day.is-today { box-shadow: inset 0 0 0 1px var(--stroke-strong); }
+.cal-day[aria-pressed="true"] { background: var(--bg-brand); color: var(--fg-on-brand); }
+.tz { margin-top: 14px; }
+.times { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.times-head { font: 600 15px/1.4 var(--font-head); padding-top: 4px; min-height: 40px; }
+.times-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+.slot { display: grid; grid-template-columns: 1fr 0fr; gap: 0; transition: grid-template-columns var(--dur), gap var(--dur); }
+.slot-time { height: 48px; border-radius: var(--r-md); border: 1px solid var(--bg-brand); background: var(--bg-surface); color: var(--fg-brand); font: 600 15px/1 var(--font-body); cursor: pointer; font-variant-numeric: tabular-nums; }
+.slot-time:hover { box-shadow: inset 0 0 0 1px var(--bg-brand); }
+.slot-next { height: 48px; padding: 0; overflow: hidden; min-width: 0; width: 0; border-radius: var(--r-md); }
+.slot.is-picked { grid-template-columns: 1fr 1fr; gap: 6px; }
+.slot.is-picked .slot-time { background: var(--fg-secondary); border-color: var(--fg-secondary); color: var(--bg-surface); }
+.slot.is-picked .slot-next { width: auto; }
+.slot:not(.is-picked) .slot-next { visibility: hidden; }
+.note { font-size: 13px; color: var(--fg-muted); }
+.book-back { border: 0; background: none; color: var(--fg-brand); font: 500 14px/1 var(--font-body); padding: 0; margin-bottom: 14px; cursor: pointer; }
+.fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--fg-secondary); }
+.field.full { grid-column: 1 / -1; }
+.book input, .book select, .book textarea { font: 400 15px/1.4 var(--font-body); color: var(--fg-primary); background: var(--bg-surface); border: 1px solid var(--stroke-strong); border-radius: var(--r-md); padding: 10px 12px; min-height: 44px; }
+.book textarea { min-height: 76px; resize: vertical; }
+.book button:focus-visible, .book input:focus-visible, .book select:focus-visible, .book textarea:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 2px; }
+.consent { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; margin-top: 16px; }
+.consent input { min-height: 0; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--bg-brand); }
+.consent details { font-size: 13px; color: var(--fg-muted); margin-top: 4px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.book-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.book-msg { font-size: 14px; color: var(--danger-ink); min-height: 20px; }
+.book-done { text-align: center; padding: 48px 0 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.done-check { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--bg-brand-soft); color: var(--fg-brand); font-size: 28px; font-weight: 700; }
+.book-done h3 { margin: 0; }
+@media (max-width: 820px) {
+  .book-wrap { grid-template-columns: minmax(0, 1fr); }
+  .book-info { border-right: 0; border-bottom: 1px solid var(--stroke-default); padding: 20px; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+  .book-info .book-desc, .book-host { display: none; }
+  .book-info h2 { font-size: 20px; }
+  .book-meta { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; margin: 0; width: 100%; font-size: 14px; }
+  .book-main { padding: 20px; }
+  .step-pick { grid-template-columns: minmax(0, 1fr); }
+  .times-list { max-height: none; }
+  .fields-grid { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="brand-mark char-face" aria-hidden="true"></span>나의 기술고문 아저씨</a>
+    <div class="top-actions">
+      <button type="button" id="theme-toggle" class="theme-btn" aria-label="다크 모드로 보기"><svg class="i-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <a class="btn btn-primary btn-sm" href="#free" data-book="free">무료 상담</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="eyebrow">AI 시대, 혼자 뒤처지지 않도록</p>
+        <h1>대표님 휴대폰에<br><em>기술고문 한 명</em> 저장해두세요</h1>
+        <p class="lead">업무를 디지털로 바꿀지, AI를 들일지, 있는 걸 쓸지, 새로 만들지. 기술을 몰라도 이 결정은 대표님 몫이에요. 그럴 때 편히 물어볼 사람이 한 명 있으면 돼요.</p>
+        <div class="price-hook"><span class="free-pill">첫 상담 1회 무료</span><span>그다음 연 <s class="price-was">50만원</s> <b>20만원</b></span><span>Founder <b>100만원</b></span></div>
+        <div class="ctas">
+          <a class="btn btn-primary" href="#free" data-book="free">첫 상담 무료로 받기</a>
+          <a class="btn btn-secondary" href="#plans">가격 보기</a>
+        </div>
+      </div>
+
+      <div class="phone" aria-label="휴대폰 연락처에 저장된 기술고문 예시">
+        <div class="phone-top"><span>‹ 연락처</span><span>편집</span></div>
+        <div class="avatar"><span class="avatar-mark char-img" aria-hidden="true"></span></div>
+        <div class="contact-name"><strong>기술고문 아저씨</strong><span>DX·AX 기술고문</span></div>
+        <div class="actions" aria-hidden="true">
+          <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>전화</span>
+          <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2z"/></svg>메시지</span>
+          <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm-2 8h14v10H5z"/></svg>예약</span>
+        </div>
+        <div class="fields">
+          <div><small>상담 시간</small>평일 아침 7시–저녁 10시 · 예약 통화 20분</div>
+          <div><small>메모</small>9월 14일 통화 · 재고 연동 견적 3,000만원 건, 범위 다시 받기로</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="questions" class="q-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">이런 순간</p>
+        <h2>이럴 때 전화하세요</h2>
+      </div>
+      <div class="marquee">
+        <div class="mq-row mq-back"><div class="mq-track"><div class="mq-set"><p class="ask">요즘 다들 DX 한다는데, 우리 회사는 뭐부터 해야 하나요?</p><p class="ask">직원들이 엑셀로 하는 일, 좀 줄일 수 없을까요?</p><p class="ask">종이·카톡으로 받는 주문, 한곳에 모을 수 없을까요?</p><p class="ask">월 30만원짜리 프로그램, 쓸 만한가요?</p></div><div class="mq-set" aria-hidden="true"><p class="ask">요즘 다들 DX 한다는데, 우리 회사는 뭐부터 해야 하나요?</p><p class="ask">직원들이 엑셀로 하는 일, 좀 줄일 수 없을까요?</p><p class="ask">종이·카톡으로 받는 주문, 한곳에 모을 수 없을까요?</p><p class="ask">월 30만원짜리 프로그램, 쓸 만한가요?</p></div></div></div>
+        <div class="mq-row mq-front"><div class="mq-track"><div class="mq-set"><p class="ask">AX가 뭔가요? 우리 같은 작은 회사도 해야 하나요?</p><p class="ask">고객 문의 답장, AI가 대신할 수 있나요?</p><p class="ask">직원이 그만두면 일이 멈춰요. 업무를 정리해 둘 방법이 없을까요?</p><p class="ask">견적이 3,000만원 나왔는데 적당한가요?</p></div><div class="mq-set" aria-hidden="true"><p class="ask">AX가 뭔가요? 우리 같은 작은 회사도 해야 하나요?</p><p class="ask">고객 문의 답장, AI가 대신할 수 있나요?</p><p class="ask">직원이 그만두면 일이 멈춰요. 업무를 정리해 둘 방법이 없을까요?</p><p class="ask">견적이 3,000만원 나왔는데 적당한가요?</p></div></div></div>
+        <div class="mq-row mq-mid"><div class="mq-track"><div class="mq-set"><p class="ask">직원들한테 ChatGPT 쓰게 해도 될까요? 회사 자료를 넣어도 되나요?</p><p class="ask">매일 쓰는 보고서, 알아서 만들어지게 할 수 있나요?</p><p class="ask">DX·AX 지원사업, 신청해도 될까요?</p><p class="ask">회사 자료, 어디에 둬야 안전한가요?</p></div><div class="mq-set" aria-hidden="true"><p class="ask">직원들한테 ChatGPT 쓰게 해도 될까요? 회사 자료를 넣어도 되나요?</p><p class="ask">매일 쓰는 보고서, 알아서 만들어지게 할 수 있나요?</p><p class="ask">DX·AX 지원사업, 신청해도 될까요?</p><p class="ask">회사 자료, 어디에 둬야 안전한가요?</p></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">AI가 있는데 왜</p>
+        <h2>AI에게 물어보면 되지 않나요?</h2>
+        <p class="lead">맞아요. 간단한 질문은 AI에게 물어보시면 돼요. 저희가 필요한 순간은 답을 찾을 때가 아니라 결정을 내려야 할 때예요.</p>
+      </div>
+      <div class="versus">
+        <div class="card"><span class="who">AI는</span><q>어떤 방법들이 있는지 알려줘요</q><p class="muted">선택지, 용어 설명, 일반적인 방법</p></div>
+        <div class="card is-us"><span class="who">기술고문은</span><q>대표님 회사에서는 어떤 방법이 맞는지 같이 판단해요</q><p class="muted">지난 통화 내용, 지금 쓰는 시스템, 예산, 직원 역량까지 알고 있어요</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap brief-wrap">
+      <div class="stack">
+        <p class="eyebrow">통화가 끝나면</p>
+        <h2>상담 브리핑 1장이 남아요</h2>
+        <p class="lead">무엇을 결정했고, 왜 그렇게 봤고, 다음에 뭘 하면 되는지 정리해서 보내드려요. 다음 통화 때는 이 기록에서 이어서 시작해요.</p>
+        <p class="muted">오른쪽은 예시예요. 실제 고객 사례가 아니에요.</p>
+      </div>
+      <article class="memo" aria-label="상담 브리핑 예시">
+        <div class="memo-head"><strong>상담 브리핑 · 재고 연동 견적 검토</strong><span>2026.09.14 · 통화 22분</span></div>
+        <dl>
+          <dt>상황</dt>
+          <dd>온라인 쇼핑몰 2곳과 창고 엑셀 재고를 맞추려고 개발사에 견적을 받으셨어요. 3,000만원, 기간 3개월이에요.</dd>
+          <dt>결정할 것</dt>
+          <dd>새로 개발할지, 기존 서비스로 해결할지</dd>
+          <dt>판단</dt>
+          <dd class="verdict"><span class="badge badge-ok">권장</span> 재고 연동 서비스(월 구독) 먼저 2개월 써 보기 <span class="badge badge-danger">비권장</span> 지금 단계의 전체 개발</dd>
+          <dt>이유</dt>
+          <dd>쇼핑몰 2곳은 이미 연동 서비스가 지원해요. 견적서에 관리자 화면·디자인이 따로 잡혀 있어서 실제 필요한 범위보다 커 보여요.</dd>
+          <dt>하지 말 것</dt>
+          <dd>범위가 정해지기 전에 계약금부터 보내지 않기</dd>
+          <dt>다음 할 일</dt>
+          <dd><ul><li>대표님: 개발사에 기능별 견적을 다시 요청</li><li>기술고문: 연동 서비스 2곳 비교표 보내기 (금요일까지)</li></ul></dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="work-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">하는 일</p>
+        <h2>대표님 대신 고민하고, 같이 결정해요</h2>
+      </div>
+      <div class="deck">
+        <div class="deck-track" id="deck">
+          <article class="slide"><svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg><h3>있는 걸로 먼저 풀어요</h3><p>새로 만들기 전에 지금 쓰는 엑셀, 프로그램, 서비스로 되는지부터 봐요. 돈이 덜 드는 방법이 먼저예요.</p></article>
+          <article class="slide"><svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg><h3>반복되는 일을 줄여요</h3><p>직원들이 매일 손으로 옮기고 맞추는 일을 찾아서, 줄이거나 알아서 돌아가게 할 수 있는지 봐요.</p></article>
+          <article class="slide"><svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><h3>AI를 일에 붙여요</h3><p>직원들이 AI를 어디에 쓰면 좋은지, 회사 자료는 어떻게 지켜야 하는지 같이 정해요. 유행 따라가기가 아니라 일이 줄어드는 곳부터요.</p></article>
+          <article class="slide"><svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg><h3>업체 말을 대표님 말로 바꿔요</h3><p>업체 설명, 제안서, 견적서를 쉽게 풀어 드리고, 계약 전에 확인할 것과 물어볼 질문을 같이 정리해요.</p></article>
+        </div>
+    </div>
+  </section>
+
+  <section class="scope-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">범위</p>
+        <h2>할 수 있는 것과 할 수 없는 것을 먼저 말씀드려요</h2>
+      </div>
+      <div class="grid scope">
+        <div class="card"><h3><span class="badge badge-ok">통화로 해요</span></h3><ul><li>DX: 무엇부터 디지털로 바꿀지 순서 정하기</li><li>AX: AI를 쓸 만한 업무 찾기</li><li>직원 AI 사용 규칙과 회사 자료 지키기</li><li>반복 업무 자동화 후보 찾기</li><li>프로그램·서비스 고르기</li><li>ERP·CRM 도입 상담</li><li>견적서·제안서 의견</li><li>지원사업 활용 판단</li><li>외주 vs 채용 판단</li></ul></div>
+        <div class="card"><h3><span class="badge badge-warn">따로 진행해요</span></h3><ul><li>방문 업무 분석(DX·AX 컨설팅)</li><li>자동화·시스템 구축</li><li>직원 AI 교육</li><li>상세 기획서·요구사항 작성</li><li>장애 복구, 24시간 긴급 대응</li><li>프로젝트 관리(PM)</li></ul></div>
+      </div>
+      <div class="next-path">
+        <strong>모르면 모른다고 말씀드려요. 대신 그냥 돌려보내지 않아요</strong>
+        <p class="muted">누가 필요한지, 그 사람에게 무엇을 물어봐야 하는지, 어떤 순서로 풀면 되는지 다음 길까지 알려드려요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="advisor" class="adv-sec">
+    <div class="wrap">
+      <div class="stack">
+        <div class="sec-head">
+          <p class="eyebrow">전문성</p>
+          <h2>그동안 만들어 본 일들이에요</h2>
+        </div>
+        <div class="seg" role="group" aria-label="태그 묶음 고르기"><button type="button" id="f-all" data-f="all" aria-pressed="true">전체</button><button type="button" id="f-ai" data-f="ai" aria-pressed="false">DX·AX <span>18</span></button><button type="button" id="f-domain" data-f="domain" aria-pressed="false">업종 <span>20</span></button><button type="button" id="f-feature" data-f="feature" aria-pressed="false">기능 <span>40</span></button><button type="button" id="f-stack" data-f="stack" aria-pressed="false">기술 <span>24</span></button></div>
+        <ul class="cloud" id="cloud">
+          <li class="w4" data-g="domain">자동차 탁송·딜러</li>
+          <li class="w4" data-g="ai">DX 컨설팅</li>
+          <li class="w4" data-g="feature">회원·로그인</li>
+          <li class="w4" data-g="stack">Python</li>
+          <li class="w4" data-g="domain">제조 MES</li>
+          <li class="w4" data-g="ai">AX 컨설팅</li>
+          <li class="w4" data-g="feature">관리자 페이지</li>
+          <li class="w4" data-g="stack">PHP</li>
+          <li class="w3" data-g="domain">수입차 딜러시스템</li>
+          <li class="w3" data-g="ai">업무 프로세스 분석</li>
+          <li class="w4" data-g="feature">외부 API 연동</li>
+          <li class="w4" data-g="stack">MySQL</li>
+          <li class="w3" data-g="domain">무역 ERP</li>
+          <li class="w3" data-g="ai">노션 업무 시스템</li>
+          <li class="w3" data-g="feature">크롤링·수집</li>
+          <li class="w3" data-g="stack">CodeIgniter</li>
+          <li class="w3" data-g="domain">쇼핑몰·입점 SCM</li>
+          <li class="w3" data-g="ai">엑셀 업무 자동화</li>
+          <li class="w3" data-g="feature">엑셀 업로드·다운로드</li>
+          <li class="w3" data-g="stack">Docker</li>
+          <li class="w3" data-g="domain">업무 워크플로우 SaaS</li>
+          <li class="w3" data-g="ai">LLM·AI</li>
+          <li class="w3" data-g="feature">대시보드</li>
+          <li class="w3" data-g="stack">React</li>
+          <li class="w2" data-g="domain">도시가스 고객접수</li>
+          <li class="w3" data-g="ai">업무 자동화</li>
+          <li class="w3" data-g="feature">예약</li>
+          <li class="w2" data-g="stack">TypeScript</li>
+          <li class="w2" data-g="domain">배달 플랫폼</li>
+          <li class="w3" data-g="ai">노션 연동</li>
+          <li class="w3" data-g="feature">정산</li>
+          <li class="w2" data-g="stack">Next.js</li>
+          <li class="w2" data-g="domain">소상공인 업무 ERP</li>
+          <li class="w2" data-g="ai">수기·종이 업무 디지털화</li>
+          <li class="w3" data-g="feature">통계·분석</li>
+          <li class="w2" data-g="stack">Node.js</li>
+          <li class="w2" data-g="domain">연구 데이터 플랫폼</li>
+          <li class="w2" data-g="ai">업무 시스템 도입</li>
+          <li class="w3" data-g="feature">결제·PG 연동</li>
+          <li class="w2" data-g="stack">FastAPI</li>
+          <li class="w2" data-g="domain">콜센터(CTI)</li>
+          <li class="w2" data-g="ai">사내 AI 활용 설계</li>
+          <li class="w2" data-g="feature">문자·알림톡</li>
+          <li class="w2" data-g="stack">AWS</li>
+          <li class="w2" data-g="domain">커머스 시장 분석</li>
+          <li class="w2" data-g="ai">직원 교육</li>
+          <li class="w2" data-g="feature">주문 관리</li>
+          <li class="w2" data-g="stack">Notion API</li>
+          <li class="w2" data-g="domain">스포츠클럽 운영</li>
+          <li class="w2" data-g="ai">AI 에이전트</li>
+          <li class="w2" data-g="feature">캘린더·일정</li>
+          <li class="w1" data-g="stack">PostgreSQL</li>
+          <li class="w2" data-g="domain">인쇄·각인 주문</li>
+          <li class="w2" data-g="ai">n8n</li>
+          <li class="w2" data-g="feature">지도·위치</li>
+          <li class="w1" data-g="stack">Redis</li>
+          <li class="w2" data-g="domain">일정 앱</li>
+          <li class="w1" data-g="ai">RAG 챗봇</li>
+          <li class="w2" data-g="feature">배차·탁송</li>
+          <li class="w1" data-g="stack">Supabase</li>
+          <li class="w1" data-g="domain">온라인 교육(LMS)</li>
+          <li class="w1" data-g="ai">이미지 생성</li>
+          <li class="w2" data-g="feature">스케줄러·배치</li>
+          <li class="w1" data-g="stack">Firebase</li>
+          <li class="w1" data-g="domain">여행·관광 예약</li>
+          <li class="w1" data-g="ai">텔레그램 봇</li>
+          <li class="w2" data-g="feature">권한 관리</li>
+          <li class="w1" data-g="stack">Java·Spring</li>
+          <li class="w1" data-g="domain">차량 렌트</li>
+          <li class="w1" data-g="ai">MCP</li>
+          <li class="w2" data-g="feature">재고 관리</li>
+          <li class="w1" data-g="stack">C#·ASP.NET</li>
+          <li class="w1" data-g="domain">중고차 홈서비스</li>
+          <li class="w2" data-g="feature">쿠폰·포인트</li>
+          <li class="w1" data-g="stack">Flutter</li>
+          <li class="w1" data-g="domain">모바일 청첩장</li>
+          <li class="w2" data-g="feature">보고서·출력</li>
+          <li class="w1" data-g="stack">React Native</li>
+          <li class="w2" data-g="feature">BOM·공정 관리</li>
+          <li class="w1" data-g="stack">Swift·Kotlin</li>
+          <li class="w2" data-g="feature">보험사 연동</li>
+          <li class="w1" data-g="stack">Electron</li>
+          <li class="w2" data-g="feature">딜러시스템(DMS) 연동</li>
+          <li class="w1" data-g="stack">Selenium·Playwright</li>
+          <li class="w1" data-g="feature">푸시 알림</li>
+          <li class="w1" data-g="stack">Claude API</li>
+          <li class="w1" data-g="feature">다국어</li>
+          <li class="w1" data-g="feature">채팅</li>
+          <li class="w1" data-g="feature">품질 검사</li>
+          <li class="w1" data-g="feature">LOT 추적</li>
+          <li class="w1" data-g="feature">바코드·QR</li>
+          <li class="w1" data-g="feature">OCR</li>
+          <li class="w1" data-g="feature">복지몰 연동</li>
+          <li class="w1" data-g="feature">택배 연동</li>
+          <li class="w1" data-g="feature">본인인증</li>
+          <li class="w1" data-g="feature">전자계약</li>
+          <li class="w1" data-g="feature">회계·전표</li>
+          <li class="w1" data-g="feature">인사·근태·급여</li>
+          <li class="w1" data-g="feature">견적서</li>
+          <li class="w1" data-g="feature">멀티테넌트 SaaS</li>
+          <li class="w1" data-g="feature">크롬 확장</li>
+          <li class="w1" data-g="feature">데스크톱 앱</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="voice-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">이용 사례</p>
+        <h2>먼저 써 본 대표님들 이야기</h2>
+      </div>
+      <div class="voices"><div class="voice-track"><div class="voice-set"><figure class="voice"><blockquote class="bubble"><p>요즘 세상에 아들처럼 편하게 물어볼 사람이 필요했는데, 너무 좋습니다.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">J</span><span><b>옥외광고업 J사 사장님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>작년에 사업이 어려워 인원을 줄여야 했어요. 그때 기술로 메울 수 있는 부분을 하나하나 짚어 주셨고, 지금은 인원이 절반인데도 일이 원활하게 돌아가요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">G</span><span><b>문구류 쇼핑몰 G사 대표님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>스마트팩토리 1차 지원사업이 완전히 실패해서 다음은 없다고 생각했어요. 그때 도움을 받아 다시 제대로 세팅할 수 있었어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">Y</span><span><b>프레스 제조업 Y사 부사장님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>엑셀에만 기대던 내부 관리를 디지털로 바꾸는 데 큰 도움을 받았어요. 진작 할 걸 그랬어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">R</span><span><b>수입 무역 R사 대표님</b><small>연간 기술고문 1년 차</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>마케팅에 필요한 DB를 모으는 방법을 자문받고 시스템까지 갖췄어요. PM처럼 개발사도 챙겨 주셔서 감사해요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">M</span><span><b>마케팅 대행 M사 대표님</b><small>연간 기술고문 3년 차</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>사무장님들의 단순 업무를 자동화하는 데서 시작해, 지금은 사무실 업무 전반의 디지털 전환을 함께 자문받고 있어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">C</span><span><b>C 법무사 사무소 법무사님</b><small>연간 기술고문 2년 차</small></span></figcaption></figure></div><div class="voice-set" aria-hidden="true"><figure class="voice"><blockquote class="bubble"><p>요즘 세상에 아들처럼 편하게 물어볼 사람이 필요했는데, 너무 좋습니다.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">J</span><span><b>옥외광고업 J사 사장님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>작년에 사업이 어려워 인원을 줄여야 했어요. 그때 기술로 메울 수 있는 부분을 하나하나 짚어 주셨고, 지금은 인원이 절반인데도 일이 원활하게 돌아가요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">G</span><span><b>문구류 쇼핑몰 G사 대표님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>스마트팩토리 1차 지원사업이 완전히 실패해서 다음은 없다고 생각했어요. 그때 도움을 받아 다시 제대로 세팅할 수 있었어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">Y</span><span><b>프레스 제조업 Y사 부사장님</b><small>Founder 기술고문</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>엑셀에만 기대던 내부 관리를 디지털로 바꾸는 데 큰 도움을 받았어요. 진작 할 걸 그랬어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">R</span><span><b>수입 무역 R사 대표님</b><small>연간 기술고문 1년 차</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>마케팅에 필요한 DB를 모으는 방법을 자문받고 시스템까지 갖췄어요. PM처럼 개발사도 챙겨 주셔서 감사해요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">M</span><span><b>마케팅 대행 M사 대표님</b><small>연간 기술고문 3년 차</small></span></figcaption></figure><figure class="voice"><blockquote class="bubble"><p>사무장님들의 단순 업무를 자동화하는 데서 시작해, 지금은 사무실 업무 전반의 디지털 전환을 함께 자문받고 있어요.</p></blockquote><figcaption><span class="voice-av" aria-hidden="true">C</span><span><b>C 법무사 사무소 법무사님</b><small>연간 기술고문 2년 차</small></span></figcaption></figure></div></div></div>
+    </div>
+  </section>
+
+  <section id="free">
+    <div class="wrap">
+      <div class="free-box">
+        <div class="stack">
+          <p class="eyebrow">사기 전에 먼저</p>
+          <h2>첫 상담은 무료예요</h2>
+          <p class="lead">연간권을 사기 전에 지금 고민 하나를 20분 동안 같이 봐요. 통화해 보고 도움이 됐을 때 결정하셔도 돼요.</p>
+        </div>
+        <ul class="free-list">
+          <li><b>1회 · 20분</b><span>회사 1곳당 한 번이에요</span></li>
+          <li><b>상담 브리핑 포함</b><span>통화 내용을 1장으로 정리해 드려요</span></li>
+          <li><b>결제 정보 필요 없어요</b><span>통화 후 연간권 여부를 정하시면 돼요</span></li>
+        </ul>
+        <a class="btn btn-primary" href="#free" data-book="free">무료 상담 신청</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="plans">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">가격</p>
+        <h2>필요할 때 전화할 사람, 1년에 20만원</h2>
+      </div>
+      <div class="plans">
+        <div class="card plan">
+          <div class="plan-name">연간 기술고문 <span class="badge badge-ok">60% 할인</span></div>
+          <div class="plan-price"><s class="price-was">50만원</s> 20만원 <small>/ 1년</small></div>
+          <p class="plan-terms">첫 상담 무료 · 통화 주 1–2회 · 회사 1곳 대표 1명</p>
+          <ul><li>예약 전화 상담 (회당 20분 안팎)</li><li>통화 후 상담 브리핑 1장</li><li>개발 견적·제안서 의견</li><li>SaaS·AI·자동화 상담</li><li>채용·외주 판단</li><li>메신저·이메일로 자료 전달</li></ul>
+          <a class="btn btn-secondary" href="#free" data-book="annual">연간 기술고문 신청</a>
+        </div>
+        <div class="card plan">
+          <div class="plan-name">Founder 기술고문</div>
+          <div class="plan-price">100만원 <small>/ 10년</small></div>
+          <p class="plan-terms">10년 · 통화 주 1–2회 · 갱신 없음</p>
+          <ul><li>연간 기술고문과 같은 범위</li><li>연간권 5년 값으로 10년 써요</li><li>통화 기록이 10년 동안 이어져요</li></ul>
+          <a class="btn btn-secondary" href="#free" data-book="founder">Founder 신청</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">진행 순서</p>
+        <h2>무료 상담부터 단골까지</h2>
+        <p class="lead">전화로 부족하면 직접 가서 봐요. 직원 업무 흐름을 봐야 하거나 업체 미팅에 같이 가야 할 때예요. 방문 자문은 비용이 따로 있어요.</p>
+      </div>
+      <ol class="timeline">
+        <li class="tl-item"><span class="tl-phase">무료</span><strong>무료 상담 신청</strong><p>고민 한 줄과 통화하기 편한 시간만 남겨 주세요</p></li>
+        <li class="tl-item"><span class="tl-phase">무료</span><strong>첫 통화 20분</strong><p>지금 고민 하나를 같이 보고 브리핑 1장을 보내 드려요</p></li>
+        <li class="tl-item"><span class="tl-phase">회원</span><strong>연간권 신청</strong><p>통화가 도움이 됐을 때 정하시면 돼요</p></li>
+        <li class="tl-item"><span class="tl-phase">회원</span><strong>필요할 때 통화 예약</strong><p>평일 아침 7시–저녁 10시, 한 번에 20분 안팎이에요</p></li>
+        <li class="tl-item"><span class="tl-phase">회원</span><strong>통화마다 브리핑</strong><p>결정한 것과 다음 할 일이 기록으로 쌓여요</p></li>
+        <li class="tl-item opt"><span class="tl-phase">선택</span><strong>방문 자문</strong><p>업무 흐름을 직접 봐야 할 때 찾아가요</p></li>
+        <li class="tl-item opt"><span class="tl-phase">선택</span><strong>DX·AX 프로젝트</strong><p>업무 분석, 자동화, 시스템 구축을 따로 진행해요</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">자주 묻는 질문</p><h2>궁금한 점</h2></div>
+      <div class="faq">
+        <details><summary>무료 상담은 어떻게 받나요?</summary><p>신청하시면 통화 시간을 잡아 드려요. 회사 1곳당 1회, 20분이에요. 통화 후 브리핑까지 보내 드리고, 연간권은 그다음에 정하시면 돼요.</p></details>
+        <details><summary>정말 아무 때나 전화할 수 있나요?</summary><p>예약 통화가 원칙이에요. 평일 아침 7시부터 저녁 10시까지 운영하고, 긴급 장애 대응 서비스는 아니에요. 장애가 나면 누구에게 무엇을 전달해야 하는지는 바로 정리해 드려요.</p></details>
+        <details><summary>상담 횟수 제한이 있나요?</summary><p>주 1–2회 통화할 수 있어요. 질문 개수를 기계적으로 세지는 않아요. 긴 조사, 문서 작성, 개발처럼 통화 범위를 넘는 일은 따로 안내해 드려요.</p></details>
+        <details><summary>AI에 물어보는 것과 뭐가 다른가요?</summary><p>AI는 선택지를 알려줘요. 기술고문은 회사 상황, 예산, 지금 쓰는 시스템, 직원 역량을 알고 어떤 선택이 현실적인지 같이 판단해요.</p></details>
+        <details><summary>개발도 해주시나요?</summary><p>회원권에는 개발이 들어 있지 않아요. 개발이 정말 필요하면 범위부터 정리하고, 원하시면 별도 프로젝트로 진행할 수 있어요.</p></details>
+        <details><summary>결국 자기 회사 제품을 팔려는 것 아닌가요?</summary><p>안 해도 되면 안 하는 쪽, 있는 도구로 되면 있는 도구를 먼저 권해요. 저희나 관계사 제품을 권할 때는 브리핑에 그 사실을 꼭 적어 드려요.</p></details>
+        <details><summary>법률이나 세무도 물어볼 수 있나요?</summary><p>법률·세무 판단은 하지 않아요. 대신 기술 쟁점을 따로 떼어 내고, 어떤 전문가에게 무엇을 물어보면 되는지 정리해 드려요.</p></details>
+        <details><summary>Founder 기술고문의 10년은 어떻게 보장되나요?</summary><p>10년 또는 서비스 운영 기간 중 짧은 쪽이에요. 서비스를 중간에 접으면 남은 기간만큼 환불해 드려요.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="final">
+        <p class="eyebrow" style="color: inherit; opacity: .7">나의 기술고문 아저씨</p>
+        <h2>필요할 때 그냥 전화하세요</h2>
+        <p>첫 상담 1회 무료 · 그다음 연 20만원(정가 50만원) · Founder 100만원</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="#free" data-book="free">첫 상담 무료로 받기</a>
+          <a class="btn btn-secondary" href="#plans">가격 보기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="brand" style="font-size:14px">
+      <svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="52 81 1056 1056" aria-hidden="true"><defs><linearGradient id="lez-mark-landing" gradientUnits="userSpaceOnUse" x1="0" y1="126" x2="0" y2="1088"><stop offset="0" stop-color="#5fe2cf"/><stop offset="0.5" stop-color="#2ed8c3"/><stop offset="1" stop-color="#0fa08d"/></linearGradient></defs><path fill="url(#lez-mark-landing)" d="M270.4 1074.1C276.8 1057.4 339.1 1014.2 358.3 956.8C384.3 878.5 384.7 787 395.6 705.1C400.6 667.3 413.6 631.9 421.2 594.8C422.5 588.4 407.5 584.6 408.8 578.2C414 553 428.8 526.8 440.7 504.2C513.6 364.7 650 315.1 778.8 240.3C813.7 220 849.9 195.6 878.5 167C888.4 157.1 906 130.2 918.7 126.8C938.7 143.4 893.2 303.1 879.7 330.2C784.1 521.8 565.7 570 457.1 757.4C459.7 763.4 489.4 724.1 495 718.5C521.7 691.8 550.1 668.9 580.6 647.1C663.7 587.6 766.6 563.1 851.4 501.9C864.2 492.7 931.1 424.1 935.4 424.1C951.8 443.9 918 469.4 913.1 477.6C907.4 487.2 906.8 504.3 903.8 515.3C859.2 677.1 738.8 699.6 602.5 758C562.9 775 520.5 798 490 828.5C487.3 831.2 483 833.4 485.5 837C489 840.5 499.2 854.6 504 854.9C509.3 855.3 582.6 826.5 596.3 822.8C658.1 805.9 721.7 801.8 782.8 780.3C813.8 769.3 870.7 728.3 890.2 723.5C890.5 753.5 863.4 794.8 848.7 820.2C787.2 926.1 683.3 972 566.9 987.4C519.5 993.7 472 988.9 425.3 1000.8C367.9 1015.4 325.1 1056.6 270.4 1074.1Z"/></svg>
+      운영 가볍지이지
+    </span>
+    <span>사업자 정보·이용약관·개인정보 처리방침은 공개 전에 채워요</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var cloud = document.getElementById('cloud');
+  var btns = document.querySelectorAll('.seg button');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.dataset.f;
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      cloud.classList.toggle('filtered', f !== 'all');
+      cloud.querySelectorAll('li').forEach(function (li) { li.classList.toggle('on', li.dataset.g === f); });
+    });
+  });
+})();
+</script>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  function isDark() { var t = root.getAttribute('data-theme'); return t ? t === 'dark' : mq.matches; }
+  function paint() {
+    var d = isDark();
+    document.body.classList.toggle('is-dark', d);
+    btn.setAttribute('aria-label', d ? '라이트 모드로 보기' : '다크 모드로 보기');
+  }
+  try { var saved = localStorage.getItem('theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var next = isDark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    paint();
+  });
+  mq.addEventListener('change', paint);
+  new MutationObserver(paint).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  paint();
+})();
+</script>
+
+<dialog class="book" id="book" aria-labelledby="book-title" data-step="1">
+  <div class="book-wrap">
+    <aside class="book-info">
+      <span class="book-av char-face" aria-hidden="true"></span>
+      <p class="book-host">나의 기술고문 아저씨</p>
+      <h2 id="book-title">무료 상담</h2>
+      <ul class="book-meta">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>20분</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>전화 상담</li>
+        <li class="book-when-li"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span id="book-when"></span></li>
+      </ul>
+      <p class="book-desc">지금 고민 하나를 같이 봐요. 통화가 끝나면 상담 브리핑 1장을 보내 드려요.</p>
+    </aside>
+    <div class="book-main">
+      <button type="button" class="book-x" data-close aria-label="예약 창 닫기">×</button>
+      <div id="step-pick" class="step-pick">
+        <div class="cal">
+          <h3>날짜와 시간을 골라 주세요</h3>
+          <div class="cal-nav"><button type="button" id="cal-prev" aria-label="이전 달">‹</button><strong id="cal-title"></strong><button type="button" id="cal-next" aria-label="다음 달">›</button></div>
+          <div class="cal-dow" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <p class="note tz">한국 표준시(KST) 기준 · 평일 아침 7시–저녁 10시</p>
+        </div>
+        <div class="times">
+          <p class="times-head" id="book-times-head">날짜를 골라 주세요</p>
+          <div class="times-list" id="book-times"></div>
+        </div>
+      </div>
+      <div id="step-form" hidden>
+        <button type="button" class="book-back" id="book-back">← 날짜·시간 다시 고르기</button>
+        <h3>대표님 정보를 알려 주세요</h3>
+        <form id="book-form" novalidate>
+          <div class="fields-grid">
+            <label class="field">이름<input id="bk-name" name="name" required maxlength="40" autocomplete="name"></label>
+            <label class="field">회사명<input id="bk-company" name="company" required maxlength="60" autocomplete="organization"></label>
+            <label class="field">업종<input id="bk-industry" name="industry" maxlength="40" placeholder="예: 제조, 쇼핑몰, 무역"></label>
+            <label class="field">휴대폰<input id="bk-phone" name="phone" required type="tel" inputmode="tel" pattern="0[0-9\- ]{8,12}" placeholder="010-0000-0000" autocomplete="tel"></label>
+            <label class="field full">이메일 (캘린더 초대를 보내 드려요)<input id="bk-email" name="email" required type="email" maxlength="80" autocomplete="email"></label>
+            <label class="field full">어떤 고민인지 한 줄로 알려 주세요<textarea id="bk-topic" name="topic" required maxlength="500" placeholder="예: 엑셀로 하는 재고 관리를 바꾸고 싶어요"></textarea></label>
+            <label class="field full">관심 상품<select id="bk-product" name="product"><option value="free">무료 상담만</option><option value="annual">연간 기술고문</option><option value="founder">Founder 기술고문</option></select></label>
+          </div>
+          <label class="hp" aria-hidden="true">웹사이트<input id="bk-website" name="website" tabindex="-1" autocomplete="off"></label>
+          <div class="consent">
+            <input id="bk-consent" name="consent" type="checkbox" required>
+            <div><label for="bk-consent">개인정보 수집·이용에 동의해요 (필수)</label>
+              <details><summary>자세히 보기</summary>수집 항목: 이름, 회사명, 업종, 휴대폰, 이메일, 상담 내용 · 목적: 상담 예약과 안내 · 보관: 상담 후 1년 뒤 파기 · 동의하지 않으면 예약할 수 없어요.</details>
+            </div>
+          </div>
+          <div class="book-foot">
+            <p class="book-msg" id="book-msg" role="status"></p>
+            <button class="btn btn-primary" id="book-submit" type="submit">예약하기</button>
+          </div>
+        </form>
+      </div>
+      <div id="step-done" class="book-done" hidden>
+        <span class="done-check" aria-hidden="true">✓</span>
+        <h3>예약했어요</h3>
+        <p id="done-when"></p>
+        <p class="note">이메일로 캘린더 초대를 보냈어요. 그 시간에 전화드릴게요.</p>
+        <button type="button" class="btn btn-secondary" data-close>닫기</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+<script>window.ADVISOR_API = 'https://flow.illey.me/webhook';</script>
+<script src="assets/slots.js"></script>
+<script src="assets/booking.js"></script>
+
+</body>
+</html>
