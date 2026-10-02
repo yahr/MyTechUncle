@@ -26,11 +26,19 @@ function parseDate(date) {
 // 그 날짜 KST 00:00 의 실제 시각(ms)
 const kstMidnight = (dayUtc) => dayUtc - KST;
 
+// 막는 일정: 상태가 '바쁨'이거나, 제목에 '휴무'·'상담불가'가 있는 일정
+const OFF_TITLE = /휴무|상담\s*불가/;
+const blocks = (e) => OFF_TITLE.test(e.summary || '') || e.transparency !== 'transparent';
+const isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');
+
 function busyRanges(events) {
   return (events || [])
-    .filter((e) => !e.allDay && e.transparency !== 'transparent' && e.start && e.end && String(e.start).includes('T'))
+    .filter((e) => !isAllDay(e) && blocks(e) && e.start && e.end)
     .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);
 }
+
+// 그날에 걸친 종일 일정 중 막는 일정이 있으면 하루 전체 휴무
+const dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start && blocks(e));
 
 function dayAllowed(dayUtc, now, cfg) {
   if (dayUtc == null) return false;
@@ -46,7 +54,7 @@ function bookedCount(events, cfg) {
 function computeSlots({ date, now, events, cfg = CFG }) {
   const dayUtc = parseDate(date);
   if (!dayAllowed(dayUtc, now, cfg)) return [];
-  if (bookedCount(events, cfg) >= cfg.maxPerDay) return [];
+  if (dayBlocked(events) || bookedCount(events, cfg) >= cfg.maxPerDay) return [];
   const busy = busyRanges(events);
   const base = kstMidnight(dayUtc);
   const out = [];
