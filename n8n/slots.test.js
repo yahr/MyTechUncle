@@ -38,27 +38,18 @@ test('바쁜 일정과 겹치는 슬롯은 빠진다(경계는 겹치지 않음)
   assert.ok(r.includes('11:00'));
 });
 
-test('투명(한가함) 일정과 한가함 종일 일정은 막지 않는다', () => {
-  const events = [
-    { start: '2026-10-05T10:00:00+09:00', end: '2026-10-05T11:00:00+09:00', transparency: 'transparent' },
-    { start: '2026-10-05', end: '2026-10-06', allDay: true, transparency: 'transparent', summary: '회사 창립일' },
-  ];
-  assert.strictEqual(computeSlots({ date: '2026-10-05', now: NOW, events }).length, 30);
-});
-
-test('종일 일정은 바쁨이어도 제목에 휴무·상담불가가 없으면 막지 않는다', () => {
-  // 실제 캘린더의 기간형 일정(예: 공부 계획 9/25~10/9)이 바쁨으로 들어 있어도 예약은 열려 있어야 한다
-  const events = [{ start: '2026-09-25', end: '2026-10-09', allDay: true, transparency: 'opaque', summary: '[JLPT N4] 7~8주차' }];
-  assert.strictEqual(computeSlots({ date: '2026-10-05', now: NOW, events }).length, 30);
-});
-
-test('제목에 휴무·상담불가가 있으면 한가함이어도 막는다', () => {
-  const dayOff = [{ start: '2026-10-05', end: '2026-10-06', allDay: true, transparency: 'transparent', summary: '휴무' }];
-  assert.deepStrictEqual(computeSlots({ date: '2026-10-05', now: NOW, events: dayOff }), []);
-  const timeOff = [{ start: '2026-10-05T13:00:00+09:00', end: '2026-10-05T15:00:00+09:00', transparency: 'transparent', summary: '[상담 불가] 병원' }];
-  const r = computeSlots({ date: '2026-10-05', now: NOW, events: timeOff });
+test('전용 캘린더라서 시간 일정은 상태(한가함)와 상관없이 막는다', () => {
+  const events = [{ start: '2026-10-05T13:00:00+09:00', end: '2026-10-05T15:00:00+09:00', transparency: 'transparent', summary: '병원' }];
+  const r = computeSlots({ date: '2026-10-05', now: NOW, events });
   assert.ok(!r.includes('13:00') && !r.includes('14:30'));
   assert.ok(r.includes('12:30') && r.includes('15:00'));
+});
+
+test('종일 일정은 그날 전체를 막는다 (여러 날짜에 걸쳐도)', () => {
+  const one = [{ start: '2026-10-05', end: '2026-10-06', allDay: true, transparency: 'transparent', summary: '휴무' }];
+  assert.deepStrictEqual(computeSlots({ date: '2026-10-05', now: NOW, events: one }), []);
+  const trip = [{ start: '2026-10-05', end: '2026-10-08', allDay: true, summary: '출장' }];
+  assert.deepStrictEqual(computeSlots({ date: '2026-10-06', now: NOW, events: trip }), []);
 });
 
 test('하루 상담 예약이 한도(8건)를 채우면 그날은 마감', () => {

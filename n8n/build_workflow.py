@@ -7,7 +7,9 @@ import json, os, sys, uuid, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 SLOTS = open(os.path.join(HERE, 'slots.js')).read().split("if (typeof module")[0]
 ORIGINS = 'https://yahr.github.io,http://localhost:8766'
-CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
+# 예약 전용 캘린더 'MyTechUncle' (light.ez.jjack@gmail.com 계정)
+CAL_ID = '24f8c32d583ad5ade6f55c65bb7bba3c6f1af3b8838106c3161342b65c2907bb@group.calendar.google.com'
+CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID.replace('@', '%40') + '/events'
 TG_CRED = {'telegramApi': {'id': 'B2fSwl8ppGfhN8QZ', 'name': 'Telegram (@illey_secretary_bot)'}}
 CHAT_ID = '6630606379'
 CAL_CRED = {'googleCalendarOAuth2Api': {'id': 'QNKMHoO0PJUojtFo', 'name': 'Google Calendar account - light.ez.jjack@gmail.com'}}

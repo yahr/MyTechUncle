@@ -26,20 +26,17 @@ function parseDate(date) {
 // 그 날짜 KST 00:00 의 실제 시각(ms)
 const kstMidnight = (dayUtc) => dayUtc - KST;
 
-// 막는 일정: 상태가 '바쁨'이거나, 제목에 '휴무'·'상담불가'가 있는 일정
-const OFF_TITLE = /휴무|상담\s*불가/;
-const blocks = (e) => OFF_TITLE.test(e.summary || '') || e.transparency !== 'transparent';
+// 예약 전용 캘린더(MyTechUncle)라서 그 캘린더에 있는 일정은 상태와 상관없이 모두 막는다.
 const isAllDay = (e) => e.allDay || !String(e.start || '').includes('T');
 
 function busyRanges(events) {
   return (events || [])
-    .filter((e) => !isAllDay(e) && blocks(e) && e.start && e.end)
+    .filter((e) => !isAllDay(e) && e.start && e.end)
     .map((e) => [new Date(e.start).getTime(), new Date(e.end).getTime()]);
 }
 
-// 그날에 걸친 종일 일정 중 제목에 '휴무'·'상담불가'가 있으면 하루 전체 휴무
-// (기간형 종일 일정은 바쁨이어도 흔해서 제목으로만 판단한다)
-const dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start && OFF_TITLE.test(e.summary || ''));
+// 그날에 걸친 종일 일정이 있으면 하루 전체 휴무 (조회 범위가 그날이라 걸친 것만 들어온다)
+const dayBlocked = (events) => (events || []).some((e) => isAllDay(e) && e.start);
 
 function dayAllowed(dayUtc, now, cfg) {
   if (dayUtc == null) return false;
