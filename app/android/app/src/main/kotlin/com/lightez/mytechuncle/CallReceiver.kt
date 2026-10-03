@@ -87,7 +87,7 @@ object CallerCard {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
             PixelFormat.TRANSLUCENT,
-        ).apply { gravity = Gravity.TOP; x = 0; y = dp(72); horizontalMargin = 0.04f }
+        ).apply { gravity = Gravity.TOP; x = 0; y = dp(100); horizontalMargin = 0.04f }
         runCatching { (ctx.getSystemService(Context.WINDOW_SERVICE) as WindowManager).addView(card, params); view = card }
     }
 
