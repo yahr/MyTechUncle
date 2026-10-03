@@ -12,6 +12,16 @@ const apiBase = String.fromEnvironment('API_BASE');
 const apiToken = String.fromEnvironment('API_TOKEN');
 const native = MethodChannel('mtu/caller');
 
+/// 지금 전화 상태: ringing(울리는 중) / offhook(통화 중) / idle. 안드로이드가 바뀔 때마다 알려 줘요.
+final callState = ValueNotifier<String>('idle');
+
+void listenCallState() {
+  native.setMethodCallHandler((c) async {
+    if (c.method == 'callState') callState.value = '${c.arguments}';
+  });
+  native.invokeMethod<String>('callState').then((s) => callState.value = s ?? 'idle').catchError((_) => 'idle');
+}
+
 typedef Rec = Map<String, dynamic>;
 
 class Store extends ChangeNotifier {

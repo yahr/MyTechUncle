@@ -23,7 +23,9 @@ import org.json.JSONObject
 class CallReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val ctx = context.applicationContext
-        when (intent.getStringExtra(TelephonyManager.EXTRA_STATE)) {
+        val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+        callStateName(state)?.let { MainActivity.onCallState(it) }
+        when (state) {
             TelephonyManager.EXTRA_STATE_RINGING -> {
                 // 번호는 READ_CALL_LOG 권한이 있을 때만 들어온다(번호 없는 방송이 한 번 더 온다)
                 val number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER) ?: return

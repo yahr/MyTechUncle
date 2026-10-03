@@ -12,6 +12,7 @@ const mint = Color(0xFF0FA08D), mintInk = Color(0xFF0B7F70), ink = Color(0xFF162
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   store.init();
+  listenCallState();
   runApp(const App());
 }
 
@@ -60,6 +61,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState s) {
     if (s == AppLifecycleState.resumed) {
       _onResume();
+      native.invokeMethod<String>('callState').then((v) => callState.value = v ?? 'idle').catchError((_) => 'idle');
       store.refresh(); // 앱으로 돌아올 때마다 새로 받아 수신 카드 목록도 갱신
     }
   }
@@ -76,7 +78,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     } catch (_) {}
   }
 
-  bool get cardReady => perms['phone'] == true && perms['callLog'] == true && perms['overlay'] == true;
+  bool get cardReady => perms['phone'] == true && perms['callLog'] == true && perms['answer'] == true && perms['overlay'] == true;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -129,8 +131,8 @@ class _PermBanner extends StatelessWidget {
               const Text('고객에게 전화가 오면 누구인지, 구독, 지난 상담이 화면 위에 떠요.', style: TextStyle(color: ink2)),
               const SizedBox(height: 12),
               Wrap(spacing: 8, runSpacing: 8, children: [
-                if (perms['phone'] != true || perms['callLog'] != true)
-                  FilledButton(onPressed: () async { await native.invokeMethod('requestPhone'); onChanged(); }, child: const Text('전화·통화 기록 권한')),
+                if (perms['phone'] != true || perms['callLog'] != true || perms['answer'] != true)
+                  FilledButton(onPressed: () async { await native.invokeMethod('requestPhone'); onChanged(); }, child: const Text('전화·통화 기록·전화 받기 권한')),
                 if (perms['overlay'] != true)
                   FilledButton.tonal(onPressed: () => native.invokeMethod('openOverlaySettings'), child: const Text('다른 앱 위에 표시 켜기')),
               ]),

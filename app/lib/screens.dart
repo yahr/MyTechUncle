@@ -183,6 +183,7 @@ class CustomerPage extends StatelessWidget {
             appBar: AppBar(actions: [
               IconButton(tooltip: '고객 정보 수정', icon: const Icon(Icons.edit_outlined), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerForm(row: c)))),
             ]),
+            bottomNavigationBar: const _CallBar(),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ConsultationForm(customerId: c['id']))),
               icon: const Icon(Icons.edit_note),
@@ -428,5 +429,42 @@ class _SubscriptionFormState extends State<SubscriptionForm> {
           const SizedBox(height: 8),
           FilledButton(onPressed: saving ? null : _save, child: Text(saving ? '저장하는 중' : '저장')),
         ]),
+      );
+}
+
+/// 전화가 울리면 [거절][받기], 통화 중이면 [통화 끊기]. 통화가 없으면 아무것도 안 보여요.
+class _CallBar extends StatelessWidget {
+  const _CallBar();
+
+  Future<void> _do(BuildContext context, String method, String fail) async {
+    final ok = await native.invokeMethod<bool>(method).catchError((_) => false);
+    if (ok != true && context.mounted) _toast(context, fail);
+  }
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder<String>(
+        valueListenable: callState,
+        builder: (context, state, _) {
+          if (state == 'idle') return const SizedBox.shrink();
+          const red = Color(0xFFC0392B), green = Color(0xFF22A06B);
+          ButtonStyle style(Color c) => FilledButton.styleFrom(backgroundColor: c, minimumSize: const Size.fromHeight(56),
+              textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700));
+          return SafeArea(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: Color(0xFFE1E6EC)))),
+              child: state == 'ringing'
+                  ? Row(children: [
+                      Expanded(child: FilledButton.icon(style: style(red), onPressed: () => _do(context, 'endCall', '거절하지 못했어요. 통화 화면에서 거절해 주세요'),
+                          icon: const Icon(Icons.call_end), label: const Text('거절'))),
+                      const SizedBox(width: 12),
+                      Expanded(child: FilledButton.icon(style: style(green), onPressed: () => _do(context, 'answerCall', '받지 못했어요. 통화 화면에서 받아 주세요'),
+                          icon: const Icon(Icons.call), label: const Text('받기'))),
+                    ])
+                  : FilledButton.icon(style: style(red), onPressed: () => _do(context, 'endCall', '끊지 못했어요. 통화 화면에서 끊어 주세요'),
+                      icon: const Icon(Icons.call_end), label: const Text('통화 끊기')),
+            ),
+          );
+        },
       );
 }
