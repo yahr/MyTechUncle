@@ -11,7 +11,7 @@ ORIGINS = 'https://yahr.github.io,http://localhost:8766'
 CAL_ID = '24f8c32d583ad5ade6f55c65bb7bba3c6f1af3b8838106c3161342b65c2907bb@group.calendar.google.com'
 CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID.replace('@', '%40') + '/events'
 TG_CRED = {'telegramApi': {'id': 'B2fSwl8ppGfhN8QZ', 'name': 'Telegram (@illey_secretary_bot)'}}
-CHAT_ID = '6630606379'
+CHAT_ID = '-1003659059794'  # 텔레그램 채널 '나의 기술고문 알림' (봇 @illey_secretary_bot 관리자)
 CAL_CRED = {'googleCalendarOAuth2Api': {'id': 'QNKMHoO0PJUojtFo', 'name': 'Google Calendar account - light.ez.jjack@gmail.com'}}
 NAME = '나의기술고문_무료상담_예약'
 
