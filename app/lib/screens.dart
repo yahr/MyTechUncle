@@ -45,7 +45,7 @@ class _ApplicationsTabState extends State<ApplicationsTab> {
         child: RefreshIndicator(
           onRefresh: store.refresh,
           child: rows.isEmpty
-              ? ListView(children: [_empty('신청이 없어요')])
+              ? ListView(children: [_empty(store.loading ? '불러오는 중이에요' : '신청이 없어요')])
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
                   itemCount: rows.length,
@@ -144,7 +144,7 @@ class _CustomersTabState extends State<CustomersTab> {
         child: RefreshIndicator(
           onRefresh: store.refresh,
           child: rows.isEmpty
-              ? ListView(children: [_empty('고객이 없어요')])
+              ? ListView(children: [_empty(store.loading ? '불러오는 중이에요' : '고객이 없어요')])
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
                   itemCount: rows.length,

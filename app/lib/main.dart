@@ -58,7 +58,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState s) {
-    if (s == AppLifecycleState.resumed) _onResume();
+    if (s == AppLifecycleState.resumed) {
+      _onResume();
+      store.refresh(); // 앱으로 돌아올 때마다 새로 받아 수신 카드 목록도 갱신
+    }
   }
 
   // 권한 상태 확인 + 수신 카드를 눌러 들어왔으면 그 고객으로
