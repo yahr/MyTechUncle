@@ -72,7 +72,7 @@ def approvals(state):
             api('POST', '/approval-done', {'id': a['id'], 'status': 'skipped', 'result': 'no reel'})
             say('올릴 릴스가 없어요. 드라이브에 배경 영상을 먼저 올려 주세요.')
             continue
-        b = waiting[-1]
+        b = waiting[0]  # 지정 안 하면 안 올린 것 중 먼저 만든 편부터
         api('POST', '/approval-done', {'id': a['id'], 'status': 'posting', 'result': b['id']})  # 중복 게시 방지: 먼저 표시
         log(f'post {b["id"]} {b["mp4"]}')
         try:

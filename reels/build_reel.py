@@ -124,6 +124,12 @@ window.__timelines["main"] = tl;
 '''
 
 
+def compress(src, dst):
+    """텔레그램 봇 한도(50MB) 안으로: 6Mbps 상한, 25초면 약 20MB"""
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-c:v', 'libx264', '-preset', 'medium', '-crf', '23',
+                    '-maxrate', '6M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', dst], check=True)
+
+
 def build(bg, ep_id):
     eps = {e['id']: e for e in json.load(open(os.path.join(HERE, 'episodes.json')))}
     ep = eps[ep_id]
@@ -140,7 +146,7 @@ def build(bg, ep_id):
     subprocess.run(['npm', 'run', 'render'], cwd=work, check=True, capture_output=True)
     renders = sorted(os.listdir(os.path.join(work, 'renders')))
     mp4 = os.path.join(HERE, 'out', f'{ep_id}-{stamp}.mp4')
-    shutil.copy(os.path.join(work, 'renders', renders[-1]), mp4)
+    compress(os.path.join(work, 'renders', renders[-1]), mp4)
     cover = mp4[:-4] + '-cover.png'  # 첫 질문과 답이 보이는 순간
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(items[1]['show'] + 0.8), '-i', mp4, '-frames:v', '1', cover], check=True)
     return mp4, cover, total
