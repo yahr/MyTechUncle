@@ -49,7 +49,8 @@ def new_videos(state):
         log(f'download {f["name"]} -> {ep["id"]}')
         try:
             open(local, 'wb').write(api('GET', f'/drive-file?id={f["id"]}', raw=True, timeout=600))
-            out = subprocess.run([sys.executable, os.path.join(HERE, 'build_reel.py'), local, ep['id']],
+            ep = dict(ep, label=f'대표님 질문 #{len(state["built"]) + 1}')  # 화면 번호는 만든(올릴) 순서대로
+            out = subprocess.run([sys.executable, os.path.join(HERE, 'build_reel.py'), local, ep['id'], ep['label']],
                                  capture_output=True, text=True, check=True, timeout=1800).stdout.strip().splitlines()[-1]
             res = json.loads(out)
             json.dump(dict(ep, built=res['mp4'], bg=f['name']), open(res['mp4'][:-4] + '.json', 'w'), ensure_ascii=False, indent=2)

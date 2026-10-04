@@ -1,5 +1,5 @@
 """배경 영상 1개 + 대화 대본 1편 → 나의 기술고문 아저씨 대화 릴스 (1080x1920)
-   python3 reels/build_reel.py <배경영상> <에피소드 id>     -> reels/out/<id>-<시각>.mp4 + 커버 png
+   python3 reels/build_reel.py <배경영상> <에피소드 id> [화면 라벨]  -> reels/out/<id>-<시각>.mp4 + 커버 png
    python3 reels/build_reel.py --selftest                   -> 타이밍 계산 확인
 대본은 reels/episodes.json. 배경은 세로로 맞춰 자르고 소리는 뺀다. 대본보다 짧으면 반복한다.
 """
@@ -130,9 +130,9 @@ def compress(src, dst):
                     '-maxrate', '6M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', dst], check=True)
 
 
-def build(bg, ep_id):
+def build(bg, ep_id, label=None):
     eps = {e['id']: e for e in json.load(open(os.path.join(HERE, 'episodes.json')))}
-    ep = eps[ep_id]
+    ep = dict(eps[ep_id], **({'label': label} if label else {}))  # 화면 번호는 올리는 순서대로
     items, end, total = schedule(ep['lines'])
     stamp = time.strftime('%Y%m%d-%H%M%S')
     work = os.path.join(HERE, 'work', f'{ep_id}-{stamp}')
@@ -166,5 +166,5 @@ if __name__ == '__main__':
     if sys.argv[1:] == ['--selftest']:
         selftest()
     else:
-        mp4, cover, total = build(sys.argv[1], sys.argv[2])
+        mp4, cover, total = build(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
         print(json.dumps({'mp4': mp4, 'cover': cover, 'seconds': total}, ensure_ascii=False))
