@@ -1,6 +1,6 @@
 """1분마다(launchd com.lightez.mtu-reels) 두 가지를 본다.
 1) 구글 드라이브 'MyTechUncle' 폴더에 새 영상 → 다음 승인 대본으로 릴스 렌더 → 텔레그램 채널에 미리보기
-2) 채널에 "올려"(또는 "올려 qa02") → 아직 안 올린 최신 릴스를 Aside 브라우저로 @mytechuncle 에 게시 → 링크 알림
+2) 채널에 "릴스 올려"(또는 "릴스 올려 qa02") → 아직 안 올린 최신 릴스를 Aside 브라우저로 @mytechuncle 에 게시 → 링크 알림
 상태: reels/state.json / 기록: reels/watch.log. 드라이브·텔레그램은 n8n(나의기술고문_릴스미리보기)을 거친다.
 """
 import fcntl, json, os, subprocess, sys, time, urllib.request
@@ -55,7 +55,7 @@ def new_videos(state):
             json.dump(dict(ep, built=res['mp4'], bg=f['name']), open(res['mp4'][:-4] + '.json', 'w'), ensure_ascii=False, indent=2)
             state['used'].append(ep['id'])
             state['built'].append({'id': ep['id'], 'mp4': res['mp4'], 'posted': ''})
-            preview(res['mp4'], f'[미리보기] {ep["label"]} — {ep["title"]} ({res["seconds"]}초)\n배경: {f["name"]}\n\n괜찮으면 이 채널에 "올려"라고 써 주세요.')
+            preview(res['mp4'], f'[미리보기] {ep["label"]} — {ep["title"]} ({res["seconds"]}초)\n배경: {f["name"]}\n\n괜찮으면 이 채널에 "릴스 올려"라고 써 주세요.')
             log(f'built {res["mp4"]}')
         except Exception as e:  # 같은 파일을 1분마다 다시 시도하지 않게 처리 목록에 넣고 알린다
             log(f'fail {f["name"]}: {e}')
@@ -84,7 +84,7 @@ def approvals(state):
         except Exception as e:
             log(f'post fail {b["id"]}: {e}')
             api('POST', '/approval-done', {'id': a['id'], 'status': 'failed', 'result': str(e)[:200]})
-            say(f'인스타에 올리지 못했어요({b["id"]}): {str(e)[:200]}\n다시 "올려"라고 써 주시면 다시 시도해요.')
+            say(f'인스타에 올리지 못했어요({b["id"]}): {str(e)[:200]}\n다시 "릴스 올려"라고 써 주시면 다시 시도해요.')
 
 
 def save(state):

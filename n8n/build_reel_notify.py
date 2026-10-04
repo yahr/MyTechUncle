@@ -4,7 +4,7 @@
    POST /webhook/mtu-api/notify        (json: {text})                          헤더 X-MTU-Token
    GET  /webhook/mtu-api/drive-list    드라이브 MyTechUncle 폴더의 영상 목록
    GET  /webhook/mtu-api/drive-file?id= 영상 내려받기
-   텔레그램 채널 "올려" -> mtu_reel_approvals(pending) / GET mtu-api/approvals / POST mtu-api/approval-done {id,status,result}
+   텔레그램 채널 "릴스 올려" -> mtu_reel_approvals(pending) / GET mtu-api/approvals / POST mtu-api/approval-done {id,status,result}
 """
 import json, os, sys, uuid, urllib.request
 
@@ -75,7 +75,7 @@ f_hook = get_hook('배경 파일 요청', 'mtu-api/drive-file', [0, 720])
 f_get = drive_get('드라이브 파일 받기', "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.query.id }}", [240, 720], {'alt': 'media'}, file=True)
 f_resp = node('파일 응답', 'n8n-nodes-base.respondToWebhook', 1.1, {'respondWith': 'binary', 'options': {}}, [480, 720])
 
-# 채널에 "올려"(또는 "올려 qa02")를 쓰면 승인 대기에 넣고, 맥이 1분마다 가져가 인스타에 올린다
+# 채널에 "릴스 올려"(또는 "릴스 올려 qa02")를 쓰면 승인 대기에 넣고, 맥이 1분마다 가져가 인스타에 올린다
 tbl = {'__rl': True, 'mode': 'id', 'value': APPROVALS}
 a_trig = node('채널 글 받기', 'n8n-nodes-base.telegramTrigger', 1.2, {'updates': ['channel_post', 'message'], 'additionalFields': {}}, [0, 960],
               credentials=TG, webhookId=str(uuid.uuid4()))
@@ -84,7 +84,7 @@ const out = [];
 for (const it of $input.all()) {
   const p = it.json.channel_post || it.json.message || {};
   const text = String(p.text || '').trim();
-  if (String((p.chat || {}).id || '') !== '%s' || !/^올려/.test(text)) continue;
+  if (String((p.chat || {}).id || '') !== '%s' || !/^릴스\\s*올려/.test(text)) continue;
   const ep = ((text.match(/qa\d+/i) || [''])[0]).toLowerCase();
   out.push({ json: { workspace_id: 'lightez', episode: ep, text: text.slice(0, 200), message_id: p.message_id || 0, status: 'pending', result: '' } });
 }
