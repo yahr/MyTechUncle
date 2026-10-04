@@ -3,6 +3,7 @@
 !/docs/
 !/n8n/
 !/app/
+!/reels/
 !/.gitignore
 !/README.md
 __pycache__/

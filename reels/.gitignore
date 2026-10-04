@@ -1,0 +1,7 @@
+inbox/
+out/
+work/
+state.json
+*.log
+.watch.lock
+__pycache__/
