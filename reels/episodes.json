@@ -118,7 +118,7 @@
     "id": "qa04",
     "label": "대표님 질문 #4",
     "title": "직원 ChatGPT, 회사 자료 넣어도 되나요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -155,7 +155,7 @@
     "id": "qa05",
     "label": "대표님 질문 #5",
     "title": "엑셀로 하는 일, 줄일 수 없을까요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -188,7 +188,7 @@
     "id": "qa06",
     "label": "대표님 질문 #6",
     "title": "고객 문의 답장, AI가 대신할 수 있나요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -225,7 +225,7 @@
     "id": "qa07",
     "label": "대표님 질문 #7",
     "title": "매일 쓰는 보고서, 자동으로 될까요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -258,7 +258,7 @@
     "id": "qa08",
     "label": "대표님 질문 #8",
     "title": "종이·카톡 주문, 한곳에 모을 수 없을까요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -291,7 +291,7 @@
     "id": "qa09",
     "label": "대표님 질문 #9",
     "title": "직원이 그만두면 일이 멈춰요",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
@@ -398,7 +398,7 @@
     "id": "qa12",
     "label": "대표님 질문 #12",
     "title": "회사 자료, 어디에 둬야 안전한가요?",
-    "approved": false,
+    "approved": true,
     "lines": [
       [
         "ceo",
