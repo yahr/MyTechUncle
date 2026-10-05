@@ -1,5 +1,6 @@
 """1분마다(launchd com.lightez.mtu-reels) 두 가지를 본다.
-1) 구글 드라이브 'MyTechUncle' 폴더에 새 영상 → 다음 승인 대본으로 릴스 렌더 → 텔레그램 채널에 미리보기
+1) 구글 드라이브 'MyTechUncle/숏폼' 폴더에 새 원본(목소리+손) → 자막 숏폼 렌더(shorts/build_short.py) → 텔레그램 미리보기
+   (말풍선 릴스 new_videos 는 2026-10-05 중지)
 2) 채널에 "릴스 올려"(또는 "릴스 올려 qa02") → 아직 안 올린 최신 릴스를 Aside 브라우저로 @mytechuncle 에 게시 → 링크 알림
 상태: reels/state.json / 기록: reels/watch.log. 드라이브·텔레그램은 n8n(나의기술고문_릴스미리보기)을 거친다.
 """
@@ -65,6 +66,36 @@ def new_videos(state):
         save(state)
 
 
+SHORTS_FOLDER = '12fEXpBBWyzfPOaQlIRNC_BT0DuQq8Zbx'  # 드라이브 MyTechUncle/숏폼
+
+
+def shorts(state):
+    """목소리+손 원본 → 자막 숏폼 (shorts/build_short.py). 어느 편인지는 대본과 비교해 스스로 찾는다"""
+    for f in api('GET', f'/drive-list?folder={SHORTS_FOLDER}').get('files', []):
+        key = 'shorts:' + f['id']
+        if key in state['processed']:
+            continue
+        local = os.path.join(HERE, '..', 'shorts', 'inbox', f['name'])
+        os.makedirs(os.path.dirname(local), exist_ok=True)
+        log(f'shorts download {f["name"]}')
+        try:
+            open(local, 'wb').write(api('GET', f'/drive-file?id={f["id"]}', raw=True, timeout=600))
+            out = subprocess.run([sys.executable, os.path.join(HERE, '..', 'shorts', 'build_short.py'), local],
+                                 capture_output=True, text=True, check=True, timeout=1800).stdout.strip().splitlines()[-1]
+            res = json.loads(out)
+            if res['episode']:
+                state['built'].append({'id': res['episode'], 'mp4': res['mp4'], 'posted': ''})
+                preview(res['mp4'], f'[미리보기] 숏폼 {res["episode"]} ({res["seconds"]}초) · 원본: {f["name"]}\n\n괜찮으면 이 채널에 "릴스 올려"라고 써 주세요.')
+            else:
+                preview(res['mp4'], f'[확인 필요] 대본과 맞는 편을 찾지 못했어요({f["name"]}). 자막은 받아쓴 그대로예요. Claude에게 캡션을 부탁해 주세요.')
+            log(f'shorts built {res["mp4"]} ep={res["episode"]} score={res["score"]}')
+        except Exception as e:
+            log(f'shorts fail {f["name"]}: {e}')
+            say(f'숏폼을 만들지 못했어요({f["name"]}): {str(e)[:300]}')
+        state['processed'].append(key)
+        save(state)
+
+
 def approvals(state):
     from post_instagram import post
     for a in api('GET', '/approvals').get('items', []):
@@ -101,7 +132,7 @@ def main():
     state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     for k in ('processed', 'used', 'warned', 'built'):
         state.setdefault(k, [])
-    for step in (approvals, new_videos):
+    for step in (approvals, shorts):  # 말풍선 릴스(new_videos)는 2026-10-05 중지
         try:
             step(state)
         except Exception as e:

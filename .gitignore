@@ -4,6 +4,7 @@
 !/n8n/
 !/app/
 !/reels/
+!/shorts/
 !/.gitignore
 !/README.md
 __pycache__/

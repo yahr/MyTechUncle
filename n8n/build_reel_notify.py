@@ -68,7 +68,7 @@ def get_hook(name, path, pos):
 
 l_hook = get_hook('배경 목록 요청', 'mtu-api/drive-list', [0, 480])
 l_get = drive_get('드라이브 폴더 목록', 'https://www.googleapis.com/drive/v3/files', [240, 480], {
-    'q': f"'{FOLDER}' in parents and mimeType contains 'video/' and trashed = false",
+    'q': "={{ \"'\" + ($json.query.folder || '%s') + \"' in parents and mimeType contains 'video/' and trashed = false\" }}" % FOLDER,
     'fields': 'files(id,name,size,createdTime)', 'orderBy': 'createdTime', 'pageSize': '100'})
 l_resp = node('목록 응답', 'n8n-nodes-base.respondToWebhook', 1.1, {'respondWith': 'json', 'responseBody': '={{ JSON.stringify($json) }}', 'options': {}}, [480, 480])
 f_hook = get_hook('배경 파일 요청', 'mtu-api/drive-file', [0, 720])
