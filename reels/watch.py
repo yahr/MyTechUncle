@@ -132,7 +132,7 @@ def main():
     state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     for k in ('processed', 'used', 'warned', 'built'):
         state.setdefault(k, [])
-    for step in (approvals, shorts):  # 말풍선 릴스(new_videos)는 2026-10-05 중지
+    for step in (approvals, new_videos, shorts):  # 말풍선 릴스 2026-10-07 재개(보완판)
         try:
             step(state)
         except Exception as e:

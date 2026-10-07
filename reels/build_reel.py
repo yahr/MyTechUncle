@@ -7,14 +7,14 @@ import html, json, math, os, shutil, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS = 1080, 1920, 30
-START = 1.4          # 제목이 먼저 보이는 시간
-TYPING = 0.6         # 아저씨가 입력 중(…) 표시
-END_CARD = 3.4       # 마무리 화면
+START = 0.3          # 첫 말풍선 (0초부터 제목이 떠 있다)
+TYPING = 0.45        # 아저씨가 입력 중(…) 표시
+END_CARD = 2.2       # 마무리 화면
 
 
 def hold_for(text):
-    """한 말풍선을 읽을 시간: 글자 수에 비례, 1.6~3.4초"""
-    return min(3.4, max(1.6, 0.065 * len(text) + 0.85))
+    """한 말풍선을 읽을 시간: 글자 수에 비례, 1.4~3.0초"""
+    return min(3.0, max(1.4, 0.06 * len(text) + 0.75))
 
 
 def schedule(lines):
@@ -96,27 +96,27 @@ body {{ font-family: "A2z", sans-serif; word-break: keep-all; color: #16202b; }}
 <div id="root" data-composition-id="main" data-start="0" data-duration="{total}" data-width="{W}" data-height="{H}">
 {chr(10).join(clips)}
 <div class="shade"></div>
-<div class="head"><span class="label">{esc(ep["label"])}</span><span class="title" id="title">{esc(ep["title"])}</span></div>
+<div class="head"><span class="label">{esc(ep["label"])}</span><span class="title" id="title">{esc(ep.get("hook") or ep["title"]).replace(chr(10), "<br>")}</span></div>
 <div class="chat">
 {chr(10).join(bubbles)}
 </div>
 <div class="end" id="end"><img src="assets/logo-vertical-light.png" alt="나의 기술고문 아저씨"><span class="pill">첫 상담 20분 무료</span>
-<span class="sub">저장해 두고 필요할 때 꺼내 보세요<br>프로필 링크에서 예약</span></div>
+<span class="sub">저장해 두고 필요할 때 꺼내 보세요<br>궁금한 건 댓글로 · 프로필 링크에서 예약</span></div>
 </div>
 <script>
 const tl = gsap.timeline({{ paused: true }});
 const E = "power3.out";
 const show = (s, t) => {{ tl.set(s, {{ display: "flex" }}, t); tl.fromTo(s, {{ opacity: 0, y: 40, scale: 0.94 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.35, ease: E }}, t); }};
 const hide = (s, t) => tl.set(s, {{ display: "none" }}, t);
-tl.fromTo(".head", {{ opacity: 0, y: -30 }}, {{ opacity: 1, y: 0, duration: 0.5, ease: E }}, 0.2);
+tl.set(".head", {{ opacity: 1 }}, 0);  // 첫 프레임부터 결론 제목
 gsap.utils.toArray(".typing .dot").forEach((d, i) => tl.to(d, {{ opacity: 1, duration: 0.2, yoyo: true, repeat: 1 }}, 0.01 * i));
 {chr(10).join(js)}
 tl.to([".chat", ".head"], {{ opacity: 0, duration: 0.3 }}, {end});
 tl.set([".chat", ".head"], {{ display: "none" }}, {end + 0.3:.2f});
 tl.fromTo("#end", {{ opacity: 0, y: 200 }}, {{ opacity: 1, y: 0, duration: 0.5, ease: "power3.inOut" }}, {end});
-tl.fromTo("#end img", {{ scale: 0.85 }}, {{ scale: 1, duration: 0.6, ease: E }}, {end + 0.3:.2f});
-tl.fromTo("#end .pill", {{ scale: 0.5, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.5, ease: E }}, {end + 0.8:.2f});
-tl.fromTo("#end .sub", {{ y: 24, opacity: 0 }}, {{ y: 0, opacity: 1, duration: 0.4, ease: E }}, {end + 1.2:.2f});
+tl.fromTo("#end img", {{ scale: 0.85 }}, {{ scale: 1, duration: 0.4, ease: E }}, {end + 0.2:.2f});
+tl.fromTo("#end .pill", {{ scale: 0.5, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.35, ease: E }}, {end + 0.45:.2f});
+tl.fromTo("#end .sub", {{ y: 24, opacity: 0 }}, {{ y: 0, opacity: 1, duration: 0.3, ease: E }}, {end + 0.7:.2f});
 tl.set({{}}, {{}}, {total});
 window.__timelines = window.__timelines || {{}};
 window.__timelines["main"] = tl;
@@ -158,7 +158,7 @@ def selftest():
     assert items[1]['typing'] == round(START + hold_for('가' * 20), 2)
     assert items[1]['show'] == round(items[1]['typing'] + TYPING, 2)
     assert end == round(items[1]['show'] + hold_for('나' * 10), 2) and total == round(end + END_CARD, 2)
-    assert hold_for('') == 1.6 and hold_for('x' * 100) == 3.4
+    assert hold_for('') == 1.4 and hold_for('x' * 100) == 3.0
     print('selftest ok')
 
 
