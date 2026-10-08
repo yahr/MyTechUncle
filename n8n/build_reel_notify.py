@@ -75,7 +75,7 @@ f_hook = get_hook('배경 파일 요청', 'mtu-api/drive-file', [0, 720])
 f_get = drive_get('드라이브 파일 받기', "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.query.id }}", [240, 720], {'alt': 'media'}, file=True)
 f_resp = node('파일 응답', 'n8n-nodes-base.respondToWebhook', 1.1, {'respondWith': 'binary', 'options': {}}, [480, 720])
 
-# 채널에 "릴스 올려"(또는 "릴스 올려 qa02")를 쓰면 승인 대기에 넣고, 맥이 1분마다 가져가 인스타에 올린다
+# 채널에 "올려"가 들어간 글(예: "릴스 올려", "#5 올려", "올려 qa02")을 쓰면 승인 대기에 넣고, 맥이 1분마다 가져가 인스타에 올린다
 tbl = {'__rl': True, 'mode': 'id', 'value': APPROVALS}
 a_trig = node('채널 글 받기', 'n8n-nodes-base.telegramTrigger', 1.2, {'updates': ['channel_post', 'message'], 'additionalFields': {}}, [0, 960],
               credentials=TG, webhookId=str(uuid.uuid4()))
@@ -84,7 +84,7 @@ const out = [];
 for (const it of $input.all()) {
   const p = it.json.channel_post || it.json.message || {};
   const text = String(p.text || '').trim();
-  if (String((p.chat || {}).id || '') !== '%s' || !/^릴스\\s*올려/.test(text)) continue;
+  if (String((p.chat || {}).id || '') !== '%s' || !/올려/.test(text)) continue;
   const ep = ((text.match(/qa\d+/i) || [''])[0]).toLowerCase();
   out.push({ json: { workspace_id: 'lightez', episode: ep, text: text.slice(0, 200), message_id: p.message_id || 0, status: 'pending', result: '' } });
 }
