@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI에게 먼저 맡길 글 체크리스트 · 나의 기술고문 아저씨</title>
+<meta name="description" content="작은 회사의 AX는 매주 쓰는 글 하나부터. AI에게 먼저 맡길 글을 고르는 5가지. 개발자 없는 회사 대표님용 체크리스트.">
+<link rel="icon" href="assets/favicon.ico?v=2" sizes="any">
+<style>
+@font-face { font-family: 'A2z'; font-weight: 700; font-display: swap; src: url(assets/a2z-700.woff2) format('woff2'); }
+:root {
+  color-scheme: light;
+  --bg-page: #f7f9fb; --bg-surface: #ffffff; --bg-subtle: #eef1f5;
+  --fg-primary: #16202b; --fg-secondary: #4c5866; --fg-muted: #6e7a88; --fg-brand: #0b7f70;
+  --stroke-default: #e1e6ec;
+  --font-head: 'A2z', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-body: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2; --fg-brand: #2ed8c3; --stroke-default: #2e3a48; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2; --fg-brand: #2ed8c3; --stroke-default: #2e3a48; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg-page); color: var(--fg-primary); font: 400 16px/1.75 var(--font-body); word-break: keep-all; overflow-wrap: anywhere; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
+a { color: var(--fg-brand); }
+.back { font-size: 14px; text-decoration: none; }
+h1 { font: 700 30px/1.3 var(--font-head); letter-spacing: -0.02em; margin: 16px 0 8px; }
+h2 { font: 700 19px/1.4 var(--font-head); margin: 40px 0 10px; }
+p, li { color: var(--fg-secondary); }
+.meta { font-size: 14px; color: var(--fg-muted); }
+.intro { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 16px; padding: 18px 20px; margin-top: 24px; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; background: var(--bg-surface); }
+th, td { border: 1px solid var(--stroke-default); padding: 10px 12px; text-align: left; vertical-align: top; color: var(--fg-secondary); }
+th { background: var(--bg-subtle); color: var(--fg-primary); font-weight: 600; white-space: nowrap; }
+ul { padding-left: 1.2em; }
+
+ol.check { list-style: none; padding: 0; counter-reset: c; display: grid; gap: 14px; margin-top: 24px; }
+ol.check > li { counter-increment: c; background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 16px; padding: 18px 20px 18px 64px; position: relative; }
+ol.check > li::before { content: counter(c); position: absolute; left: 20px; top: 18px; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-subtle); color: var(--fg-brand); font: 700 15px/30px var(--font-head); text-align: center; }
+ol.check h3 { margin: 0 0 4px; font: 700 17px/1.5 var(--font-head); color: var(--fg-primary); }
+ol.check p { margin: 0; }
+.ex { font-size: 14px; color: var(--fg-muted); margin-top: 6px !important; }
+.cta { display: inline-block; margin-top: 12px; padding: 14px 22px; border-radius: 12px; background: #0fa08d; color: #fff; font-weight: 700; text-decoration: none; }
+.prompt { background: var(--bg-subtle); border-radius: 12px; padding: 14px 16px; font-size: 15px; color: var(--fg-primary); white-space: pre-wrap; }
+@media print { .cta, .back { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← 나의 기술고문 아저씨</a>
+  <h1>AI에게 먼저 맡길 글, 이렇게 골라요</h1>
+  <p class="meta">개발자 없는 회사 대표님용 체크리스트</p>
+
+  <div class="intro">
+    <p>작은 회사의 AX(AI 전환)는 큰 시스템보다 매주 쓰는 글 하나에서 시작해요. 아래 5가지를 차례로 따라가면 이번 주에 바로 맡겨 볼 글 하나가 골라져요.</p>
+  </div>
+
+  <ol class="check">
+    <li><h3>매주 반복해서 쓰는 글을 적어요</h3>
+      <p>대표님이나 직원이 매주 손으로 쓰는 글을 모두 적어요.</p>
+      <p class="ex">예: 견적 문의 답장, 상품 설명, 회의록, 공지, 고객 안내 문자</p></li>
+    <li><h3>형식이 매번 비슷한 글에 표시해요</h3>
+      <p>틀이 비슷하고 내용만 조금씩 바뀌는 글일수록 AI가 잘 써요. 매번 처음부터 생각해야 하는 글은 뒤로 미뤄요.</p></li>
+    <li><h3>틀려도 바로 고칠 수 있는 글부터 골라요</h3>
+      <p>사람이 한 번 읽고 고쳐서 보내는 글이 첫 후보예요. 계약서나 세금처럼 틀리면 손해가 큰 글은 나중에 해요.</p></li>
+    <li><h3>잘 쓴 예시를 한두 개 모아요</h3>
+      <p>지난번에 보낸 메일, 반응이 좋았던 상품 설명을 같이 주면 회사 말투 그대로 써요.</p></li>
+    <li><h3>넣지 않을 정보를 정해요</h3>
+      <p>고객 개인정보, 계약서 원문, 비밀번호는 넣지 않아요. 회사에서 쓸 때는 회사용 요금제와 학습 끄기 설정을 먼저 확인해요.</p></li>
+  </ol>
+
+  <h2>이렇게 시켜 보세요</h2>
+  <p class="prompt">아래 예시 메일 말투로, [상품명] 견적 문의에 답하는 메일을 써 줘.
+가격과 납기는 비워 두고 [ ]로 표시해 줘.
+
+[예시 메일 붙여 넣기]</p>
+  <p>가격처럼 확인이 필요한 숫자는 비워 두게 하고, 보내기 전에 사람이 채워요.</p>
+
+  <h2>골라 보셨다면</h2>
+  <p>고른 글을 들고 전화 주시면 어떤 도구로, 어떻게 맡기면 좋을지 같이 정해 드려요. 첫 상담 20분은 무료예요.</p>
+  <a class="cta" href="./#book">무료 상담 예약하기</a>
+</main>
+</body>
+</html>
