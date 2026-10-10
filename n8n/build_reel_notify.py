@@ -103,7 +103,7 @@ d_upd = node('승인 상태 바꾸기', 'n8n-nodes-base.dataTable', 1.1, {'opera
              'columns': {'mappingMode': 'defineBelow', 'value': {'status': '={{ $json.body.status }}', 'result': '={{ $json.body.result }}'}}}, [240, 1440])
 
 wf = {'name': NAME, 'nodes': [v_hook, v_send, t_hook, t_send, l_hook, l_get, l_resp, f_hook, f_get, f_resp,
-                              a_trig, a_pick, a_ins, a_ack, q_hook, q_get, q_resp, d_hook, d_upd], 'settings': {'executionOrder': 'v1'},
+                              a_trig, a_pick, a_ins, a_ack, q_hook, q_get, q_resp, d_hook, d_upd], 'settings': {'executionOrder': 'v1', 'errorWorkflow': 'xS8KE1dg3iS5A3WL'},
       'connections': {v_hook['name']: {'main': [[{'node': v_send['name'], 'type': 'main', 'index': 0}]]},
                       t_hook['name']: {'main': [[{'node': t_send['name'], 'type': 'main', 'index': 0}]]},
                       l_hook['name']: {'main': [[{'node': l_get['name'], 'type': 'main', 'index': 0}]]},

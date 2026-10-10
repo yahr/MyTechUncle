@@ -110,7 +110,7 @@ for a, b, out in links:
     c = connections.setdefault(a['name'], {'main': []})['main']
     while len(c) <= out: c.append([])
     c[out].append({'node': b['name'], 'type': 'main', 'index': 0})
-wf = {'name': NAME, 'nodes': nodes, 'connections': connections, 'settings': {'executionOrder': 'v1'}}
+wf = {'name': NAME, 'nodes': nodes, 'connections': connections, 'settings': {'executionOrder': 'v1', 'errorWorkflow': 'xS8KE1dg3iS5A3WL'}}
 json.dump(wf, open(os.path.join(HERE, 'app-api.json'), 'w'), ensure_ascii=False, indent=2)
 print('wrote n8n/app-api.json')
 

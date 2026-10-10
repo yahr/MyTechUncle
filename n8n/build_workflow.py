@@ -10,8 +10,8 @@ ORIGINS = 'https://yahr.github.io,http://localhost:8766'
 # 예약 전용 캘린더 'MyTechUncle' (light.ez.jjack@gmail.com 계정)
 CAL_ID = '24f8c32d583ad5ade6f55c65bb7bba3c6f1af3b8838106c3161342b65c2907bb@group.calendar.google.com'
 CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID.replace('@', '%40') + '/events'
-TG_CRED = {'telegramApi': {'id': 'B2fSwl8ppGfhN8QZ', 'name': 'Telegram (@illey_secretary_bot)'}}
-CHAT_ID = '-1003659059794'  # 텔레그램 채널 '나의 기술고문 알림' (봇 @illey_secretary_bot 관리자)
+TG_CRED = {'telegramApi': {'id': 'ydX5qYevNyp4pd21', 'name': 'Telegram (@mytechuncle_bot)'}}  # 채널 관리자 봇(illey_secretary_bot 은 채널에 없어 chat not found)
+CHAT_ID = '-1003659059794'  # 텔레그램 채널 '나의 기술고문 알림' (봇 @mytechuncle_bot 관리자)
 CAL_CRED = {'googleCalendarOAuth2Api': {'id': 'QNKMHoO0PJUojtFo', 'name': 'Google Calendar account - light.ez.jjack@gmail.com'}}
 NAME = '나의기술고문_무료상담_예약'
 
@@ -150,7 +150,7 @@ for src, out, dst in links:
     while len(c) <= out: c.append([])
     c[out].append({'node': dst, 'type': 'main', 'index': 0})
 
-wf = {'name': NAME, 'nodes': nodes, 'connections': connections, 'settings': {'executionOrder': 'v1'}}
+wf = {'name': NAME, 'nodes': nodes, 'connections': connections, 'settings': {'executionOrder': 'v1', 'errorWorkflow': 'xS8KE1dg3iS5A3WL'}}
 out_path = os.path.join(HERE, 'advisor-booking.json')
 json.dump(wf, open(out_path, 'w'), ensure_ascii=False, indent=2)
 print('wrote', out_path)
