@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'core.dart';
 import 'main.dart';
 import 'store.dart';
+import 'summary.dart';
 
 const statusNames = {'new': '신규', 'contacted': '연락함', 'consulted': '첫 상담 완료', 'member': '회원 전환', 'hold': '보류', 'closed': '종료'};
 String _today() => DateTime.now().toIso8601String().substring(0, 10);
@@ -196,6 +197,10 @@ class CustomerPage extends StatelessWidget {
               Wrap(spacing: 8, runSpacing: 8, children: [
                 if ('${c['phone'] ?? ''}'.isNotEmpty) OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(Icons.call, size: 18), label: Text('${c['phone']}')),
                 if ('${c['email'] ?? ''}'.isNotEmpty) _chip('${c['email']}'),
+                FilledButton.tonalIcon(
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => RecordingPickerPage(customer: c))),
+                    icon: const Icon(Icons.mic_none, size: 18),
+                    label: const Text('녹음 요약')),
               ]),
               if ('${c['memo'] ?? ''}'.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 12), child: Text('${c['memo']}', style: const TextStyle(color: ink2))),
               const SizedBox(height: 24),
@@ -333,15 +338,16 @@ class CustomerForm extends StatelessWidget {
 }
 
 class ConsultationForm extends StatelessWidget {
-  const ConsultationForm({super.key, required this.customerId, this.row});
+  const ConsultationForm({super.key, required this.customerId, this.row, this.draft});
   final dynamic customerId;
   final Rec? row;
+  final String? draft; // 녹음 요약으로 채운 '나눈 이야기' 초안(저장 전에 고쳐요)
   @override
   Widget build(BuildContext context) => _FormPage(
         title: row == null ? '상담 기록' : '상담 기록 수정',
         table: 'consultations',
         row: row,
-        extra: {'customer_id': customerId, if (row == null) 'date': _today()},
+        extra: {'customer_id': customerId, if (row == null) 'date': _today(), if (draft != null) 'content': draft},
         fields: const [
           ('date', '날짜 (YYYY-MM-DD)', multiline: false, number: false),
           ('title', '주제 한 줄', multiline: false, number: false),

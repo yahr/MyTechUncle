@@ -62,3 +62,36 @@ Map<String, Map<String, dynamic>> buildCallerIndex(List<Map<String, dynamic>> cu
   }
   return out;
 }
+
+// ---------------- 통화 녹음 ----------------
+
+/// 파일 이름이 이 고객 것인지: 전화번호 끝 8자리가 이름 속 숫자에 있거나, 고객 이름(첫 낱말)이 들어 있으면 true.
+/// 번호의 하이픈·공백·+82 는 무시해요. 날짜·시간 숫자는 밑줄로 갈라져 있어 번호와 섞이지 않아요.
+bool recordingMatches(String fileName, {String? phone, String? name}) {
+  final p = normalizePhone(phone);
+  if (p.length >= 8) {
+    final digits = fileName.replaceAll(RegExp(r'(?<=\d)[-\s](?=\d)'), '');
+    if (digits.contains(p.substring(p.length - 8))) return true;
+  }
+  final n = (name ?? '').split(RegExp(r'[\s()]+')).where((t) => t.isNotEmpty).firstOrNull ?? '';
+  return n.length >= 2 && fileName.contains(n);
+}
+
+/// 녹음 목록(최신순)을 '이 고객' 것 전부 + 나머지 최근 [limit]개로 나눠요.
+({List<Map<String, dynamic>> mine, List<Map<String, dynamic>> others}) groupRecordings(List<Map<String, dynamic>> recs,
+    {String? phone, String? name, int limit = 20}) {
+  final mine = recs.where((r) => recordingMatches('${r['name']}', phone: phone, name: name)).toList();
+  final others = recs.where((r) => !mine.contains(r)).take(limit).toList();
+  return (mine: mine, others: others);
+}
+
+/// 새 상담 내역 '나눈 이야기' 칸 초안: 요약 + 받아쓴 원문
+String consultationDraft(String summary, String transcript) {
+  final s = summary.trim(), t = transcript.trim();
+  return t.isEmpty ? s : '$s\n\n— 받아쓴 원문 —\n$t';
+}
+
+String formatDuration(Duration d) {
+  final s = _2(d.inSeconds % 60), m = d.inHours > 0 ? _2(d.inMinutes % 60) : '${d.inMinutes % 60}';
+  return d.inHours > 0 ? '${d.inHours}:$m:$s' : '$m:$s';
+}
