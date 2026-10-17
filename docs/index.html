@@ -478,6 +478,7 @@ img { max-width: 100%; }
 .book button:focus-visible, .book input:focus-visible, .book select:focus-visible, .book textarea:focus-visible { outline: 2px solid var(--stroke-focus); outline-offset: 2px; }
 .consent { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; margin-top: 16px; }
 .consent input { min-height: 0; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--bg-brand); }
+.consent-note { margin: 4px 0 0; font-size: 13px; color: var(--fg-muted); }
 .consent details { font-size: 13px; color: var(--fg-muted); margin-top: 4px; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .book-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
@@ -949,7 +950,8 @@ img { max-width: 100%; }
           <div class="consent">
             <input id="bk-consent" name="consent" type="checkbox" required>
             <div><label for="bk-consent">개인정보 수집·이용에 동의해요 (필수)</label>
-              <details><summary>자세히 보기</summary>수집 항목: 이름, 회사명, 업종, 휴대폰, 이메일, 상담 내용 · 목적: 상담 예약과 안내 · 보관: 상담 후 1년 뒤 파기 · 국외 이전: 일정 등록을 위해 Google 캘린더(미국 등), 예약 알림을 위해 Telegram 서버로 전송돼요 · 동의하지 않으면 예약할 수 없어요. <a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침 전문</a></details>
+              <p class="consent-note">2026년 10월 24일부터 상담 통화는 녹음될 수 있고, 상담 요약을 위해 AI(Google Gemini·Anthropic Claude, 미국)로 받아쓰기·요약해요. 원하지 않으면 통화 때 말씀해 주세요.</p>
+              <details><summary>자세히 보기</summary>수집 항목: 이름, 회사명, 업종, 휴대폰, 이메일, 상담 내용 · 목적: 상담 예약과 안내 · 보관: 상담 후 1년 뒤 파기 · 국외 이전: 일정 등록을 위해 Google 캘린더(미국 등), 예약 알림을 위해 Telegram 서버로 전송돼요 · 통화 녹음: 휴대폰에만 보관하고, 요약을 요청한 통화만 받아쓰기는 Google Gemini(미국), 요약은 Anthropic Claude(미국)으로 전송돼요. 받아쓴 글과 요약은 상담 기록에 보관돼요 · 동의하지 않으면 예약할 수 없어요. <a href="privacy.html" target="_blank" rel="noopener">개인정보 처리방침 전문</a></details>
             </div>
           </div>
           <div class="book-foot">

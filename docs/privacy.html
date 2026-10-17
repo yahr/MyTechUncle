@@ -30,6 +30,8 @@ h2 { font: 700 19px/1.4 var(--font-head); margin: 40px 0 10px; }
 p, li { color: var(--fg-secondary); }
 .meta { font-size: 14px; color: var(--fg-muted); }
 .intro { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 16px; padding: 18px 20px; margin-top: 24px; }
+.notice { background: var(--bg-subtle); border: 1px solid var(--stroke-default); border-left: 4px solid var(--fg-brand); border-radius: 12px; padding: 14px 18px; margin-top: 16px; }
+.notice p { margin: 0; color: var(--fg-primary); }
 .tbl-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; background: var(--bg-surface); }
 th, td { border: 1px solid var(--stroke-default); padding: 10px 12px; text-align: left; vertical-align: top; color: var(--fg-secondary); }
@@ -41,7 +43,10 @@ ul { padding-left: 1.2em; }
 <main>
   <a class="back" href="./">← 나의 기술고문 아저씨</a>
   <h1>개인정보 처리방침</h1>
-  <p class="meta">시행일 2026년 10월 2일</p>
+  <p class="meta">시행일 2026년 10월 2일 · 개정 시행일 2026년 10월 24일(2026년 10월 17일 공지)</p>
+  <div class="notice" role="note">
+    <p>2026년 10월 24일부터 상담 통화 녹음·요약 관련 내용이 바뀝니다. 바뀌는 내용은 아래 5조와 변경 이력에서 볼 수 있습니다. 10월 24일 전까지는 이 내용을 적용하지 않으며, 지금까지의 내용(상담 통화를 녹음하지 않음)이 그대로 적용됩니다.</p>
+  </div>
 
   <div class="intro">
     <p>가볍지이지(이하 '운영자')는 '나의 기술고문 아저씨'(My Tech Uncle) 서비스를 운영하면서 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고, 관련 고충을 빠르게 처리하기 위해 다음과 같이 개인정보 처리방침을 둡니다.</p>
@@ -52,6 +57,7 @@ ul { padding-left: 1.2em; }
   <ul>
     <li>무료 상담 예약 접수, 상담 일정 확인과 안내(캘린더 초대, 전화·문자 연락)</li>
     <li>상담 진행과 상담 내용 정리(상담 브리핑 전달)</li>
+    <li>(2026년 10월 24일부터 적용) 상담 내용 요약(운영자가 요약을 요청한 통화에 한해 통화 녹음을 받아쓰고 요약)</li>
     <li>이용자가 관심을 보인 상품(연간·Founder 기술고문) 안내</li>
   </ul>
 
@@ -60,11 +66,13 @@ ul { padding-left: 1.2em; }
     <li>필수: 이름, 회사명, 휴대폰 번호, 이메일, 상담하고 싶은 내용, 예약 날짜·시간</li>
     <li>선택: 업종, 관심 상품</li>
     <li>자동 생성: 접수 시각</li>
+    <li>(2026년 10월 24일부터 적용) 상담 통화 녹음 음성(통화에서 말한 내용), 녹음을 받아쓴 글과 요약(운영자가 요약을 요청한 통화에 한함)</li>
   </ul>
   <p>예약 화면에서 직접 입력한 정보만 받습니다. 주민등록번호 등 고유식별정보와 민감정보는 받지 않습니다.</p>
 
   <h2>3. 처리·보유 기간</h2>
   <p>예약한 상담이 끝난 날부터 1년 동안 보관한 뒤 파기합니다. 이용자가 연간·Founder 기술고문을 계약하면 계약이 끝날 때까지 보관하고, 법령에서 보관을 정한 정보는 그 기간 동안 보관합니다.</p>
+  <p>(2026년 10월 24일부터 적용) 상담 통화 녹음 원본은 운영자의 휴대폰에만 보관하며 서버에 저장하지 않습니다. 위 보유 기간이 끝나면 운영자가 지웁니다. 받아쓴 글과 요약은 상담 기록(운영자가 관리하는 서버의 데이터 테이블)에 보관하며, 위 보유 기간과 같습니다.</p>
 
   <h2>4. 제3자 제공</h2>
   <p>운영자는 이용자의 개인정보를 제3자에게 제공하지 않습니다. 다만 법령에 근거가 있거나 수사기관이 법령에 따른 절차로 요청하는 경우는 예외입니다.</p>
@@ -80,6 +88,21 @@ ul { padding-left: 1.2em; }
       </tbody>
     </table>
   </div>
+  <p><b>상담 통화 녹음·요약 (2026년 10월 24일부터 적용)</b></p>
+  <p>운영자는 상담 통화를 휴대폰의 T전화 등 통화 녹음 기능으로 녹음할 수 있습니다. 상담 내용을 요약하려고 운영자가 요약을 요청한 통화에 한해, 그 녹음을 아래 서비스로 보내 받아쓰고 요약합니다. 요약을 요청하지 않은 통화의 녹음은 어디로도 보내지 않습니다.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>받는 곳</th><th>목적</th><th>항목</th><th>국가·시기·방법</th><th>보유 기간</th></tr></thead>
+      <tbody>
+        <tr><td>Google LLC (Gemini API)</td><td>상담 통화 녹음 받아쓰기</td><td>상담 통화 녹음 음성</td><td>미국 · 운영자가 요약 버튼을 누를 때 · 암호화된 통신(HTTPS)으로 전송</td><td>받아쓰기에 쓰려고 올린 파일은 받아쓰기가 끝나면 운영자 시스템이 바로 지움. 그 밖에는 Google의 공개 정책에 따름(아래 설명)</td></tr>
+        <tr><td>Anthropic, PBC (Claude API)</td><td>받아쓴 글 요약</td><td>받아쓴 글(통화 내용)</td><td>미국 · 받아쓰기가 끝난 직후 · 암호화된 통신(HTTPS)으로 전송</td><td>Anthropic의 공개 정책에 따름(아래 설명). 운영자는 Anthropic에 따로 보관을 요청하지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Google은 Gemini API 추가 약관(Gemini API Additional Terms of Service)에서 유료 서비스로 보낸 입력과 출력을 Google 제품을 개선하는 데 쓰지 않는다고 정하고 있습니다. 다만 이용 정책 위반을 찾아내고 막으려는 목적과 법령상 공개 의무를 위해 입력과 출력을 제한된 기간 동안 기록하며, 이 기록은 Google이나 그 협력사가 있는 어느 나라에서든 임시로 저장되거나 캐시될 수 있다고 안내합니다. 받아쓰기를 위해 올린 음성 파일은 Gemini API의 파일 저장소에 최대 48시간 보관된 뒤 자동으로 삭제되며, 운영자 시스템은 받아쓰기가 끝나면 그 파일을 바로 지웁니다.</p>
+  <p>Anthropic은 상업용 제품(Claude API 포함)의 입력과 출력을 기본으로 모델 학습에 쓰지 않는다고 공개하고 있습니다(이용자가 피드백·버그 제보를 보내거나 따로 동의한 경우 제외). API로 보낸 입력과 출력은 받은 날부터 30일 안에 삭제한다고 안내합니다. 다만 이용 정책 위반이 의심되어 자동 감지된 경우나 법령을 지켜야 하는 경우에는 더 오래 보관될 수 있습니다.</p>
+  <p>위 두 회사의 정책은 바뀔 수 있으며, 바뀐 내용은 각 회사의 공개 정책에 따릅니다.</p>
+  <p>이용자는 이 녹음과 국외 이전을 거부할 수 있습니다. 통화를 시작할 때 원하지 않는다고 말하면 그 통화는 녹음하지 않고 요약도 하지 않으며, 상담은 그대로 진행합니다. 이미 녹음된 뒤라도 운영자 이메일로 요청하면 녹음 원본과 받아쓴 글·요약을 지웁니다.</p>
   <p>예약 접수는 운영자가 관리하는 자동화 서버(flow.illey.me)를 거치며, 이 서버는 접수 처리 기록을 일정 기간 남깁니다. 웹 페이지는 GitHub Pages(GitHub, Inc., 미국)에서 제공되며, 접속 기록(IP 주소 등)은 GitHub의 정책에 따라 처리됩니다.</p>
 
   <h2>6. 파기 절차와 방법</h2>
@@ -91,6 +114,7 @@ ul { padding-left: 1.2em; }
   <h2>8. 안전성 확보 조치</h2>
   <ul>
     <li>예약 정보는 암호화된 연결(HTTPS)로만 주고받습니다.</li>
+    <li>(2026년 10월 24일부터 적용) 상담 통화 녹음 원본은 운영자 휴대폰에만 두고 서버에 저장하지 않으며, 요약을 위해 보낼 때도 암호화된 연결로만 보냅니다.</li>
     <li>개인정보를 다루는 계정은 운영자만 쓰며, 접근 권한을 최소로 둡니다.</li>
     <li>보유 기간이 지난 정보는 정기적으로 확인해 파기합니다.</li>
   </ul>
@@ -114,7 +138,11 @@ ul { padding-left: 1.2em; }
   </ul>
 
   <h2>12. 처리방침의 변경</h2>
-  <p>이 처리방침은 2026년 10월 2일부터 적용합니다. 내용이 바뀌면 시행 7일 전부터 이 페이지에 알립니다.</p>
+  <p>이 처리방침은 2026년 10월 2일부터 적용하며, 2026년 10월 24일 시행 개정 내용은 그날부터 적용합니다. 내용이 바뀌면 시행 7일 전부터 이 페이지에 알립니다.</p>
+  <ul>
+    <li>2026년 10월 24일 시행(10월 17일 공지): 상담 통화 녹음과 요약(처리 목적·항목·보유 기간·Google(Gemini)·Anthropic 국외 이전·거부 방법) 추가</li>
+    <li>2026년 10월 2일: 최초 시행</li>
+  </ul>
 </main>
 <script>
 try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
