@@ -101,6 +101,8 @@
     timesEl.innerHTML = '';
     showStep(1); renderCal();
     dlg.showModal();
+    // 휴대폰 뒤로가기로 예약 창만 닫히게: 열 때 기록 한 칸을 넣어 둔다
+    if (!(history.state && history.state.mtuBook)) history.pushState({ mtuBook: 1 }, '');
     var f = firstBookable(); if (f) { state.month = monthStart(Date.parse(f + 'T00:00:00Z')); pickDay(f); }
   }
 
@@ -112,6 +114,13 @@
   });
   dlg.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { dlg.close(); }); });
   dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  // 뒤로가기(popstate) → 창만 닫기. ×·바깥·ESC로 닫으면 넣어 둔 기록 칸을 지워서 다음 뒤로가기가 정상으로 동작
+  var closingByBack = false;
+  window.addEventListener('popstate', function () { if (dlg.open) { closingByBack = true; dlg.close(); } });
+  dlg.addEventListener('close', function () {
+    if (!closingByBack && history.state && history.state.mtuBook) history.back();
+    closingByBack = false;
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
