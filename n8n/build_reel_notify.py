@@ -90,7 +90,7 @@ for (const it of $input.all()) {
 }
 return out;""" % CHAT}, [240, 960])
 a_ins = node('승인 대기에 넣기', 'n8n-nodes-base.dataTable', 1.1, {'operation': 'insert', 'dataTableId': tbl, 'columns': {'mappingMode': 'autoMapInputData', 'value': {}}}, [480, 960])
-a_ack = node('받았다고 알리기', 'n8n-nodes-base.telegram', 1.2, {'chatId': CHAT, 'text': '받았어요. 1분 안에 인스타에 올리고 링크를 보내 드릴게요.',
+a_ack = node('받았다고 알리기', 'n8n-nodes-base.telegram', 1.2, {'chatId': CHAT, 'text': '받았어요. 1분 안에 확인할게요. 만들어 둔 릴스가 있으면 올리고, 없으면 드라이브의 새 영상으로 미리보기를 만들어 보내 드려요.',
              'additionalFields': {'appendAttribution': False}}, [720, 960], credentials=TG, executeOnce=True)
 q_hook = get_hook('승인 목록 요청', 'mtu-api/approvals', [0, 1200])
 q_get = node('대기 중 승인', 'n8n-nodes-base.dataTable', 1.1, {'operation': 'get', 'dataTableId': tbl, 'matchType': 'allConditions',
