@@ -515,6 +515,7 @@ class _FormPageState extends State<_FormPage> {
               padding: const EdgeInsets.only(bottom: 16),
               child: DsField(
                 label: f.$2,
+                hint: f.$1 == 'date' ? 'YYYY-MM-DD' : null, // 날짜 형식은 라벨이 아니라 칸 안 안내로(구독 폼과 같게)
                 controller: ctl[f.$1]!,
                 minLines: f.multiline ? 4 : 1,
                 maxLines: f.multiline ? 12 : 1,
@@ -558,7 +559,7 @@ class ConsultationForm extends StatelessWidget {
         row: row,
         extra: {'customer_id': customerId, if (row == null) 'date': _today(), if (draft != null) 'content': draft},
         fields: const [
-          ('date', '날짜 (YYYY-MM-DD)', multiline: false, number: false),
+          ('date', '날짜', multiline: false, number: false),
           ('title', '주제 한 줄', multiline: false, number: false),
           ('content', '나눈 이야기', multiline: true, number: false),
           ('next_action', '다음 할 일', multiline: false, number: false),
