@@ -89,7 +89,9 @@ object CallerCard {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
             PixelFormat.TRANSLUCENT,
-        ).apply { gravity = Gravity.TOP; x = 0; y = dp(100); horizontalMargin = 0.04f }
+        ).apply {
+            // 갤럭시 통화 화면의 발신자 이름·번호(위)와 통화 기록(아래) 사이 빈 칸에 오게 화면 높이 비율로 둔다
+            gravity = Gravity.TOP; x = 0; y = (ctx.resources.displayMetrics.heightPixels * 0.33f).toInt(); horizontalMargin = 0.04f }
         runCatching { (ctx.getSystemService(Context.WINDOW_SERVICE) as WindowManager).addView(card, params); view = card }
     }
 
