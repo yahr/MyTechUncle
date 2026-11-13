@@ -10,6 +10,7 @@ W, H, FPS = 1080, 1920, 30
 START = 0.3          # 첫 말풍선 (0초부터 제목이 떠 있다)
 TYPING = 0.45        # 아저씨가 입력 중(…) 표시
 END_CARD = 2.2       # 마무리 화면
+KEYWORD_END_CARD = 3.0  # 댓글 키워드 편의 마무리 화면
 
 
 def hold_for(text):
@@ -38,13 +39,19 @@ def probe(path):
 
 def page(ep, items, end, total, bg_dur):
     esc = html.escape
+    if ep.get('keyword'):  # 댓글 키워드 편: DM 안내가 엔드카드의 주인공
+        end_pill = f"댓글에 '{esc(ep['keyword'])}'"
+        end_sub = "남기시면 체크리스트를 DM으로 보내 드려요<br>첫 상담 20분 무료 · 프로필 링크"
+    else:
+        end_pill = "첫 상담 20분 무료"
+        end_sub = ep.get("cta") or "저장해 두고 필요할 때 꺼내 보세요<br>궁금한 건 댓글로 · 프로필에 무료 상담 링크"
     clips = []
     for i in range(math.ceil(total / bg_dur)):
         s = i * bg_dur
         clips.append(f'<video id="bg{i}" class="clip bg" src="assets/bg.mp4" muted playsinline data-start="{s:.2f}" '
                      f'data-duration="{min(bg_dur, total - s):.2f}" data-media-start="0" data-track-index="0"></video>')
     bubbles, js = [], []
-    KEEP = 3  # 화면에는 최근 말풍선 3개만 (오래된 건 위로 밀려 잘리지 않게 지운다)
+    KEEP = 2  # 화면에는 최근 말풍선 2개만 (말풍선 자리를 아래로 내려서 3개면 긴 대사가 위로 잘린다, 10/13)
     for i, it in enumerate(items):
         if i >= KEEP:
             js.append(f'hide("#b{i - KEEP}", {it["typing"] if it["typing"] is not None else it["show"]});')
@@ -69,26 +76,26 @@ html, body {{ width: {W}px; height: {H}px; overflow: hidden; background: #0f1720
 body {{ font-family: "A2z", sans-serif; word-break: keep-all; color: #16202b; }}
 #root {{ position: relative; width: 100%; height: 100%; overflow: hidden; }}
 .bg {{ position: absolute; inset: 0; width: {W}px; height: {H}px; object-fit: cover; }}
-.shade {{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,20,24,.72) 0%, rgba(8,20,24,.38) 34%, rgba(8,20,24,.38) 66%, rgba(8,20,24,.7) 100%); }}
+.shade {{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,20,24,.5) 0%, rgba(8,20,24,.62) 22%, rgba(8,20,24,.2) 42%, rgba(8,20,24,.2) 60%, rgba(8,20,24,.62) 100%); }}
 /* 글자 안전 영역: 세로 230~1480px */
-.head {{ position: absolute; left: 70px; right: 70px; top: 230px; }}
+.head {{ position: absolute; left: 70px; right: 70px; top: 450px; }}  /* 피드 4:5 는 위아래 285px 가 잘리고 계정 이름이 덮는다 */
 .label {{ display: inline-block; background: #2ed8c3; color: #04211e; font-weight: 700; font-size: 38px; line-height: 1; padding: 16px 28px; border-radius: 999px; }}
-.title {{ display: block; margin-top: 22px; color: #fff; font-weight: 700; font-size: 72px; line-height: 1.2; letter-spacing: -0.03em; text-shadow: 0 4px 24px rgba(0,0,0,.35); }}
-.chat {{ position: absolute; left: 50px; right: 50px; top: 520px; bottom: 440px; display: flex; flex-direction: column; justify-content: flex-end; gap: 26px; overflow: hidden;
+.title {{ display: block; margin-top: 20px; color: #fff; font-weight: 700; font-size: 64px; line-height: 1.2; letter-spacing: -0.03em; text-shadow: 0 4px 24px rgba(0,0,0,.35); }}
+.chat {{ position: absolute; left: 50px; right: 50px; top: 980px; bottom: 360px; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; overflow: hidden;
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 110px); mask-image: linear-gradient(180deg, transparent 0, #000 110px); }}
-.row {{ display: none; align-items: flex-end; gap: 18px; }}
+.row {{ display: none; align-items: flex-end; gap: 14px; }}
 .row.uncle {{ justify-content: flex-end; }}
-.col {{ display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 780px; }}
+.col {{ display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: 680px; }}
 .uncle .col {{ align-items: flex-end; }}
-.who {{ color: #fff; background: rgba(8,20,24,.62); font-weight: 500; font-size: 30px; line-height: 1; padding: 10px 18px; border-radius: 999px; }}
-.bub {{ font-weight: 700; font-size: 50px; line-height: 1.38; letter-spacing: -0.02em; padding: 26px 34px; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,.22); }}
-.ceo .bub {{ background: #fff; color: #16202b; border-bottom-left-radius: 12px; }}
-.uncle .bub {{ background: #2ed8c3; color: #04211e; border-bottom-right-radius: 12px; }}
-.av {{ flex: none; width: 104px; height: 104px; border-radius: 50%; display: block; }}
-.ceo-av {{ background: #e1e6ec; color: #4c5866; display: grid; place-items: center; font-weight: 700; font-size: 34px; }}
-.typing .bub {{ display: flex; gap: 14px; padding: 34px 38px; }}
-.dot {{ width: 20px; height: 20px; border-radius: 50%; background: #04211e; opacity: .45; display: block; }}
-.end {{ position: absolute; inset: 0; background: #2ed8c3; color: #04211e; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 64px; text-align: center; padding: 248px 86px 562px; }}
+.who {{ color: #fff; background: rgba(8,20,24,.55); font-weight: 500; font-size: 24px; line-height: 1; padding: 8px 14px; border-radius: 999px; }}
+.bub {{ font-weight: 500; font-size: 40px; line-height: 1.4; letter-spacing: -0.01em; padding: 16px 24px; border-radius: 30px; box-shadow: 0 8px 22px rgba(0,0,0,.2); }}
+.ceo .bub {{ background: rgba(255,255,255,.9); color: #16202b; border-bottom-left-radius: 10px; }}
+.uncle .bub {{ background: rgba(46,216,195,.9); color: #04211e; border-bottom-right-radius: 10px; }}
+.av {{ flex: none; width: 80px; height: 80px; border-radius: 50%; display: block; }}
+.ceo-av {{ background: #e1e6ec; color: #4c5866; display: grid; place-items: center; font-weight: 700; font-size: 26px; }}
+.typing .bub {{ display: flex; gap: 12px; padding: 24px 28px; }}
+.dot {{ width: 16px; height: 16px; border-radius: 50%; background: #04211e; opacity: .45; display: block; }}
+.end {{ position: absolute; inset: 0; background: #2ed8c3; color: #04211e; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 64px; text-align: center; padding: 405px 86px; }}
 .end img {{ width: 780px; display: block; }}
 .pill {{ background: #fff; color: #16202b; border-radius: 999px; padding: 50px 92px; font-weight: 700; font-size: 80px; line-height: 1; box-shadow: 0 22px 65px rgba(4,33,30,.2); }}
 .sub {{ font-weight: 500; font-size: 48px; line-height: 1.35; }}
@@ -100,8 +107,8 @@ body {{ font-family: "A2z", sans-serif; word-break: keep-all; color: #16202b; }}
 <div class="chat">
 {chr(10).join(bubbles)}
 </div>
-<div class="end" id="end"><img src="assets/logo-vertical-light.png" alt="나의 기술고문 아저씨"><span class="pill">첫 상담 20분 무료</span>
-<span class="sub">저장해 두고 필요할 때 꺼내 보세요<br>궁금한 건 댓글로 · 프로필 링크에서 예약</span></div>
+<div class="end" id="end"><img src="assets/logo-vertical-light.png" alt="나의 기술고문 아저씨"><span class="pill">{end_pill}</span>
+<span class="sub">{end_sub}</span></div>
 </div>
 <script>
 const tl = gsap.timeline({{ paused: true }});
@@ -134,6 +141,8 @@ def build(bg, ep_id, label=None):
     eps = {e['id']: e for e in json.load(open(os.path.join(HERE, 'episodes.json')))}
     ep = dict(eps[ep_id], **({'label': label} if label else {}))  # 화면 번호는 올리는 순서대로
     items, end, total = schedule(ep['lines'])
+    if ep.get('keyword'):  # 키워드 편은 댓글→DM 안내를 읽을 시간을 더 준다
+        total = round(end + KEYWORD_END_CARD, 2)
     stamp = time.strftime('%Y%m%d-%H%M%S')
     work = os.path.join(HERE, 'work', f'{ep_id}-{stamp}')
     shutil.copytree(os.path.join(HERE, 'template'), work)
