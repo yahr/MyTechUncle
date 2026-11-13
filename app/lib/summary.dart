@@ -200,7 +200,7 @@ class _RecordingPickerPageState extends State<RecordingPickerPage> with WidgetsB
               padding: EdgeInsets.all(32),
               child: Text('통화 녹음을 찾지 못했어요.\n갤럭시 전화 앱에서 통화 자동 녹음이 켜져 있는지 확인해 주세요.', textAlign: TextAlign.center, style: TextStyle(color: ink2))));
     } else {
-      body = ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
+      body = ListView(padding: EdgeInsets.fromLTRB(16, 0, 16, 32 + MediaQuery.paddingOf(context).bottom), children: [
         if (mine.isNotEmpty) ...[_head('이 고객 ${mine.length}건'), for (final r in mine) ...[_tile(r), const SizedBox(height: 8)]],
         if (mine.isEmpty) Padding(padding: const EdgeInsets.fromLTRB(4, 12, 4, 0), child: Text('파일 이름에 ${c['name'] ?? '고객'} 이름이나 번호가 들어 있는 녹음이 없어요. 아래에서 골라 주세요.', style: const TextStyle(color: ink2))),
         if (others.isNotEmpty) ...[_head('최근 녹음'), for (final r in others) ...[_tile(r), const SizedBox(height: 8)]],

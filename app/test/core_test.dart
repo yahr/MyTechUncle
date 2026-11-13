@@ -151,4 +151,22 @@ void main() {
       expect(formatDuration(const Duration(hours: 1, minutes: 2, seconds: 3)), '1:02:03');
     });
   });
+
+  group('formatWon', () {
+    test('세 자리마다 쉼표', () {
+      expect(formatWon(300000), '300,000원');
+      expect(formatWon('1000000'), '1,000,000원');
+      expect(formatWon(999), '999원');
+      expect(formatWon(0), '0원');
+    });
+    test('값이 없거나 숫자가 아니면 -', () {
+      expect(formatWon(null), '-');
+      expect(formatWon(''), '-');
+      expect(formatWon('미정'), '-');
+    });
+    test('음수·소수', () {
+      expect(formatWon(-12000), '-12,000원');
+      expect(formatWon(12000.0), '12,000원');
+    });
+  });
 }

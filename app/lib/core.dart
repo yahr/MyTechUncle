@@ -135,3 +135,12 @@ int issueStageIndex(dynamic status) {
 
 /// 아직 안 끝난 이슈인가 (일거리·업무·직업)
 bool issueActive(dynamic status) => issueStageIndex(status) <= 2;
+
+/// 금액 300000 → '300,000원'. 비었거나 숫자가 아니면 '-'.
+String formatWon(Object? v) {
+  final n = num.tryParse('${v ?? ''}'.trim());
+  if (n == null) return '-';
+  final i = n.round();
+  final s = i.abs().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+$)'), (_) => ',');
+  return '${i < 0 ? '-' : ''}$s원';
+}

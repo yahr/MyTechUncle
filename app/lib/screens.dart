@@ -356,7 +356,7 @@ class _SharedTextPageState extends State<SharedTextPage> {
             ..sort((a, b) => '${a['company']}'.compareTo('${b['company']}'));
           return Scaffold(
             appBar: const DsAppBar(title: '공유받은 내용'),
-            body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
+            body: ListView(padding: EdgeInsets.fromLTRB(16, 0, 16, 32 + MediaQuery.paddingOf(context).bottom), children: [
               Card(child: Padding(padding: const EdgeInsets.all(12), child: Text(widget.text, maxLines: 6, overflow: TextOverflow.ellipsis, style: const TextStyle(color: ink2)))),
               const Padding(padding: EdgeInsets.only(top: 16, bottom: 8), child: Text('누구와 나눈 이야기인가요', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600))),
               TextField(decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.search), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
@@ -397,10 +397,10 @@ class CustomerPage extends StatelessWidget {
             body: ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 32), children: [
               DsCard(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Expanded(child: Text('${c['company'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 22, fontWeight: FontWeight.w700, height: 1.4))),
-                    const SizedBox(width: 8),
-                    Padding(padding: const EdgeInsets.only(top: 4), child: _chip(subscriptionLabel(subs, DateTime.now()), tone: subs.isEmpty ? 'neutral' : 'ok')),
+                  // 배지가 길면(구독 기간·D-day) 제목 아래 줄로 내려간다 — Row 로 두면 회사명이 한 글자씩 꺾였다(2026-11-13 갤럭시)
+                  Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                    Text('${c['company'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 22, fontWeight: FontWeight.w700, height: 1.4)),
+                    _chip(subscriptionLabel(subs, DateTime.now()), tone: subs.isEmpty ? 'neutral' : 'ok'),
                   ]),
                   const SizedBox(height: 12),
                   Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -443,7 +443,7 @@ class CustomerPage extends StatelessWidget {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text('${productNames[s['product']] ?? s['product']} · ${s['start_date']} ~ ${s['end_date']}'),
-                      subtitle: Text('${s['amount'] ?? '-'}원 · ${s['paid'] == true ? '입금 확인' : '입금 대기'}${s['status'] == 'cancelled' ? ' · 해지' : ''}'),
+                      subtitle: Text('${formatWon(s['amount'])} · ${s['paid'] == true ? '입금 확인' : '입금 대기'}${s['status'] == 'cancelled' ? ' · 해지' : ''}'),
                       trailing: const Icon(LucideIcons.pencil, size: 18),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SubscriptionForm(customerId: c['id'], row: s))),
                     ),
@@ -465,7 +465,7 @@ class CustomerPage extends StatelessWidget {
                                 Expanded(
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Text('${r['title'] ?? ''}'),
-                                    if ('${r['content'] ?? ''}'.isNotEmpty) Text('${r['content']}'),
+                                    if ('${r['content'] ?? ''}'.isNotEmpty) Text('${r['content']}', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: ink2)), // 전문은 눌러서 연다
                                     if ('${r['next_action'] ?? ''}'.isNotEmpty) Text('다음 할 일: ${r['next_action']}', style: const TextStyle(color: ink2)),
                                   ]),
                                 ),
@@ -527,7 +527,7 @@ class _FormPageState extends State<_FormPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: DsAppBar(title: widget.title),
-        body: ListView(padding: const EdgeInsets.all(16), children: [
+        body: ListView(padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom), children: [
           for (final f in widget.fields)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -640,7 +640,7 @@ class _SubscriptionFormState extends State<SubscriptionForm> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: DsAppBar(title: widget.row == null ? '구독 추가' : '구독 수정'),
-        body: ListView(padding: const EdgeInsets.all(16), children: [
+        body: ListView(padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom), children: [
           SegmentedButton<String>(
             segments: const [ButtonSegment(value: 'annual', label: Text('연간 기술고문')), ButtonSegment(value: 'founder', label: Text('Founder'))],
             selected: {product},
@@ -678,7 +678,8 @@ class _CallBar extends StatelessWidget {
   Widget build(BuildContext context) => ValueListenableBuilder<String>(
         valueListenable: callState,
         builder: (context, state, _) {
-          if (state == 'idle') return const SizedBox.shrink();
+          // 쉴 때도 아랫 안전 영역만큼은 자리를 잡는다 — 0 이면 Scaffold 가 본문 아래 여백을 빼서 내용이 시스템 막대 밑으로 들어간다
+          if (state == 'idle') return const SafeArea(top: false, child: SizedBox(width: double.infinity));
           const red = danger, green = ok;
           ButtonStyle style(Color c) => FilledButton.styleFrom(backgroundColor: c, minimumSize: const Size.fromHeight(56),
               textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700));
