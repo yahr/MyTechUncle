@@ -2,7 +2,7 @@
   "name": "나의기술고문_녹음요약",
   "nodes": [
     {
-      "id": "c8be6a0f-61fb-43f1-a6c1-c1bf46c3f57f",
+      "id": "fc8ce0ff-e05f-4e7c-b4f3-57ebe528c01e",
       "name": "요약 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -17,7 +17,7 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "924e20a5-6454-4560-931e-7085b1b2c697",
+      "webhookId": "9f957ffe-838e-4ec6-a579-6ee7ce4f785f",
       "credentials": {
         "httpHeaderAuth": {
           "id": "3g7jgSREOadPJYvX",
@@ -26,7 +26,7 @@
       }
     },
     {
-      "id": "db51b27e-a245-46b1-b58c-6c0affbae347",
+      "id": "71953c50-145b-423e-8e2a-f5ddf337c607",
       "name": "음성 있나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -43,7 +43,7 @@
           },
           "conditions": [
             {
-              "id": "f308a546-0e0b-4031-820e-7b8e9e00a4e7",
+              "id": "8ac16ef5-22fe-4cca-ac7f-c834fe344305",
               "leftValue": "={{ !!$binary.audio }}",
               "rightValue": "",
               "operator": {
@@ -59,7 +59,7 @@
       }
     },
     {
-      "id": "5ef2bfe4-a19a-44c7-b399-e10a382063cc",
+      "id": "afc92097-660f-43eb-abf1-87fb1bf7419c",
       "name": "음성 없음 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -76,7 +76,7 @@
       }
     },
     {
-      "id": "535b59ae-c055-4825-960e-f16b5f15a87c",
+      "id": "cda72020-abd8-472c-8bc0-cdce3be1c257",
       "name": "파일 정보",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -89,7 +89,7 @@
       }
     },
     {
-      "id": "6f51c129-fc0c-4fc9-9247-a61f277bbd91",
+      "id": "18524367-2bf0-4144-b11f-3dfcdbba59c7",
       "name": "업로드 시작",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -144,7 +144,7 @@
       "onError": "continueErrorOutput"
     },
     {
-      "id": "2a8b219e-fa03-41d9-a5de-25496abb73df",
+      "id": "af83be34-fccb-4969-a50f-ba79bc3c1b81",
       "name": "업로드 준비",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -157,7 +157,7 @@
       }
     },
     {
-      "id": "4a4f711c-7e44-4b4a-9a8e-2b82772f1572",
+      "id": "f18fa17c-53eb-46c1-a52b-981e5804783a",
       "name": "업로드",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -191,7 +191,7 @@
       "onError": "continueErrorOutput"
     },
     {
-      "id": "888c5fa2-d7ce-43bf-9d37-4c09c69c281f",
+      "id": "e23e5d57-36f3-4190-8041-476c79992bc2",
       "name": "받아쓰기",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -223,7 +223,7 @@
       "onError": "continueRegularOutput"
     },
     {
-      "id": "c6d9d722-a22b-4287-a55c-e4d385d086f4",
+      "id": "c6c3a1a6-287e-460b-aec9-a1bce0773c92",
       "name": "파일 삭제",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -249,7 +249,7 @@
       "onError": "continueRegularOutput"
     },
     {
-      "id": "421cb960-19dc-45df-b38c-633d9f9048e9",
+      "id": "40fa56fb-2ef2-4f44-b073-c651bdff4a08",
       "name": "받아쓰기 결과",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -262,7 +262,7 @@
       }
     },
     {
-      "id": "439f0b4c-2f22-43f6-99d9-7e56e22b3fdb",
+      "id": "a67e837a-075f-4d37-926a-ba98006b100f",
       "name": "받아쓰기 됐나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -279,7 +279,7 @@
           },
           "conditions": [
             {
-              "id": "e105c86b-17f7-4894-b9f4-237b9c8211a0",
+              "id": "267c06bc-53d4-4a43-b503-588b57cd37c4",
               "leftValue": "={{ $json.status === \"ok\" }}",
               "rightValue": "",
               "operator": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": "7ed92e84-375c-4a04-9766-5e2a4c060596",
+      "id": "3d29e79d-58f0-4f85-87b0-f8f59e201419",
       "name": "받아쓰기 실패 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -305,14 +305,14 @@
       ],
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ error: $json.status === \"empty\" ? \"받아쓰기 결과가 비었어요\" : \"받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요\" }) }}",
+        "responseBody": "={{ JSON.stringify({ error: $json.status === \"empty\" ? \"받아쓰기 결과가 비었어요\"\n  : /Payment required|prepayment/i.test(JSON.stringify($json.error || {})) ? \"Gemini 선불 크레딧이 떨어졌어요. AI Studio(ai.studio/projects)에서 충전한 뒤 다시 해 주세요\"\n  : $json.error ? \"받아쓰기 서버 오류: \" + String($json.error.message || $json.error.description || \"\").slice(0, 160)\n  : \"받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요\" }) }}",
         "options": {
           "responseCode": 502
         }
       }
     },
     {
-      "id": "b9861e7b-7443-40c2-911f-7fc3c615c11b",
+      "id": "3b38b48b-04d3-409b-9ebf-dcfbe14808de",
       "name": "요약",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -354,7 +354,7 @@
       "onError": "continueErrorOutput"
     },
     {
-      "id": "9d445586-a13b-40c3-ad76-c17dbf6f8903",
+      "id": "18448ff4-7280-4a42-bc20-fcea0ac3e5a4",
       "name": "요약 실패 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -371,7 +371,7 @@
       }
     },
     {
-      "id": "8ccf472b-bcc7-4d39-8dce-e40e6dbba76b",
+      "id": "72305142-7a8d-41a8-9de1-390b7c3fd360",
       "name": "결과 묶기",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -384,7 +384,7 @@
       }
     },
     {
-      "id": "79b6a93c-a542-44ce-8fd1-33f51207d021",
+      "id": "f2e18ee5-abd7-43c8-9cb0-1d7309667abd",
       "name": "거절?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -401,7 +401,7 @@
           },
           "conditions": [
             {
-              "id": "99039ee7-6246-47bf-b5a3-1ec600037983",
+              "id": "fc81b68c-efb0-4ae7-81d5-0b43084ed436",
               "leftValue": "={{ $json.refused }}",
               "rightValue": "",
               "operator": {
@@ -417,7 +417,7 @@
       }
     },
     {
-      "id": "f938af4d-eacd-4c8d-92f9-7dcf415dea44",
+      "id": "ba34c21c-5830-4b02-9baf-5e410f79f7dd",
       "name": "요약 거절 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -434,7 +434,7 @@
       }
     },
     {
-      "id": "90cc8780-ee77-4006-8ccf-3740b7c532f6",
+      "id": "0a7ad5db-9127-44ee-a4db-0c742dda8c90",
       "name": "요약 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,

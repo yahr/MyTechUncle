@@ -1,6 +1,6 @@
 """고문용 앱 API 플로우 (n8n 데이터 테이블 4개 위에 웹훅 2개)
    python3 n8n/build_app_api.py --push
-   GET  /webhook/mtu-api/data            -> { customers, applications, subscriptions, consultations }
+   GET  /webhook/mtu-api/data            -> { customers, applications, subscriptions, consultations, issues }
    POST /webhook/mtu-api/save {table,row} -> 저장된 행 (row.id 가 있으면 수정, 없으면 추가)
    두 웹훅 모두 헤더 X-MTU-Token 필요. 토큰은 app/secrets.json (저장소에 올리지 않음)
 """
@@ -13,12 +13,14 @@ WS = 'lightez'  # 워크스페이스(사업자). 지금은 하나뿐
 TABLES = {  # n8n 데이터 테이블 id
     'customers': '5qDtcVGsBuMFKueV', 'applications': 'SOVh9O6LyXcADRzE',
     'subscriptions': '2ZX9iNXiAqrMXaMz', 'consultations': 'SjS8D9OKcSlDIcD5',
+    'issues': 'qOun1OPB8Jw9PbS1',  # 카톡 '/해줘' 요청 (kakao/issue-bot.js)
 }
 COLUMNS = {  # 앱이 쓸 수 있는 칸과 형식 (s 문자, n 숫자, b 참거짓)
     'customers': {'company': 's', 'name': 's', 'phone': 's', 'email': 's', 'industry': 's', 'memo': 's'},
     'applications': {'customer_id': 'n', 'product': 's', 'topic': 's', 'slot': 's', 'status': 's', 'calendar_link': 's', 'source': 's'},
     'subscriptions': {'customer_id': 'n', 'product': 's', 'start_date': 's', 'end_date': 's', 'amount': 'n', 'paid': 'b', 'status': 's'},
     'consultations': {'customer_id': 'n', 'date': 's', 'title': 's', 'content': 's', 'next_action': 's'},
+    'issues': {'room': 's', 'sender': 's', 'text': 's', 'status': 's', 'created_at': 's'},
 }
 
 cfg = json.load(open(os.path.expanduser('~/.claude.json')))

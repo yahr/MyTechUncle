@@ -122,7 +122,11 @@ stt_ok = node('받아쓰기 됐나', 'n8n-nodes-base.if', 2, {'conditions': {
     'conditions': [{'id': str(uuid.uuid4()), 'leftValue': '={{ $json.status === "ok" }}', 'rightValue': '',
                     'operator': {'type': 'boolean', 'operation': 'true', 'singleValue': True}}],
     'combinator': 'and'}, 'options': {}}, [1980, 0])
-stt_fail = respond('받아쓰기 실패 응답', '={{ JSON.stringify({ error: $json.status === "empty" ? "받아쓰기 결과가 비었어요" : "받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요" }) }}', [2200, 140], 502)
+# 업로드 시작/업로드 의 오류 출력은 $json.error 에 Gemini 응답이 들어온다. 402(선불 크레딧 소진)는 사람이 충전해야 하니 그대로 알린다
+stt_fail = respond('받아쓰기 실패 응답', '={{ JSON.stringify({ error: $json.status === "empty" ? "받아쓰기 결과가 비었어요"\n'
+    '  : /Payment required|prepayment/i.test(JSON.stringify($json.error || {})) ? "Gemini 선불 크레딧이 떨어졌어요. AI Studio(ai.studio/projects)에서 충전한 뒤 다시 해 주세요"\n'
+    '  : $json.error ? "받아쓰기 서버 오류: " + String($json.error.message || $json.error.description || "").slice(0, 160)\n'
+    '  : "받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요" }) }}', [2200, 140], 502)
 chat = node('요약', 'n8n-nodes-base.httpRequest', 4.2, {
     'method': 'POST', 'url': 'https://api.anthropic.com/v1/messages', 'authentication': 'predefinedCredentialType',
     'nodeCredentialType': 'anthropicApi', 'sendHeaders': True,
