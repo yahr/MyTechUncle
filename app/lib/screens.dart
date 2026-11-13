@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'core.dart';
 import 'ds.dart';
+import 'ds_bars.dart';
 import 'main.dart';
 import 'store.dart';
 import 'summary.dart';
@@ -115,7 +116,7 @@ void _applicationSheet(BuildContext context, Rec a) {
           const SizedBox(height: 16),
           if (c != null)
             Row(children: [
-              Expanded(child: OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(Icons.call), label: const Text('전화하기'))),
+              Expanded(child: OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(LucideIcons.phone), label: const Text('전화하기'))),
               const SizedBox(width: 8),
               Expanded(
                   child: FilledButton(
@@ -286,7 +287,15 @@ class _CustomersTabState extends State<CustomersTab> {
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-        child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerForm())),
+            icon: const Icon(LucideIcons.userPlus, size: 24),
+            label: const Text('고객 추가'),
+          ),
+          const SizedBox(height: 12),
+          TextField(decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.search, size: 20), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
+        ]),
       ),
       Expanded(
         child: RefreshIndicator(
@@ -303,7 +312,7 @@ class _CustomersTabState extends State<CustomersTab> {
                       child: ListTile(
                         title: Text('${c['company'] ?? ''} ${c['name'] ?? ''}'),
                         subtitle: Text(subscriptionLabel(ofCustomer(store.subscriptions, c['id']), DateTime.now())),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: const Icon(LucideIcons.chevronRight),
                         onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerPage(id: c['id']))),
                       ),
                     );
@@ -330,7 +339,7 @@ class _SharedTextPageState extends State<SharedTextPage> {
         child: ListTile(
           title: Text('${c['company'] ?? ''} ${c['name'] ?? ''}'.trim()),
           subtitle: Text('${c['phone'] ?? ''}'),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: const Icon(LucideIcons.chevronRight),
           onTap: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => ConsultationForm(customerId: c['id'], draft: widget.text))),
         ),
       );
@@ -343,11 +352,11 @@ class _SharedTextPageState extends State<SharedTextPage> {
           final rows = store.customers.where((c) => c != guess && (q.isEmpty || '${c['company']} ${c['name']} ${c['phone']}'.contains(q))).toList()
             ..sort((a, b) => '${a['company']}'.compareTo('${b['company']}'));
           return Scaffold(
-            appBar: AppBar(title: const Text('공유받은 내용')),
+            appBar: const DsAppBar(title: '공유받은 내용'),
             body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
               Card(child: Padding(padding: const EdgeInsets.all(12), child: Text(widget.text, maxLines: 6, overflow: TextOverflow.ellipsis, style: const TextStyle(color: ink2)))),
               const Padding(padding: EdgeInsets.only(top: 16, bottom: 8), child: Text('누구와 나눈 이야기인가요', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600))),
-              TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
+              TextField(decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.search), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
               const SizedBox(height: 8),
               if (store.customers.isEmpty)
                 _empty(store.loading ? '불러오는 중이에요' : '고객이 없어요. 고객 탭에서 먼저 추가해 주세요')
@@ -374,36 +383,35 @@ class CustomerPage extends StatelessWidget {
         listenable: store,
         builder: (context, _) {
           final c = store.customer(id);
-          if (c == null) return Scaffold(appBar: AppBar(), body: _empty('고객을 찾지 못했어요'));
+          if (c == null) return Scaffold(appBar: const DsAppBar(), body: _empty('고객을 찾지 못했어요'));
           final subs = ofCustomer(store.subscriptions, id)..sort((a, b) => '${b['start_date']}'.compareTo('${a['start_date']}'));
           final cons = sortedConsultations(ofCustomer(store.consultations, id));
           return Scaffold(
-            appBar: AppBar(actions: [
-              IconButton(tooltip: '고객 정보 수정', icon: const Icon(Icons.edit_outlined), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerForm(row: c)))),
+            appBar: DsAppBar(title: '고객', actions: [
+              DsIconBtn(icon: LucideIcons.pencil, label: '고객 정보 수정', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerForm(row: c)))),
             ]),
             bottomNavigationBar: const _CallBar(),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ConsultationForm(customerId: c['id']))),
-              icon: const Icon(Icons.edit_note),
-              label: const Text('상담 기록'),
-            ),
-            body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 96), children: [
+            body: ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 32), children: [
               Text('${c['company'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 24, fontWeight: FontWeight.w700)),
               Text('${c['name'] ?? ''}${(c['industry'] ?? '') == '' ? '' : ' · ${c['industry']}'}', style: const TextStyle(color: ink2, fontSize: 16)),
               const SizedBox(height: 12),
               Wrap(spacing: 8, runSpacing: 8, children: [
-                if ('${c['phone'] ?? ''}'.isNotEmpty) OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(Icons.call, size: 18), label: Text('${c['phone']}')),
+                if ('${c['phone'] ?? ''}'.isNotEmpty) OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(LucideIcons.phone, size: 18), label: Text('${c['phone']}')),
                 if ('${c['email'] ?? ''}'.isNotEmpty) _chip('${c['email']}'),
-                FilledButton.tonalIcon(
+                FilledButton.icon(
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ConsultationForm(customerId: c['id']))),
+                    icon: const Icon(LucideIcons.notebookPen, size: 20),
+                    label: const Text('상담 기록')),
+                OutlinedButton.icon(
                     onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => RecordingPickerPage(customer: c))),
-                    icon: const Icon(Icons.mic_none, size: 18),
+                    icon: const Icon(LucideIcons.mic, size: 20),
                     label: const Text('녹음 요약')),
               ]),
               if ('${c['memo'] ?? ''}'.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 12), child: Text('${c['memo']}', style: const TextStyle(color: ink2))),
               const SizedBox(height: 24),
               _Section(
                 title: '구독',
-                action: TextButton.icon(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SubscriptionForm(customerId: c['id']))), icon: const Icon(Icons.add), label: const Text('구독 추가')),
+                action: TextButton.icon(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SubscriptionForm(customerId: c['id']))), icon: const Icon(LucideIcons.plus), label: const Text('구독 추가')),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   _chip(subscriptionLabel(subs, DateTime.now()), tone: subs.isEmpty ? 'neutral' : 'ok'),
                   for (final s in subs)
@@ -411,7 +419,7 @@ class CustomerPage extends StatelessWidget {
                       contentPadding: EdgeInsets.zero,
                       title: Text('${productNames[s['product']] ?? s['product']} · ${s['start_date']} ~ ${s['end_date']}'),
                       subtitle: Text('${s['amount'] ?? '-'}원 · ${s['paid'] == true ? '입금 확인' : '입금 대기'}${s['status'] == 'cancelled' ? ' · 해지' : ''}'),
-                      trailing: const Icon(Icons.edit_outlined, size: 18),
+                      trailing: const Icon(LucideIcons.pencil, size: 18),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SubscriptionForm(customerId: c['id'], row: s))),
                     ),
                 ]),
@@ -496,7 +504,7 @@ class _FormPageState extends State<_FormPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: DsAppBar(title: widget.title),
         body: ListView(padding: const EdgeInsets.all(16), children: [
           for (final f in widget.fields)
             Padding(
@@ -609,7 +617,7 @@ class _SubscriptionFormState extends State<SubscriptionForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.row == null ? '구독 추가' : '구독 수정')),
+        appBar: DsAppBar(title: widget.row == null ? '구독 추가' : '구독 수정'),
         body: ListView(padding: const EdgeInsets.all(16), children: [
           SegmentedButton<String>(
             segments: const [ButtonSegment(value: 'annual', label: Text('연간 기술고문')), ButtonSegment(value: 'founder', label: Text('Founder'))],
@@ -659,13 +667,13 @@ class _CallBar extends StatelessWidget {
               child: state == 'ringing'
                   ? Row(children: [
                       Expanded(child: FilledButton.icon(style: style(red), onPressed: () => _do(context, 'endCall', '거절하지 못했어요. 통화 화면에서 거절해 주세요'),
-                          icon: const Icon(Icons.call_end), label: const Text('거절'))),
+                          icon: const Icon(LucideIcons.phoneOff), label: const Text('거절'))),
                       const SizedBox(width: 12),
                       Expanded(child: FilledButton.icon(style: style(green), onPressed: () => _do(context, 'answerCall', '받지 못했어요. 통화 화면에서 받아 주세요'),
-                          icon: const Icon(Icons.call), label: const Text('받기'))),
+                          icon: const Icon(LucideIcons.phone), label: const Text('받기'))),
                     ])
                   : FilledButton.icon(style: style(red), onPressed: () => _do(context, 'endCall', '끊지 못했어요. 통화 화면에서 끊어 주세요'),
-                      icon: const Icon(Icons.call_end), label: const Text('통화 끊기')),
+                      icon: const Icon(LucideIcons.phoneOff), label: const Text('통화 끊기')),
             ),
           );
         },

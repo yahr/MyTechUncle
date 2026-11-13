@@ -3,6 +3,8 @@
 // ponytail: 라이트만. 다크를 넣으려면 const 색을 쓰는 곳이 context 로 토큰을 받아야 한다.
 import 'package:flutter/material.dart';
 
+export 'package:lucide_icons_flutter/lucide_icons.dart'; // 세무 앱과 같은 선 아이콘
+
 const mint = Color(0xFF0FA08D), //       bg-brand
     mintHover = Color(0xFF0B7F70), //     bg-brand-hover
     brandSoft = Color(0xFFE6FBF8), //     bg-brand-soft
@@ -41,6 +43,7 @@ ThemeData dsTheme() {
   const btnSize = Size(64, 44); // .btn 40 이지만 눌리는 것은 44 이상
   return base.copyWith(
     scaffoldBackgroundColor: page,
+    splashFactory: InkRipple.splashFactory, // 세무 앱과 같은 눌림 효과
     textTheme: base.textTheme.copyWith(
       headlineSmall: const TextStyle(fontFamily: head, fontWeight: FontWeight.w700, fontSize: 22, height: 1.4, color: ink), // t3
       titleLarge: const TextStyle(fontFamily: head, fontWeight: FontWeight.w600, fontSize: 18, height: 1.45, color: ink), // t4

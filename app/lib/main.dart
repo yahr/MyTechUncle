@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'core.dart';
 import 'ds.dart';
+import 'ds_bars.dart';
 import 'screens.dart';
 import 'store.dart';
 
@@ -80,36 +81,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   Widget build(BuildContext context) => ListenableBuilder(
         listenable: store,
         builder: (context, _) => Scaffold(
-          appBar: AppBar(
-            title: const Text('기술고문 노트'),
-            actions: [
-              if (store.loading) const Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-              IconButton(tooltip: '새로 불러오기', onPressed: store.refresh, icon: const Icon(Icons.refresh)),
-            ],
-          ),
+          appBar: DsAppBar(title: '기술고문 노트', back: false, actions: [
+            if (store.loading) const SizedBox(width: 44, height: 44, child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)))),
+            DsIconBtn(icon: LucideIcons.refreshCw, label: '새로 불러오기', onTap: store.refresh),
+          ]),
           body: Column(children: [
+            const SizedBox(height: 16), // 세무 앱처럼 상단바 아래 16
             if (perms.isNotEmpty && !cardReady) _PermBanner(perms: perms, onChanged: _onResume),
             if (store.error != null)
               Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(store.error!, style: const TextStyle(color: danger, fontSize: 13))),
             Expanded(child: switch (tab) { 0 => ApplicationsTab(), 1 => CustomersTab(), _ => IssuesTab() }), // const 를 쓰면 store 가 바뀌어도 다시 안 그려진다
           ]),
-          floatingActionButton: tab == 1
-              ? FloatingActionButton.extended(
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CustomerForm())),
-                  icon: const Icon(Icons.person_add_alt),
-                  label: const Text('고객 추가'))
-              : null,
-          bottomNavigationBar: DecoratedBox(
-            decoration: const BoxDecoration(border: Border(top: BorderSide(color: stroke))),
-            child: NavigationBar(
-            selectedIndex: tab,
-            onDestinationSelected: (i) => setState(() => tab = i),
-            destinations: const [
-              NavigationDestination(icon: Icon(Icons.inbox_outlined), label: '신청'),
-              NavigationDestination(icon: Icon(Icons.people_outline), label: '고객'),
-              NavigationDestination(icon: Icon(Icons.task_alt_outlined), label: '이슈'),
-            ],
-          )),
+          bottomNavigationBar: DsTabBar(
+            selected: tab,
+            onSelected: (i) => setState(() => tab = i),
+            items: const [(LucideIcons.inbox, '신청'), (LucideIcons.users, '고객'), (LucideIcons.listChecks, '이슈')],
+          ),
         ),
       );
 }

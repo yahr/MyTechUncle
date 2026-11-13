@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import 'core.dart';
 import 'ds.dart';
+import 'ds_bars.dart';
 import 'screens.dart';
 import 'store.dart';
 
@@ -165,7 +166,7 @@ class _RecordingPickerPageState extends State<RecordingPickerPage> with WidgetsB
         child: ListTile(
           title: Text(_when(r)),
           subtitle: Text('${r['name']}', maxLines: 2, overflow: TextOverflow.ellipsis),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: const Icon(LucideIcons.chevronRight),
           onTap: () => _pick(r),
         ),
       );
@@ -205,6 +206,6 @@ class _RecordingPickerPageState extends State<RecordingPickerPage> with WidgetsB
         if (others.isNotEmpty) ...[_head('최근 녹음'), for (final r in others) ...[_tile(r), const SizedBox(height: 8)]],
       ]);
     }
-    return Scaffold(appBar: AppBar(title: Text('녹음 요약 · ${c['name'] ?? ''}')), body: body);
+    return Scaffold(appBar: DsAppBar(title: '녹음 요약 · ${c['name'] ?? ''}'), body: body);
   }
 }
