@@ -51,7 +51,6 @@ def build(p):
     main = f'''<main>
   <div class="top">
     <a class="back" href="./">← 나의 기술고문 아저씨</a>
-    {re.search(r'<button type="button" id="theme-toggle".*?</button>', tpl, re.S).group(0)}
   </div>
   <h1>{e(p['h1'])}</h1>
   <p class="meta">개발자 없는 회사 대표님용 체크리스트 · 가볍지이지 작성 · <time datetime="{p['date']}">{int(y)}년 {int(m)}월 {int(d)}일</time> 업데이트</p>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,15 +11,14 @@
 :root {
   color-scheme: light;
   --bg-page: #f7f9fb; --bg-surface: #ffffff; --bg-subtle: #eef1f5;
-  --fg-primary: #16202b; --fg-secondary: #4c5866; --fg-muted: #6e7a88; --fg-brand: #0b7f70;
-  --stroke-default: #e1e6ec;
+  --bg-brand: #0fa08d; --bg-brand-hover: #0b7f70;
+  --fg-primary: #16202b; --fg-secondary: #4c5866; --fg-muted: #6e7a88; --fg-brand: #0b7f70; --fg-on-brand: #ffffff;
+  --stroke-default: #e1e6ec; --stroke-strong: #cbd3db; --stroke-focus: #17bfa9;
+  --sh-1: 0 1px 2px rgba(22,32,43,.06);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
   --font-head: 'A2z', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   --font-body: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { color-scheme: dark; --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2; --fg-brand: #2ed8c3; --stroke-default: #2e3a48; }
-}
-:root[data-theme="dark"] { color-scheme: dark; --bg-page: #10161d; --bg-surface: #16202b; --bg-subtle: #243040; --fg-primary: #eef1f5; --fg-secondary: #cbd3db; --fg-muted: #9ba6b2; --fg-brand: #2ed8c3; --stroke-default: #2e3a48; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg-page); color: var(--fg-primary); font: 400 16px/1.75 var(--font-body); word-break: keep-all; overflow-wrap: anywhere; }
 main { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
@@ -29,8 +28,8 @@ h1 { font: 700 30px/1.3 var(--font-head); letter-spacing: -0.02em; margin: 16px 
 h2 { font: 700 19px/1.4 var(--font-head); margin: 40px 0 10px; }
 p, li { color: var(--fg-secondary); }
 .meta { font-size: 14px; color: var(--fg-muted); }
-.intro { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: 16px; padding: 18px 20px; margin-top: 24px; }
-.notice { background: var(--bg-subtle); border: 1px solid var(--stroke-default); border-left: 4px solid var(--fg-brand); border-radius: 12px; padding: 14px 18px; margin-top: 16px; }
+.intro { background: var(--bg-surface); border: 1px solid var(--stroke-default); border-radius: var(--r-lg); box-shadow: var(--sh-1); padding: 18px 20px; margin-top: 24px; }
+.notice { background: var(--bg-subtle); border: 1px solid var(--stroke-default); border-radius: var(--r-lg); padding: 14px 18px; margin-top: 16px; }
 .notice p { margin: 0; color: var(--fg-primary); }
 .tbl-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; background: var(--bg-surface); }
@@ -144,8 +143,5 @@ ul { padding-left: 1.2em; }
     <li>2026년 10월 2일: 최초 시행</li>
   </ul>
 </main>
-<script>
-try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
-</script>
 </body>
 </html>
