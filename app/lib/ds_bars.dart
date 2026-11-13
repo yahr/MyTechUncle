@@ -184,3 +184,67 @@ class DsKv extends StatelessWidget {
         DefaultTextStyle.merge(style: const TextStyle(fontSize: 15, height: 1.6, color: ink), child: value),
       ]);
 }
+
+/// 칸 라벨(t8 보조색). 입력칸 위, 시트 안 묶음 이름에 쓴다.
+class DsLabel extends StatelessWidget {
+  const DsLabel(this.text, {super.key});
+  final String text;
+  @override
+  Widget build(BuildContext context) => Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, height: 1.5, color: ink2));
+}
+
+/// .field — 라벨이 위, 사이 8, 입력 칸(여러 줄이면 minLines). 세무 앱 widgets/ds_field.dart 와 같다.
+class DsField extends StatelessWidget {
+  const DsField({super.key, required this.label, required this.controller, this.hint, this.minLines = 1, this.maxLines, this.keyboardType, this.onChanged});
+  final String label;
+  final TextEditingController controller;
+  final String? hint;
+  final int minLines;
+  final int? maxLines;
+  final TextInputType? keyboardType;
+  final ValueChanged<String>? onChanged;
+
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+        DsLabel(label),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          minLines: minLines,
+          maxLines: maxLines ?? minLines,
+          keyboardType: keyboardType,
+          onChanged: onChanged,
+          style: const TextStyle(fontSize: 15, height: 1.6, color: ink),
+          decoration: InputDecoration(hintText: hint),
+        ),
+      ]);
+}
+
+/// .sheet — 위 라운드 24, 손잡이 36×4, 가로 24 · 위 12 · 아래 24, 제목(에이투지체 t4), 항목 사이 16.
+/// 세무 앱 widgets/new_task_sheet.dart 의 틀과 같다. 버튼 줄은 [DsSheetActions] 로 오른쪽 정렬.
+Future<T?> showDsSheet<T>(BuildContext context, {required String title, required List<Widget> Function(BuildContext ctx) children}) =>
+    showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surface,
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(24, 12, 24, 24 + MediaQuery.viewInsetsOf(ctx).bottom),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: strokeStrong, borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 16),
+            Text(title, style: const TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600, height: 1.45, color: ink)),
+            ...children(ctx),
+          ]),
+        ),
+      ),
+    );
+
+/// .actions — 시트 맨 아래 버튼 줄. 오른쪽 정렬, 사이 8, 좁으면 다음 줄로.
+class DsSheetActions extends StatelessWidget {
+  const DsSheetActions(this.children, {super.key});
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) =>
+      Padding(padding: const EdgeInsets.only(top: 24), child: Wrap(alignment: WrapAlignment.end, spacing: 8, runSpacing: 8, children: children));
+}

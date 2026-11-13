@@ -84,54 +84,43 @@ class _ApplicationsTabState extends State<ApplicationsTab> {
 
 void _applicationSheet(BuildContext context, Rec a) {
   final c = store.customer(a['customer_id']);
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (ctx) => SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${c?['company'] ?? '-'} ${c?['name'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 20, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text('${a['slot'] ?? ''} · ${productNames[a['product']] ?? ''}', style: const TextStyle(color: ink2)),
-          const SizedBox(height: 12),
-          Text('${a['topic'] ?? ''}'),
-          const SizedBox(height: 16),
-          const Text('상태', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            for (final s in statusNames.entries)
-              ChoiceChip(
-                label: Text(s.value),
-                selected: a['status'] == s.key,
-                onSelected: (_) async {
-                  Navigator.pop(ctx);
-                  try {
-                    await store.save('applications', {'id': a['id'], 'status': s.key});
-                    if (context.mounted) _toast(context, '${s.value}(으)로 바꿨어요');
-                  } catch (e) {
-                    if (context.mounted) _toast(context, '$e');
-                  }
-                },
-              ),
-          ]),
-          const SizedBox(height: 16),
-          if (c != null)
-            Row(children: [
-              Expanded(child: OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(LucideIcons.phone), label: const Text('전화하기'))),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: FilledButton(
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerPage(id: c['id'])));
-                      },
-                      child: const Text('고객 보기'))),
-            ]),
+  showDsSheet(
+    context,
+    title: '${c?['company'] ?? '-'} ${c?['name'] ?? ''}',
+    children: (ctx) => [
+      const SizedBox(height: 4),
+      Text('${a['slot'] ?? ''} · ${productNames[a['product']] ?? ''}', style: const TextStyle(fontSize: 14, color: ink2)),
+      if ('${a['topic'] ?? ''}'.isNotEmpty) ...[const SizedBox(height: 16), const DsLabel('상담 주제'), const SizedBox(height: 4), Text('${a['topic']}', style: const TextStyle(fontSize: 15, height: 1.6))],
+      const SizedBox(height: 16),
+      const DsLabel('상태'),
+      const SizedBox(height: 8),
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final s in statusNames.entries)
+          ChoiceChip(
+            label: Text(s.value),
+            selected: a['status'] == s.key,
+            onSelected: (_) async {
+              Navigator.pop(ctx);
+              try {
+                await store.save('applications', {'id': a['id'], 'status': s.key});
+                if (context.mounted) _toast(context, '${s.value}(으)로 바꿨어요');
+              } catch (e) {
+                if (context.mounted) _toast(context, '$e');
+              }
+            },
+          ),
+      ]),
+      if (c != null)
+        DsSheetActions([
+          OutlinedButton.icon(onPressed: () => callPhone(c['phone']), icon: const Icon(LucideIcons.phone, size: 20), label: const Text('전화하기')),
+          FilledButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerPage(id: c['id'])));
+              },
+              child: const Text('고객 보기')),
         ]),
-      ),
-    ),
+    ],
   );
 }
 
@@ -245,32 +234,25 @@ void _issueSheet(BuildContext context, Rec r) {
     }
   }
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    builder: (ctx) => SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Flexible(child: SingleChildScrollView(child: Text('${r['text'] ?? ''}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)))),
-          const SizedBox(height: 8),
-          Text('${r['room'] ?? ''} · ${r['sender'] ?? ''} · ${r['created_at'] ?? ''}', style: const TextStyle(color: ink2)),
-          const SizedBox(height: 8),
-          Text(issueQuips[keys[idx]]!, style: const TextStyle(color: mintInk)),
-          const SizedBox(height: 16),
-          const Text('단계', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            for (final s in issueStages.entries) ChoiceChip(label: Text(s.value), selected: keys[idx] == s.key, onSelected: (_) => move(ctx, s.key)),
-          ]),
-          if (idx < keys.length - 1) ...[
-            const SizedBox(height: 16),
-            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => move(ctx, keys[idx + 1]), child: const Text('다음 단계로'))),
-          ],
-        ]),
-      ),
-    ),
+  showDsSheet(
+    context,
+    title: '${r['text'] ?? ''}',
+    children: (ctx) => [
+      const SizedBox(height: 4),
+      Text('${r['room'] ?? ''} · ${r['sender'] ?? ''} · ${r['created_at'] ?? ''}', style: const TextStyle(fontSize: 14, color: ink2)),
+      const SizedBox(height: 8),
+      Text(issueQuips[keys[idx]]!, style: const TextStyle(fontSize: 14, color: mintInk)),
+      const SizedBox(height: 16),
+      const DsLabel('단계'),
+      const SizedBox(height: 8),
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final s in issueStages.entries) ChoiceChip(label: Text(s.value), selected: keys[idx] == s.key, onSelected: (_) => move(ctx, s.key)),
+      ]),
+      DsSheetActions([
+        OutlinedButton(onPressed: () => Navigator.pop(ctx), child: const Text('닫기')),
+        if (idx < keys.length - 1) FilledButton(onPressed: () => move(ctx, keys[idx + 1]), child: const Text('다음 단계로')),
+      ]),
+    ],
   );
 }
 
@@ -530,13 +512,13 @@ class _FormPageState extends State<_FormPage> {
         body: ListView(padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom), children: [
           for (final f in widget.fields)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: TextField(
-                controller: ctl[f.$1],
+              padding: const EdgeInsets.only(bottom: 16),
+              child: DsField(
+                label: f.$2,
+                controller: ctl[f.$1]!,
                 minLines: f.multiline ? 4 : 1,
                 maxLines: f.multiline ? 12 : 1,
                 keyboardType: f.number ? TextInputType.number : (f.multiline ? TextInputType.multiline : TextInputType.text),
-                decoration: InputDecoration(labelText: f.$2),
               ),
             ),
           const SizedBox(height: 8),
@@ -644,19 +626,20 @@ class _SubscriptionFormState extends State<SubscriptionForm> {
           SegmentedButton<String>(
             segments: const [ButtonSegment(value: 'annual', label: Text('연간 기술고문')), ButtonSegment(value: 'founder', label: Text('Founder'))],
             selected: {product},
+            showSelectedIcon: false, // .seg — 체크 표시 없이 바탕·글자색으로
             onSelectionChanged: (v) => setState(() {
               product = v.first;
               _fill();
             }),
           ),
           const SizedBox(height: 16),
-          TextField(controller: start, decoration: const InputDecoration(labelText: '시작일 (YYYY-MM-DD)'), onChanged: (_) {
+          DsField(label: '시작일', hint: 'YYYY-MM-DD', controller: start, onChanged: (_) {
             if (widget.row == null) setState(_fill);
           }),
-          const SizedBox(height: 12),
-          TextField(controller: end, decoration: const InputDecoration(labelText: '종료일 (YYYY-MM-DD)')),
-          const SizedBox(height: 12),
-          TextField(controller: amount, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: '금액 (원)')),
+          const SizedBox(height: 16),
+          DsField(label: '종료일', hint: 'YYYY-MM-DD', controller: end),
+          const SizedBox(height: 16),
+          DsField(label: '금액 (원)', controller: amount, keyboardType: TextInputType.number),
           SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('입금 확인'), value: paid, onChanged: (v) => setState(() => paid = v)),
           if (widget.row != null) SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('해지'), value: cancelled, onChanged: (v) => setState(() => cancelled = v)),
           const SizedBox(height: 8),
