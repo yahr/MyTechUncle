@@ -113,6 +113,38 @@ void main() {
     test('원문이 없으면 요약만', () => expect(consultationDraft(' 견적서 검토 ', ''), '견적서 검토'));
   });
 
+  group('issueStageIndex', () {
+    test('여섯 키는 순서대로 0..5', () {
+      expect(issueStages.keys.map(issueStageIndex).toList(), [0, 1, 2, 3, 4, 5]);
+      expect(issueStages.keys.toList(), ['received', 'reviewed', 'doing', 'done', 'feedback', 'pride']);
+    });
+    test('옛 값과 모르는 값', () {
+      expect(issueStageIndex('open'), 0);
+      expect(issueStageIndex('closed'), 3);
+      expect(issueStageIndex(null), 0);
+      expect(issueStageIndex('???'), 0);
+    });
+    test('issueActive는 직업 단계까지', () {
+      expect(issueActive('doing'), true);
+      expect(issueActive('open'), true);
+      expect(issueActive('done'), false);
+      expect(issueActive('closed'), false);
+    });
+  });
+
+  group('guessCustomer', () {
+    final cs = <Map<String, dynamic>>[
+      {'id': 1, 'name': '김민수 대표', 'phone': '010-1234-5678'},
+      {'id': 2, 'name': '박지영', 'phone': '010-9999-0000'},
+      {'id': 3, 'name': '최', 'phone': ''},
+    ];
+    test('번호로 찾아요(하이픈 있는 번호)', () => expect(guessCustomer('통화 요약 010-9999-0000 견적 문의', cs)?['id'], 2));
+    test('이름으로 찾아요', () => expect(guessCustomer('박지영 대표님과 통화했어요', cs)?['id'], 2));
+    test('번호가 이름보다 먼저예요', () => expect(guessCustomer('박지영 (010-1234-5678) 통화', cs)?['id'], 1));
+    test('아무것도 없으면 null', () => expect(guessCustomer('오늘 통화 요약이에요', cs), isNull));
+    test('이름 한 글자는 맞추지 않아요', () => expect(guessCustomer('최고의 하루', cs), isNull));
+  });
+
   group('formatDuration', () {
     test('분:초', () {
       expect(formatDuration(const Duration(minutes: 3, seconds: 5)), '3:05');

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'core.dart';
+import 'ds.dart';
 import 'screens.dart';
 import 'store.dart';
 
 final store = Store();
-
-const mint = Color(0xFF0FA08D), mintInk = Color(0xFF0B7F70), ink = Color(0xFF16202B), ink2 = Color(0xFF4C5866), page = Color(0xFFF7F9FB);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,14 +21,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: '기술고문 노트',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: mint, primary: mint, surface: Colors.white),
-          scaffoldBackgroundColor: page,
-          appBarTheme: const AppBarTheme(backgroundColor: page, foregroundColor: ink, elevation: 0, centerTitle: false),
-          cardTheme: CardThemeData(color: Colors.white, elevation: 0, margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Color(0xFFE1E6EC)))),
-          inputDecorationTheme: InputDecorationTheme(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), filled: true, fillColor: Colors.white),
-        ),
+        theme: dsTheme(),
         home: const Home(),
       );
 }
@@ -75,6 +67,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       if (id != null && id > 0 && mounted) {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerPage(id: id)));
       }
+      final shared = await native.invokeMethod<String>('takeSharedText');
+      if (shared != null && shared.trim().isNotEmpty && mounted) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => SharedTextPage(text: shared.trim())));
+      }
     } catch (_) {}
   }
 
@@ -85,7 +81,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         listenable: store,
         builder: (context, _) => Scaffold(
           appBar: AppBar(
-            title: const Text('기술고문 노트', style: TextStyle(fontWeight: FontWeight.w700)),
+            title: const Text('기술고문 노트'),
             actions: [
               if (store.loading) const Padding(padding: EdgeInsets.all(16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
               IconButton(tooltip: '새로 불러오기', onPressed: store.refresh, icon: const Icon(Icons.refresh)),
@@ -94,8 +90,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           body: Column(children: [
             if (perms.isNotEmpty && !cardReady) _PermBanner(perms: perms, onChanged: _onResume),
             if (store.error != null)
-              Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(store.error!, style: const TextStyle(color: Color(0xFFC0392B), fontSize: 13))),
-            Expanded(child: tab == 0 ? const ApplicationsTab() : const CustomersTab()),
+              Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(store.error!, style: const TextStyle(color: danger, fontSize: 13))),
+            Expanded(child: switch (tab) { 0 => ApplicationsTab(), 1 => CustomersTab(), _ => IssuesTab() }), // const 를 쓰면 store 가 바뀌어도 다시 안 그려진다
           ]),
           floatingActionButton: tab == 1
               ? FloatingActionButton.extended(
@@ -103,14 +99,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   icon: const Icon(Icons.person_add_alt),
                   label: const Text('고객 추가'))
               : null,
-          bottomNavigationBar: NavigationBar(
+          bottomNavigationBar: DecoratedBox(
+            decoration: const BoxDecoration(border: Border(top: BorderSide(color: stroke))),
+            child: NavigationBar(
             selectedIndex: tab,
             onDestinationSelected: (i) => setState(() => tab = i),
             destinations: const [
               NavigationDestination(icon: Icon(Icons.inbox_outlined), label: '신청'),
               NavigationDestination(icon: Icon(Icons.people_outline), label: '고객'),
+              NavigationDestination(icon: Icon(Icons.task_alt_outlined), label: '이슈'),
             ],
-          ),
+          )),
         ),
       );
 }
@@ -126,7 +125,7 @@ class _PermBanner extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('전화 수신 카드를 켜 주세요', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              const Text('전화 수신 카드를 켜 주세요', style: TextStyle(fontFamily: head, fontWeight: FontWeight.w600, fontSize: 18)),
               const SizedBox(height: 4),
               const Text('고객에게 전화가 오면 누구인지, 구독, 지난 상담이 화면 위에 떠요.', style: TextStyle(color: ink2)),
               const SizedBox(height: 12),

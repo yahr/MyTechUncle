@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core.dart';
+import 'ds.dart';
 import 'main.dart';
 import 'store.dart';
 import 'summary.dart';
@@ -10,11 +11,18 @@ String _today() => DateTime.now().toIso8601String().substring(0, 10);
 
 Widget _empty(String text) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text(text, style: const TextStyle(color: ink2), textAlign: TextAlign.center)));
 
-Widget _chip(String text, {bool strong = false}) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: strong ? const Color(0xFFE6FBF8) : const Color(0xFFF0F3F6), borderRadius: BorderRadius.circular(99)),
-      child: Text(text, style: TextStyle(fontSize: 12, color: strong ? mintInk : ink2, fontWeight: FontWeight.w600)),
-    );
+/// DS .badge(점 + 연한 바탕·테두리). tone: 'warn' 진행·대기, 'ok' 완료·이용 중, 'neutral' 그 밖. null 이면 .tag(점 없음)
+Widget _chip(String text, {String? tone}) {
+  final (bg, fg, line) = switch (tone) { 'warn' => (warnSoft, warnInk, warnLine), 'ok' => (okSoft, okInk, okLine), _ => (subtle, ink2, tone == null ? subtle : stroke) };
+  return Container(
+    height: 24, padding: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: BoxDecoration(color: bg, border: Border.all(color: line), borderRadius: BorderRadius.circular(99)),
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      if (tone != null) ...[Container(width: 6, height: 6, decoration: BoxDecoration(color: fg, shape: BoxShape.circle)), const SizedBox(width: 6)],
+      Text(text, style: TextStyle(fontSize: 13, color: fg, fontWeight: tone == null ? FontWeight.w400 : FontWeight.w600)),
+    ]),
+  );
+}
 
 void _toast(BuildContext context, String msg) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
@@ -55,10 +63,10 @@ class _ApplicationsTabState extends State<ApplicationsTab> {
                     final a = rows[i], c = store.customer(a['customer_id']);
                     return Card(
                       child: ListTile(
-                        title: Text('${c?['company'] ?? '-'} ${c?['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                        title: Text('${c?['company'] ?? '-'} ${c?['name'] ?? ''}'),
                         subtitle: Text('${a['slot'] ?? ''} · ${productNames[a['product']] ?? ''}\n${a['topic'] ?? ''}', maxLines: 3, overflow: TextOverflow.ellipsis),
                         isThreeLine: true,
-                        trailing: _chip(statusNames[a['status']] ?? '${a['status']}', strong: a['status'] == 'new'),
+                        trailing: _chip(statusNames[a['status']] ?? '${a['status']}', tone: a['status'] == 'new' ? 'warn' : 'neutral'),
                         onTap: () => _applicationSheet(context, a),
                       ),
                     );
@@ -80,13 +88,13 @@ void _applicationSheet(BuildContext context, Rec a) {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${c?['company'] ?? '-'} ${c?['name'] ?? ''}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Text('${c?['company'] ?? '-'} ${c?['name'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 20, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           Text('${a['slot'] ?? ''} · ${productNames[a['product']] ?? ''}', style: const TextStyle(color: ink2)),
           const SizedBox(height: 12),
           Text('${a['topic'] ?? ''}'),
           const SizedBox(height: 16),
-          const Text('상태', style: TextStyle(fontWeight: FontWeight.w700)),
+          const Text('상태', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final s in statusNames.entries)
@@ -117,6 +125,145 @@ void _applicationSheet(BuildContext context, Rec a) {
                       },
                       child: const Text('고객 보기'))),
             ]),
+        ]),
+      ),
+    ),
+  );
+}
+
+// ---------------- 이슈 ----------------
+class IssuesTab extends StatefulWidget {
+  const IssuesTab({super.key});
+  @override
+  State<IssuesTab> createState() => _IssuesTabState();
+}
+
+class _IssuesTabState extends State<IssuesTab> {
+  String filter = 'active'; // 'active' | 'all' | 단계 키
+  @override
+  Widget build(BuildContext context) {
+    final keys = issueStages.keys.toList();
+    final counts = List.filled(6, 0);
+    for (final i in store.issues) {
+      counts[issueStageIndex(i['status'])]++;
+    }
+    final rows = store.issues.where((i) => switch (filter) {
+          'all' => true,
+          'active' => issueActive(i['status']),
+          _ => keys[issueStageIndex(i['status'])] == filter,
+        }).toList();
+    final quip = issueQuips[issueStages.containsKey(filter) ? filter : 'received']!;
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                for (var n = 0; n < 6; n++)
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => setState(() => filter = keys[n]),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(color: filter == keys[n] ? brandSoft : null, borderRadius: BorderRadius.circular(10)),
+                        child: Column(children: [
+                          Text(issueStages[keys[n]]!, style: const TextStyle(fontSize: 11, color: ink2, fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 2),
+                          Text('${counts[n]}', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: counts[n] > 0 ? mintInk : disabled)),
+                        ]),
+                      ),
+                    ),
+                  ),
+              ]),
+              Padding(padding: const EdgeInsets.fromLTRB(8, 8, 8, 4), child: Text(quip, style: const TextStyle(color: ink2, fontSize: 13))),
+            ]),
+          ),
+        ),
+      ),
+      SizedBox(
+        height: 48,
+        child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
+          for (final f in const {'active': '진행 중', 'all': '전체'}.entries)
+            Padding(padding: const EdgeInsets.only(right: 8), child: ChoiceChip(label: Text(f.value), selected: filter == f.key, onSelected: (_) => setState(() => filter = f.key))),
+        ]),
+      ),
+      Expanded(
+        child: RefreshIndicator(
+          onRefresh: store.refresh,
+          child: rows.isEmpty
+              ? ListView(children: [_empty(store.loading ? '불러오는 중이에요' : '이슈가 없어요')])
+              : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  itemCount: rows.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (_, i) {
+                    final r = rows[i], idx = issueStageIndex(r['status']);
+                    return Card(
+                      child: ListTile(
+                        title: Text('${r['text'] ?? ''}', maxLines: 3, overflow: TextOverflow.ellipsis),
+                        subtitle: Text('${r['room'] ?? ''} · ${r['sender'] ?? ''} · ${r['created_at'] ?? ''}'),
+                        trailing: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
+                          _chip(issueStages[keys[idx]]!, tone: idx <= 2 ? 'warn' : 'ok'),
+                          const SizedBox(height: 6),
+                          Row(mainAxisSize: MainAxisSize.min, children: [
+                            for (var n = 0; n < 6; n++)
+                              Container(
+                                margin: EdgeInsets.only(left: n == 0 ? 0 : 3),
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: n <= idx ? mint : stroke),
+                              ),
+                          ]),
+                        ]),
+                        onTap: () => _issueSheet(context, r),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ),
+    ]);
+  }
+}
+
+void _issueSheet(BuildContext context, Rec r) {
+  final keys = issueStages.keys.toList(), idx = issueStageIndex(r['status']);
+  Future<void> move(BuildContext ctx, String key) async {
+    Navigator.pop(ctx);
+    try {
+      await store.save('issues', {'id': r['id'], 'status': key});
+      if (context.mounted) _toast(context, '${issueStages[key]}(으)로 옮겼어요');
+    } catch (e) {
+      if (context.mounted) _toast(context, '$e');
+    }
+  }
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (ctx) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Flexible(child: SingleChildScrollView(child: Text('${r['text'] ?? ''}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)))),
+          const SizedBox(height: 8),
+          Text('${r['room'] ?? ''} · ${r['sender'] ?? ''} · ${r['created_at'] ?? ''}', style: const TextStyle(color: ink2)),
+          const SizedBox(height: 8),
+          Text(issueQuips[keys[idx]]!, style: const TextStyle(color: mintInk)),
+          const SizedBox(height: 16),
+          const Text('단계', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final s in issueStages.entries) ChoiceChip(label: Text(s.value), selected: keys[idx] == s.key, onSelected: (_) => move(ctx, s.key)),
+          ]),
+          if (idx < keys.length - 1) ...[
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => move(ctx, keys[idx + 1]), child: const Text('다음 단계로'))),
+          ],
         ]),
       ),
     ),
@@ -154,7 +301,7 @@ class _CustomersTabState extends State<CustomersTab> {
                     final c = rows[i];
                     return Card(
                       child: ListTile(
-                        title: Text('${c['company'] ?? ''} ${c['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                        title: Text('${c['company'] ?? ''} ${c['name'] ?? ''}'),
                         subtitle: Text(subscriptionLabel(ofCustomer(store.subscriptions, c['id']), DateTime.now())),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CustomerPage(id: c['id']))),
@@ -166,6 +313,56 @@ class _CustomersTabState extends State<CustomersTab> {
       ),
     ]);
   }
+}
+
+/// 다른 앱에서 공유받은 텍스트를 어느 고객 상담 기록에 넣을지 고르는 화면
+class SharedTextPage extends StatefulWidget {
+  const SharedTextPage({super.key, required this.text});
+  final String text;
+  @override
+  State<SharedTextPage> createState() => _SharedTextPageState();
+}
+
+class _SharedTextPageState extends State<SharedTextPage> {
+  String q = '';
+
+  Widget _tile(Map<String, dynamic> c) => Card(
+        child: ListTile(
+          title: Text('${c['company'] ?? ''} ${c['name'] ?? ''}'.trim()),
+          subtitle: Text('${c['phone'] ?? ''}'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => ConsultationForm(customerId: c['id'], draft: widget.text))),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+        listenable: store,
+        builder: (context, _) {
+          final guess = guessCustomer(widget.text, store.customers);
+          final rows = store.customers.where((c) => c != guess && (q.isEmpty || '${c['company']} ${c['name']} ${c['phone']}'.contains(q))).toList()
+            ..sort((a, b) => '${a['company']}'.compareTo('${b['company']}'));
+          return Scaffold(
+            appBar: AppBar(title: const Text('공유받은 내용')),
+            body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
+              Card(child: Padding(padding: const EdgeInsets.all(12), child: Text(widget.text, maxLines: 6, overflow: TextOverflow.ellipsis, style: const TextStyle(color: ink2)))),
+              const Padding(padding: EdgeInsets.only(top: 16, bottom: 8), child: Text('누구와 나눈 이야기인가요', style: TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600))),
+              TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: '회사·이름·번호로 찾기', isDense: true), onChanged: (v) => setState(() => q = v.trim())),
+              const SizedBox(height: 8),
+              if (store.customers.isEmpty)
+                _empty(store.loading ? '불러오는 중이에요' : '고객이 없어요. 고객 탭에서 먼저 추가해 주세요')
+              else ...[
+                if (guess != null) ...[
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Text('이 고객 같아요', style: TextStyle(color: mintInk, fontWeight: FontWeight.w600))),
+                  _tile(guess),
+                  const SizedBox(height: 8),
+                ],
+                for (final c in rows) _tile(c),
+              ],
+            ]),
+          );
+        },
+      );
 }
 
 class CustomerPage extends StatelessWidget {
@@ -191,7 +388,7 @@ class CustomerPage extends StatelessWidget {
               label: const Text('상담 기록'),
             ),
             body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 96), children: [
-              Text('${c['company'] ?? ''}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+              Text('${c['company'] ?? ''}', style: const TextStyle(fontFamily: head, fontSize: 24, fontWeight: FontWeight.w700)),
               Text('${c['name'] ?? ''}${(c['industry'] ?? '') == '' ? '' : ' · ${c['industry']}'}', style: const TextStyle(color: ink2, fontSize: 16)),
               const SizedBox(height: 12),
               Wrap(spacing: 8, runSpacing: 8, children: [
@@ -208,7 +405,7 @@ class CustomerPage extends StatelessWidget {
                 title: '구독',
                 action: TextButton.icon(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => SubscriptionForm(customerId: c['id']))), icon: const Icon(Icons.add), label: const Text('구독 추가')),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  _chip(subscriptionLabel(subs, DateTime.now()), strong: true),
+                  _chip(subscriptionLabel(subs, DateTime.now()), tone: subs.isEmpty ? 'neutral' : 'ok'),
                   for (final s in subs)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -231,10 +428,10 @@ class CustomerPage extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                SizedBox(width: 84, child: Text('${r['date'] ?? ''}', style: const TextStyle(color: mintInk, fontWeight: FontWeight.w700, fontSize: 13))),
+                                SizedBox(width: 84, child: Text('${r['date'] ?? ''}', style: const TextStyle(color: mintInk, fontWeight: FontWeight.w500, fontSize: 13))),
                                 Expanded(
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    Text('${r['title'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                                    Text('${r['title'] ?? ''}'),
                                     if ('${r['content'] ?? ''}'.isNotEmpty) Text('${r['content']}'),
                                     if ('${r['next_action'] ?? ''}'.isNotEmpty) Text('다음 할 일: ${r['next_action']}', style: const TextStyle(color: ink2)),
                                   ]),
@@ -260,7 +457,7 @@ class _Section extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700))), if (action != null) action!]),
+            Row(children: [Expanded(child: Text(title, style: const TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600))), if (action != null) action!]),
             const SizedBox(height: 8),
             child,
           ]),
@@ -452,13 +649,13 @@ class _CallBar extends StatelessWidget {
         valueListenable: callState,
         builder: (context, state, _) {
           if (state == 'idle') return const SizedBox.shrink();
-          const red = Color(0xFFC0392B), green = Color(0xFF22A06B);
+          const red = danger, green = ok;
           ButtonStyle style(Color c) => FilledButton.styleFrom(backgroundColor: c, minimumSize: const Size.fromHeight(56),
               textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700));
           return SafeArea(
             child: Container(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: Color(0xFFE1E6EC)))),
+              decoration: const BoxDecoration(color: surface, border: Border(top: BorderSide(color: stroke))),
               child: state == 'ringing'
                   ? Row(children: [
                       Expanded(child: FilledButton.icon(style: style(red), onPressed: () => _do(context, 'endCall', '거절하지 못했어요. 통화 화면에서 거절해 주세요'),

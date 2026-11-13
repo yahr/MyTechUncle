@@ -25,7 +25,7 @@ void listenCallState() {
 typedef Rec = Map<String, dynamic>;
 
 class Store extends ChangeNotifier {
-  List<Rec> customers = [], applications = [], subscriptions = [], consultations = [];
+  List<Rec> customers = [], applications = [], subscriptions = [], consultations = [], issues = [];
   bool loading = false;
   String? error;
   DateTime? syncedAt;
@@ -76,6 +76,7 @@ class Store extends ChangeNotifier {
     applications = rows('applications')..sort((a, b) => '${b['createdAt']}'.compareTo('${a['createdAt']}'));
     subscriptions = rows('subscriptions');
     consultations = rows('consultations');
+    issues = rows('issues')..sort((a, b) => '${b['created_at']}'.compareTo('${a['created_at']}'));
   }
 
   Rec? customer(dynamic id) => customers.where((c) => '${c['id']}' == '$id').firstOrNull;

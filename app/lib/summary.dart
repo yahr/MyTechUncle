@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'core.dart';
-import 'main.dart';
+import 'ds.dart';
 import 'screens.dart';
 import 'store.dart';
 
@@ -163,14 +163,14 @@ class _RecordingPickerPageState extends State<RecordingPickerPage> with WidgetsB
 
   Widget _tile(Rec r) => Card(
         child: ListTile(
-          title: Text(_when(r), style: const TextStyle(fontWeight: FontWeight.w700)),
+          title: Text(_when(r)),
           subtitle: Text('${r['name']}', maxLines: 2, overflow: TextOverflow.ellipsis),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _pick(r),
         ),
       );
 
-  Widget _head(String t) => Padding(padding: const EdgeInsets.fromLTRB(4, 16, 4, 8), child: Text(t, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: mintInk)));
+  Widget _head(String t) => Padding(padding: const EdgeInsets.fromLTRB(4, 16, 4, 8), child: Text(t, style: const TextStyle(fontFamily: head, fontSize: 18, fontWeight: FontWeight.w600, color: ink)));
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +192,7 @@ class _RecordingPickerPageState extends State<RecordingPickerPage> with WidgetsB
         ),
       );
     } else if (error != null) {
-      body = Center(child: Padding(padding: const EdgeInsets.all(32), child: Text(error!, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFFC0392B)))));
+      body = Center(child: Padding(padding: const EdgeInsets.all(32), child: Text(error!, textAlign: TextAlign.center, style: const TextStyle(color: danger))));
     } else if (mine.isEmpty && others.isEmpty) {
       body = const Center(
           child: Padding(

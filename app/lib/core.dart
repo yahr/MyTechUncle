@@ -77,6 +77,20 @@ bool recordingMatches(String fileName, {String? phone, String? name}) {
   return n.length >= 2 && fileName.contains(n);
 }
 
+/// 공유된 텍스트에서 고객을 짐작해요. 번호(끝 8자리) 일치가 이름(첫 낱말, 2글자 이상) 일치보다 먼저예요.
+Map<String, dynamic>? guessCustomer(String text, List<Map<String, dynamic>> customers) {
+  final digits = text.replaceAll(RegExp(r'(?<=\d)[-\s](?=\d)'), '');
+  for (final c in customers) {
+    final p = normalizePhone('${c['phone'] ?? ''}');
+    if (p.length >= 8 && digits.contains(p.substring(p.length - 8))) return c;
+  }
+  for (final c in customers) {
+    final n = '${c['name'] ?? ''}'.split(RegExp(r'[\s()]+')).where((t) => t.isNotEmpty).firstOrNull ?? '';
+    if (n.length >= 2 && text.contains(n)) return c;
+  }
+  return null;
+}
+
 /// 녹음 목록(최신순)을 '이 고객' 것 전부 + 나머지 최근 [limit]개로 나눠요.
 ({List<Map<String, dynamic>> mine, List<Map<String, dynamic>> others}) groupRecordings(List<Map<String, dynamic>> recs,
     {String? phone, String? name, int limit = 20}) {
@@ -95,3 +109,29 @@ String formatDuration(Duration d) {
   final s = _2(d.inSeconds % 60), m = d.inHours > 0 ? _2(d.inMinutes % 60) : '${d.inMinutes % 60}';
   return d.inHours > 0 ? '${d.inHours}:$m:$s' : '$m:$s';
 }
+
+// ---------------- 이슈 상태 6단계 ----------------
+
+/// 이슈 상태 6단계 (키 → 이름). 순서가 곧 진행 순서.
+const issueStages = {
+  'received': '일거리', 'reviewed': '업무', 'doing': '직업', 'done': '월급', 'feedback': '전문가', 'pride': '프라이드',
+};
+
+/// 단계별 위트 한 줄
+const issueQuips = {
+  'received': '누가 뭘 해 달래요. 아직은 심부름이에요.',
+  'reviewed': '뭘 원하는지 알아들었어요. 이제 업무예요.',
+  'doing': '손대고 있어요. 이게 밥벌이예요.',
+  'done': '끝냈어요. 이걸로 밥을 먹어요.',
+  'feedback': '고객이 한마디 남겼어요. 다음엔 더 잘해요.',
+  'pride': '그래서 이 일을 해요.',
+};
+
+/// status → 0..5. 옛 값 'open'→0, 'closed'→3, 모르는 값→0
+int issueStageIndex(dynamic status) {
+  final i = issueStages.keys.toList().indexOf('$status');
+  return i >= 0 ? i : (status == 'closed' ? 3 : 0);
+}
+
+/// 아직 안 끝난 이슈인가 (일거리·업무·직업)
+bool issueActive(dynamic status) => issueStageIndex(status) <= 2;

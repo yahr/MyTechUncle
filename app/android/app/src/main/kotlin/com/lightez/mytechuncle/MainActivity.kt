@@ -20,6 +20,7 @@ import kotlin.concurrent.thread
 
 class MainActivity : FlutterActivity() {
     private var pendingCustomerId: Int? = null
+    private var pendingSharedText: String? = null // 공유 텍스트는 로그에 남기지 않는다
     private var pendingAudioResult: MethodChannel.Result? = null
 
     companion object {
@@ -38,6 +39,7 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         current = this
+        sharedText(intent)
         fromCall(intent)
     }
 
@@ -68,6 +70,7 @@ class MainActivity : FlutterActivity() {
                         result.success(null)
                     }
                     "takeCustomerId" -> { result.success(pendingCustomerId); pendingCustomerId = null }
+                    "takeSharedText" -> { result.success(pendingSharedText); pendingSharedText = null }
                     "callState" -> result.success(callState)
                     "answerCall" -> result.success(telecom { acceptRingingCall(); true })
                     "endCall" -> result.success(telecom { endCall() })
@@ -152,7 +155,15 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.customerId()?.let { pendingCustomerId = it }
+        sharedText(intent)
         fromCall(intent)
+    }
+
+    // 다른 앱에서 "공유"로 보낸 텍스트
+    private fun sharedText(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            pendingSharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        }
     }
 
     // 카드에서 열었을 때만 잠금 화면 위로 보인다(통화가 끝나면 다시 끈다)
