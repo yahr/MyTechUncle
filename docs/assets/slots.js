@@ -82,4 +82,19 @@ function slotRange(date, time, cfg = CFG) {
   return { start: `${date}T${time}:00+09:00`, end: endStr };
 }
 
-if (typeof module !== 'undefined') module.exports = { computeSlots, isSlotFree, slotRange, CFG };
+// 개인 캘린더(light.ez.jjack@gmail.com)의 구글 일정 → 막을 일정만. MyTechUncle 캘린더와 달리
+// '한가함'(transparent)·내가 거절한 일정·취소된 일정은 빼고, 제목은 지워 [무료상담] 하루 한도에 섞이지 않게 한다.
+// 구글은 종일 일정을 기본 '한가함'으로 두므로 생일·기념일 같은 종일 일정으로 하루가 막히지 않는다.
+function personalEvents(items) {
+  return (items || [])
+    .filter((e) => e.status !== 'cancelled' && e.transparency !== 'transparent')
+    .filter((e) => !(e.attendees || []).some((a) => a.self && a.responseStatus === 'declined'))
+    .map((e) => ({
+      start: (e.start && (e.start.dateTime || e.start.date)) || '',
+      end: (e.end && (e.end.dateTime || e.end.date)) || '',
+      allDay: !!(e.start && e.start.date),
+      summary: '',
+    }));
+}
+
+if (typeof module !== 'undefined') module.exports = { computeSlots, isSlotFree, slotRange, personalEvents, CFG };

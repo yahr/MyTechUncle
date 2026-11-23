@@ -77,3 +77,38 @@ test('isSlotFree: 예약 직전 재확인', () => {
   assert.strictEqual(isSlotFree({ date: '2026-10-05', time: '10:30', now: NOW, events }), true);
   assert.strictEqual(isSlotFree({ date: '2026-10-05', time: '10:15', now: NOW, events }), false); // 슬롯 경계가 아님
 });
+
+// 개인 캘린더(light.ez.jjack@gmail.com): '바쁨' 일정만 막는다
+const { personalEvents } = require('./slots.js');
+const gItem = (o) => ({ status: 'confirmed', ...o });
+
+test('개인 캘린더: 바쁨(기본) 시간 일정은 그 시간을 막는다', () => {
+  const events = personalEvents([gItem({ start: { dateTime: '2026-10-05T10:00:00+09:00' }, end: { dateTime: '2026-10-05T11:00:00+09:00' } })]);
+  const r = computeSlots({ date: '2026-10-05', now: NOW, events });
+  assert.ok(!r.includes('10:00') && !r.includes('10:30'));
+  assert.ok(r.includes('09:30') && r.includes('11:00'));
+});
+
+test('개인 캘린더: 한가함 일정·거절한 일정·취소된 일정은 막지 않는다', () => {
+  const t = { start: { dateTime: '2026-10-05T10:00:00+09:00' }, end: { dateTime: '2026-10-05T11:00:00+09:00' } };
+  const events = personalEvents([
+    gItem({ ...t, transparency: 'transparent' }),
+    gItem({ ...t, attendees: [{ email: 'light.ez.jjack@gmail.com', self: true, responseStatus: 'declined' }] }),
+    gItem({ ...t, status: 'cancelled' }),
+  ]);
+  assert.deepStrictEqual(events, []);
+  assert.ok(computeSlots({ date: '2026-10-05', now: NOW, events }).includes('10:00'));
+});
+
+test('개인 캘린더: 종일 일정은 한가함(구글 기본)이면 하루를 막지 않고, 바쁨이면 막는다', () => {
+  const allDay = { start: { date: '2026-10-05' }, end: { date: '2026-10-06' } };
+  const free = personalEvents([gItem({ ...allDay, transparency: 'transparent' })]);
+  assert.strictEqual(computeSlots({ date: '2026-10-05', now: NOW, events: free }).length, 30);
+  const busy = personalEvents([gItem({ ...allDay })]);
+  assert.deepStrictEqual(computeSlots({ date: '2026-10-05', now: NOW, events: busy }), []);
+});
+
+test('개인 캘린더 일정은 [무료상담] 하루 한도 계산에 들어가지 않는다', () => {
+  const events = personalEvents([gItem({ summary: '[무료상담] 개인 메모', start: { dateTime: '2026-10-05T07:00:00+09:00' }, end: { dateTime: '2026-10-05T07:30:00+09:00' } })]);
+  assert.strictEqual(events[0].summary, '');
+});

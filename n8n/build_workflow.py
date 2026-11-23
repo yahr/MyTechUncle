@@ -10,6 +10,8 @@ ORIGINS = 'https://yahr.github.io,http://localhost:8766'
 # 예약 전용 캘린더 'MyTechUncle' (light.ez.jjack@gmail.com 계정)
 CAL_ID = '24f8c32d583ad5ade6f55c65bb7bba3c6f1af3b8838106c3161342b65c2907bb@group.calendar.google.com'
 CAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID.replace('@', '%40') + '/events'
+# 개인(기본) 캘린더 — '바쁨' 일정만 막는다(slots.js personalEvents). 읽기만 하고 여기엔 쓰지 않는다 (2026-11-23 사용자 요청)
+PERSONAL_EVENTS = 'https://www.googleapis.com/calendar/v3/calendars/light.ez.jjack%40gmail.com/events'
 TG_CRED = {'telegramApi': {'id': 'ydX5qYevNyp4pd21', 'name': 'Telegram (@mytechuncle_bot)'}}  # 채널 관리자 봇(illey_secretary_bot 은 채널에 없어 chat not found)
 CHAT_ID = '-1003659059794'  # 텔레그램 채널 '나의 기술고문 알림' (봇 @mytechuncle_bot 관리자)
 CAL_CRED = {'googleCalendarOAuth2Api': {'id': 'QNKMHoO0PJUojtFo', 'name': 'Google Calendar account - light.ez.jjack@gmail.com'}}
@@ -46,11 +48,11 @@ def webhook(name, path, method, pos):
 def code(name, js, pos):
     return node(name, 'n8n-nodes-base.code', 2, {'jsCode': js}, pos)
 
-def cal_list(name, pos):
+def cal_list(name, pos, url=CAL_EVENTS, src='$json'):
     return node(name, 'n8n-nodes-base.httpRequest', 4.2, {
-        'url': CAL_EVENTS, 'authentication': 'predefinedCredentialType', 'nodeCredentialType': 'googleCalendarOAuth2Api',
+        'url': url, 'authentication': 'predefinedCredentialType', 'nodeCredentialType': 'googleCalendarOAuth2Api',
         'sendQuery': True, 'queryParameters': {'parameters': [
-            {'name': 'timeMin', 'value': '={{ $json.timeMin }}'}, {'name': 'timeMax', 'value': '={{ $json.timeMax }}'},
+            {'name': 'timeMin', 'value': '={{ %s.timeMin }}' % src}, {'name': 'timeMax', 'value': '={{ %s.timeMax }}' % src},
             {'name': 'singleEvents', 'value': 'true'}, {'name': 'maxResults', 'value': '250'}]},
         'options': {}}, pos, credentials=CAL_CRED)
 
@@ -72,9 +74,10 @@ s_range = code('조회 날짜 범위', DAY_RANGE + r'''
 const date = String(($input.first().json.query || {}).date || '');
 return [{ json: { date, ...dayRange(date) } }];''', [220, 0])
 s_cal = cal_list('캘린더 일정 조회', [440, 0])
+s_pcal = cal_list('개인 캘린더 일정 조회', [550, 0], PERSONAL_EVENTS, "$('조회 날짜 범위').first().json")
 s_calc = code('빈 시간 계산', SLOTS + DAY_RANGE + r'''
 const date = $('조회 날짜 범위').first().json.date;
-const events = toEvents($input.first().json.items);
+const events = [...toEvents($('캘린더 일정 조회').first().json.items), ...personalEvents($input.first().json.items)];
 return [{ json: { date, slots: computeSlots({ date, now: Date.now(), events }) } }];''', [660, 0])
 s_resp = respond('빈 시간 응답', '={{ JSON.stringify({ date: $json.date, slots: $json.slots }) }}', [880, 0])
 
@@ -93,9 +96,10 @@ return [{ json: { valid: !!valid, ...d, ...dayRange(d.date) } }];''', [220, 400]
 b_valid = if_true('입력이 올바른가', 'valid', [440, 400])
 b_bad = respond('입력 오류 응답', '={{ JSON.stringify({ ok: false, reason: "invalid" }) }}', [660, 560], 400)
 b_cal = cal_list('예약 직전 일정 조회', [660, 320])
+b_pcal = cal_list('예약 직전 개인 일정 조회', [770, 320], PERSONAL_EVENTS, "$('입력 확인').first().json")
 b_free = code('그 시간이 비었나', SLOTS + DAY_RANGE + r'''
 const d = $('입력 확인').first().json;
-const free = isSlotFree({ date: d.date, time: d.time, now: Date.now(), events: toEvents($input.first().json.items) });
+const free = isSlotFree({ date: d.date, time: d.time, now: Date.now(), events: [...toEvents($('예약 직전 일정 조회').first().json.items), ...personalEvents($input.first().json.items)] });
 const r = slotRange(d.date, d.time);
 const label = { free: '무료 상담', annual: '연간 기술고문', founder: 'Founder 기술고문' }[d.product];
 const event = {
@@ -137,12 +141,12 @@ b_app = node('신청 추가', 'n8n-nodes-base.dataTable', 1.1, {
         'topic': '={{ %s.topic }}' % D, 'slot': '={{ %s.date + " " + %s.time }}' % (D, D), 'status': 'new',
         'calendar_link': "={{ $('캘린더에 예약 등록').first().json.htmlLink }}", 'source': 'landing'}}}, [2200, 240], executeOnce=True)
 
-nodes = [s_hook, s_range, s_cal, s_calc, s_resp, b_hook, b_check, b_valid, b_bad, b_cal, b_free, b_isfree, b_taken, b_create, b_ok, b_tg, b_cust, b_app]
+nodes = [s_hook, s_range, s_cal, s_pcal, s_calc, s_resp, b_hook, b_check, b_valid, b_bad, b_cal, b_pcal, b_free, b_isfree, b_taken, b_create, b_ok, b_tg, b_cust, b_app]
 def link(a, b, out=0):
     return a['name'], out, b['name']
-links = [link(s_hook, s_range), link(s_range, s_cal), link(s_cal, s_calc), link(s_calc, s_resp),
+links = [link(s_hook, s_range), link(s_range, s_cal), link(s_cal, s_pcal), link(s_pcal, s_calc), link(s_calc, s_resp),
          link(b_hook, b_check), link(b_check, b_valid), link(b_valid, b_cal, 0), link(b_valid, b_bad, 1),
-         link(b_cal, b_free), link(b_free, b_isfree), link(b_isfree, b_create, 0), link(b_isfree, b_taken, 1),
+         link(b_cal, b_pcal), link(b_pcal, b_free), link(b_free, b_isfree), link(b_isfree, b_create, 0), link(b_isfree, b_taken, 1),
          link(b_create, b_ok), link(b_ok, b_tg), link(b_tg, b_cust), link(b_cust, b_app)]
 connections = {}
 for src, out, dst in links:
