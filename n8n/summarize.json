@@ -2,7 +2,7 @@
   "name": "나의기술고문_녹음요약",
   "nodes": [
     {
-      "id": "fc8ce0ff-e05f-4e7c-b4f3-57ebe528c01e",
+      "id": "9589f0ba-26da-4c02-ae8c-8afe5acf1658",
       "name": "요약 요청",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -17,7 +17,7 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "9f957ffe-838e-4ec6-a579-6ee7ce4f785f",
+      "webhookId": "932f0b3e-e799-47e6-85d5-18fbac081c49",
       "credentials": {
         "httpHeaderAuth": {
           "id": "3g7jgSREOadPJYvX",
@@ -26,7 +26,7 @@
       }
     },
     {
-      "id": "71953c50-145b-423e-8e2a-f5ddf337c607",
+      "id": "80d5375e-f596-4f01-b8d6-2665be86d400",
       "name": "음성 있나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -43,7 +43,7 @@
           },
           "conditions": [
             {
-              "id": "8ac16ef5-22fe-4cca-ac7f-c834fe344305",
+              "id": "28155c0c-b3c1-46e5-9a03-26cd4d6f1119",
               "leftValue": "={{ !!$binary.audio }}",
               "rightValue": "",
               "operator": {
@@ -59,7 +59,7 @@
       }
     },
     {
-      "id": "afc92097-660f-43eb-abf1-87fb1bf7419c",
+      "id": "e927912b-c921-40aa-ae5e-f749ba644ba4",
       "name": "음성 없음 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -76,7 +76,7 @@
       }
     },
     {
-      "id": "cda72020-abd8-472c-8bc0-cdce3be1c257",
+      "id": "93a250b6-a55d-419a-a16e-f9ba8b62f3be",
       "name": "파일 정보",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -89,7 +89,7 @@
       }
     },
     {
-      "id": "18524367-2bf0-4144-b11f-3dfcdbba59c7",
+      "id": "91f4b8be-52d5-4330-99e4-12c48fa8bf7f",
       "name": "업로드 시작",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -138,13 +138,13 @@
       "credentials": {
         "googlePalmApi": {
           "id": "dAIQcWMAkuPwZRn2",
-          "name": "Google Gemini (light.ez.notion@gmail.com)"
+          "name": "Google Gemini (light.ez.jjack@gmail.com)"
         }
       },
       "onError": "continueErrorOutput"
     },
     {
-      "id": "af83be34-fccb-4969-a50f-ba79bc3c1b81",
+      "id": "86b46cb2-4963-4d46-b9e2-91ec190d41e2",
       "name": "업로드 준비",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -157,7 +157,7 @@
       }
     },
     {
-      "id": "f18fa17c-53eb-46c1-a52b-981e5804783a",
+      "id": "d8d32799-7dec-4562-baf2-2aa83a1be1e3",
       "name": "업로드",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -191,7 +191,7 @@
       "onError": "continueErrorOutput"
     },
     {
-      "id": "e23e5d57-36f3-4190-8041-476c79992bc2",
+      "id": "9f1185ce-26eb-4065-a40f-724fbe9a7595",
       "name": "받아쓰기",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -214,7 +214,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "dAIQcWMAkuPwZRn2",
-          "name": "Google Gemini (light.ez.notion@gmail.com)"
+          "name": "Google Gemini (light.ez.jjack@gmail.com)"
         }
       },
       "retryOnFail": true,
@@ -223,7 +223,7 @@
       "onError": "continueRegularOutput"
     },
     {
-      "id": "c6c3a1a6-287e-460b-aec9-a1bce0773c92",
+      "id": "13ac6a55-f1cb-4388-a0ff-50cf6a1ca2e5",
       "name": "파일 삭제",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -243,13 +243,13 @@
       "credentials": {
         "googlePalmApi": {
           "id": "dAIQcWMAkuPwZRn2",
-          "name": "Google Gemini (light.ez.notion@gmail.com)"
+          "name": "Google Gemini (light.ez.jjack@gmail.com)"
         }
       },
       "onError": "continueRegularOutput"
     },
     {
-      "id": "40fa56fb-2ef2-4f44-b073-c651bdff4a08",
+      "id": "7351246c-662c-4c8b-b85d-2dbeb2e2d299",
       "name": "받아쓰기 결과",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -262,7 +262,7 @@
       }
     },
     {
-      "id": "a67e837a-075f-4d37-926a-ba98006b100f",
+      "id": "e451dca2-beed-4a75-809a-b214d7987c93",
       "name": "받아쓰기 됐나",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -279,7 +279,7 @@
           },
           "conditions": [
             {
-              "id": "267c06bc-53d4-4a43-b503-588b57cd37c4",
+              "id": "e2d8efc6-cb3b-4012-ab95-e871adb3baec",
               "leftValue": "={{ $json.status === \"ok\" }}",
               "rightValue": "",
               "operator": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": "3d29e79d-58f0-4f85-87b0-f8f59e201419",
+      "id": "af7c99dc-d530-47cc-9ec3-22302fe36bc6",
       "name": "받아쓰기 실패 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -305,14 +305,14 @@
       ],
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ error: $json.status === \"empty\" ? \"받아쓰기 결과가 비었어요\"\n  : /Payment required|prepayment/i.test(JSON.stringify($json.error || {})) ? \"Gemini 선불 크레딧이 떨어졌어요. AI Studio(ai.studio/projects)에서 충전한 뒤 다시 해 주세요\"\n  : $json.error ? \"받아쓰기 서버 오류: \" + String($json.error.message || $json.error.description || \"\").slice(0, 160)\n  : \"받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요\" }) }}",
+        "responseBody": "={{ JSON.stringify({ error: $json.status === \"empty\" ? \"받아쓰기 결과가 비었어요\"\n  : /Payment required|prepayment/i.test(JSON.stringify($json.error || {})) ? \"Gemini 선불 크레딧이 떨어졌어요. AI Studio(ai.studio/projects)에서 충전한 뒤 다시 해 주세요\"\n  : /too many requests|RESOURCE_EXHAUSTED|rate.?limit|quota/i.test(JSON.stringify($json.error || {})) ? \"Gemini 사용 한도에 걸렸어요. 잠시 뒤(길면 하루) 다시 해 주세요. 계속되면 AI Studio 사용량·한도를 확인해 주세요\"\n  : $json.error ? \"받아쓰기 서버 오류: \" + String($json.error.message || $json.error.description || \"\").slice(0, 160)\n  : \"받아쓰기에 실패했어요. 파일 형식(m4a·mp3·wav)을 확인하고 잠시 뒤 다시 보내 주세요\" }) }}",
         "options": {
           "responseCode": 502
         }
       }
     },
     {
-      "id": "3b38b48b-04d3-409b-9ebf-dcfbe14808de",
+      "id": "b36db7d4-9354-4ec1-8205-81471a5adf31",
       "name": "요약",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -354,7 +354,7 @@
       "onError": "continueErrorOutput"
     },
     {
-      "id": "18448ff4-7280-4a42-bc20-fcea0ac3e5a4",
+      "id": "c17cbf7e-52a9-4fa9-a726-39d273ced720",
       "name": "요약 실패 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -371,7 +371,7 @@
       }
     },
     {
-      "id": "72305142-7a8d-41a8-9de1-390b7c3fd360",
+      "id": "8f26aa02-caab-4922-a89c-2ef7d0da7801",
       "name": "결과 묶기",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -384,7 +384,7 @@
       }
     },
     {
-      "id": "f2e18ee5-abd7-43c8-9cb0-1d7309667abd",
+      "id": "519754bd-556b-4992-8201-dabd2d15e8bc",
       "name": "거절?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -401,7 +401,7 @@
           },
           "conditions": [
             {
-              "id": "fc81b68c-efb0-4ae7-81d5-0b43084ed436",
+              "id": "3ad83f28-a77a-47d9-81b2-9597a01c966e",
               "leftValue": "={{ $json.refused }}",
               "rightValue": "",
               "operator": {
@@ -417,7 +417,7 @@
       }
     },
     {
-      "id": "ba34c21c-5830-4b02-9baf-5e410f79f7dd",
+      "id": "9cd872bc-0019-4ba1-8132-4b63b4c129b2",
       "name": "요약 거절 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -434,7 +434,7 @@
       }
     },
     {
-      "id": "0a7ad5db-9127-44ee-a4db-0c742dda8c90",
+      "id": "c080fa42-6557-4ea2-b29b-0e15c194ba92",
       "name": "요약 응답",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
